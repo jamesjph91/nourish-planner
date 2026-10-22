@@ -35,7 +35,7 @@ test('Combined Health Hub loads alongside existing food, gym and progress pages'
  b.evaluate("navigate('workouts')");
  assert.match(b.element('workouts').innerHTML,/Workout planner & strength tracker/);
  b.evaluate("navigate('diary')");
- assert.match(b.element('diary').innerHTML,/Food diary/);
+ assert.match(b.element('diary').innerHTML,/FOOD DIARY/);
  b.evaluate("navigate('progress')");
  assert.match(b.element('progress').innerHTML,/Measurements & gym progress/);
 });
@@ -113,7 +113,7 @@ test('Nutrition counts actual logged food only and watch kcal do not increase di
  b.evaluate("navigate('overview')");
  const page=b.element('overview').innerHTML;
  assert.match(page,/Not logged/);
- assert.match(page,/900 active kcal/);
+ assert.match(page,/Activity energy: 900 kcal/);
  assert.match(page,/do not automatically add watch calories to your food allowance/);
  const summary=b.context.window.nourishHealthAPI.summary();
  assert.equal(summary.nutrition.count,0);
