@@ -173,3 +173,27 @@ test('Account switch prevents pending barcode lookup from repopulating private f
  assert.doesNotMatch(b.element('diary').innerHTML,/Other user food/);
  assert.doesNotMatch(b.element('diary').innerHTML,/3017624010701/);
 });
+
+
+test('A personally saved barcode is found without external API, including a UPC leading zero',async()=>{
+ let calls=0;
+ const b=boot({fetch:async()=>{calls++;throw Error('Network unavailable')}});
+ b.evaluate("navigate('diary')");b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'My saved product',quantity:'100',code:'966340011833',kcal:'175',protein:'8',carbs:'21',fat:'7',fibre:'2',saveFood:true});
+ b.context.window.fdSaveManual();
+ assert.equal(b.cloud().foodDiary.savedFoods[0].barcode,'966340011833');
+ await b.context.window.fdLookup('966340011833');
+ assert.match(b.element('diary').innerHTML,/My saved product/);
+ assert.match(b.element('fd-message').textContent,/Found in My saved foods/);
+ await b.context.window.fdLookup('0966340011833');
+ assert.match(b.element('diary').innerHTML,/My saved product/);
+ assert.equal(calls,0,'A previously saved barcode never requires a network lookup');
+});
+test('Food database diagnostic does not log a test item or replace the current diary',async()=>{
+ const b=boot({fetch:async()=>({ok:true,status:200,json:async()=>({status:'success',product:{product_name:'Nutella',nutriments:{'energy-kcal_100g':539}}})})});
+ b.evaluate("navigate('diary')");
+ await b.context.window.fdTestLookup();
+ assert.match(b.element('fd-message').textContent,/Database connection works/);
+ assert.equal(b.cloud().foodDiary.entries.length,0);
+ assert.equal(b.cloud().foodDiary.savedFoods.length,0);
+});
