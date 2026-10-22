@@ -1,12 +1,12 @@
 {
-  "name": "Nourish — Meal & Fitness Planner",
-  "short_name": "Nourish",
-  "description": "28-day high-protein meal, activity, recipes and shopping planner",
+  "name": "FORGE — Gym & Lifestyle",
+  "short_name": "FORGE",
+  "description": "Train, fuel, recover and progress with one private gym, nutrition, health and lifestyle platform",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f7f1",
-  "theme_color": "#173a32",
+  "background_color": "#07100c",
+  "theme_color": "#07100c",
   "icons": [
     {
       "src": "icon-192.png",
