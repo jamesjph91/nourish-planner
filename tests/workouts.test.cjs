@@ -30,6 +30,8 @@ vm.runInContext(gym,ctx,{filename:'gym.js'});
 assert(html.includes('data-tab="workouts"'),'Gym nav button');
 assert(html.includes('src="./gym.js"'),'Gym script');
 vm.runInContext('navigate("workouts")',ctx);
+// The current date may be a rest day; select the Monday workout before checking exercise controls.
+vm.runInContext('gymSelectDay(s.workouts.startDate)',ctx);
 assert(element('workouts').innerHTML.includes('Workout planner'));
 assert(element('workouts').innerHTML.includes('Your training week'));
 assert(element('workouts').innerHTML.includes('How to do it'));
