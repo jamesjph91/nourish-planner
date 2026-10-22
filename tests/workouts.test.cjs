@@ -69,7 +69,7 @@ assert(element('gym-library-list').innerHTML.includes('Dumbbell lateral raise'),
 vm.runInContext('gymChoose("lateral")',ctx);
 assert(vm.runInContext('s.workouts.sessions["'+day+'"].exerciseIds.includes("lateral")',ctx),'Exercise added');
 vm.runInContext('gymMoveExercise("'+day+'","lateral",-1)',ctx);
-assert.equal(vm.runInContext('s.workouts.sessions["'+day+'"].exerciseIds.indexOf("lateral")',ctx),3,'Exercises can move up');
+assert.equal(vm.runInContext('s.workouts.sessions["'+day+'"].exerciseIds.indexOf("lateral")',ctx),4,'Exercises can move up');
 vm.runInContext('gymSaveRoutine("'+day+'")',ctx);
 assert(vm.runInContext('s.workouts.templates.A.includes("lateral")',ctx),'Routine template saved');
 const nextDay=new Date(day+'T12:00:00');
@@ -94,3 +94,20 @@ const restoredFlexible=vm.runInContext('window.nourishCloudBridge.getData()',ctx
 assert.deepEqual(JSON.parse(JSON.stringify(restoredFlexible.workouts.templates)),JSON.parse(JSON.stringify(flexible.workouts.templates)),'Saved templates round trip');
 assert.deepEqual(JSON.parse(JSON.stringify(restoredFlexible.workouts.sessions[nextDate].sets)),JSON.parse(JSON.stringify(flexible.workouts.sessions[nextDate].sets)),'All set history round trips');
 console.log('PASS Gym Lab Flex: search, add, reorder, save routine, future reuse, replace, remove, history, cloud');
+
+
+// Personal exercise definitions can be created and remain private in the saved workout state.
+vm.runInContext('gymLibrary("'+nextDate+'")',ctx);
+element('gym-own-name').value='Custom machine movement';
+element('gym-own-focus').value='Back';
+element('gym-own-equip').value='Machine';
+element('gym-own-unit').value='reps';
+element('gym-own-load').checked=true;
+vm.runInContext('gymCreateOwn()',ctx);
+const own=vm.runInContext('s.workouts.sessions["'+nextDate+'"].exerciseIds.find(id=>id.startsWith("own_"))',ctx);
+assert(own,'Custom exercise added');
+const ownSaved=vm.runInContext('window.nourishCloudBridge.getData()',ctx);
+assert(ownSaved.workouts.customExercises[own],'Custom exercise definition synced');
+vm.runInContext('window.nourishCloudBridge.applyData('+JSON.stringify(ownSaved)+')',ctx);
+assert(vm.runInContext('s.workouts.customExercises["'+own+'"].name',ctx)==='Custom machine movement','Custom definition restored');
+console.log('PASS User-defined movements: add, cloud save, restore');
