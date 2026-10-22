@@ -64,9 +64,16 @@ function useSaved(id){
  if(!item)return;fillDraft({...item,quantity:item.lastQuantity||100,category:item.category||'snack',saveFood:true});
 }
 function cancelDraft(){draft=null;editing='';renderCurrent();}
+function sameBarcode(a,b){
+ const x=String(a||''),y=String(b||'');
+ return /^\d{8,14}$/.test(x)&&/^\d{8,14}$/.test(y)&&x.replace(/^0+(?=\d)/,'')===y.replace(/^0+(?=\d)/,'');
+}
+function savedBarcode(code){
+ return cleanDiary().savedFoods.find(item=>sameBarcode(item.barcode,code));
+}
 function upsertSaved(data){
  const diary=cleanDiary();
- const key=data.barcode?diary.savedFoods.findIndex(x=>x.barcode===data.barcode):diary.savedFoods.findIndex(x=>x.name.toLowerCase()===data.name.toLowerCase()&&!x.barcode);
+ const key=data.barcode?diary.savedFoods.findIndex(x=>sameBarcode(x.barcode,data.barcode)):diary.savedFoods.findIndex(x=>x.name.toLowerCase()===data.name.toLowerCase()&&!x.barcode);
  const item={id:key>=0?diary.savedFoods[key].id:uid(),name:data.name,barcode:data.barcode||'',unit:data.unit,category:data.category,perUnit:data.perUnit,lastQuantity:data.quantity};
  if(key>=0)diary.savedFoods.splice(key,1);diary.savedFoods.unshift(item);
  diary.savedFoods=diary.savedFoods.slice(0,80);s.foodDiary=diary;
@@ -132,6 +139,14 @@ async function lookup(code){
  if(!/^\d{8,14}$/.test(normalized)){showMessage('Enter a valid 8–14 digit barcode or use manual food entry.');return;}
  if(lookupBusy){showMessage('The previous lookup is still running. Please try again once it finishes.');return;}
  lookupBusy=true;lastBarcode=normalized;const token=++lookupToken;
+ const mine=savedBarcode(normalized);
+ if(mine){
+  lookupBusy=false;
+  draft={...blankDraft(),...mine,barcode:normalized,quantity:mine.lastQuantity||100,perUnit:{...mine.perUnit},saveFood:true};editing='';
+  renderCurrent();showMessage('Found in My saved foods: '+mine.name+'. These are the label values you previously saved. Review the amount eaten, then add to your diary.');
+  document.getElementById('fd-entry')?.scrollIntoView({behavior:'smooth',block:'start'});
+  return;
+ }
  // Retain the scanned code in a usable food form even if the external API is offline.
  draft={...blankDraft(),barcode:normalized};editing='';
  renderCurrent();showMessage('Barcode '+normalized+' captured. Looking for the product and nutritional values…');
