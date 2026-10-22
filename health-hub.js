@@ -152,7 +152,7 @@ async function importFile(file){
   a.daily=[...map.values()].sort((x,y)=>x.date.localeCompare(y.date)).slice(-400);
   s.healthActivity=validateHealthActivity(a);
   selected=parsed.rows[parsed.rows.length-1].date;
-  importMessage='Imported '+updated+' daily record'+(updated===1?'':'s')+(parsed.rejected?' ('+parsed.rejected+' invalid rows skipped).':'.')+' Data stays in your private Nourish account.';
+  importMessage='Imported '+updated+' daily record'+(updated===1?'':'s')+(parsed.rejected?' ('+parsed.rejected+' invalid rows skipped).':'.')+' Data stays in your private FORGE account.';
   save();renderCurrent();notify('Health activity imported successfully.');
  }catch(e){
   importMessage='Import failed: '+(e?.message||'Invalid file')+'. Your existing activity has not been changed.';
@@ -220,7 +220,7 @@ function dashboard(){
  const lifts=strengthSummary();
  const steps=watch?.steps,activityKcal=watch?.activeKcal,sleep=watch?.sleepMinutes;
  const watchNote=watch?'Activity '+(watch.source==='manual'?'entered manually':watch.source==='health-connect'?'imported from Health Connect':'imported'):'No activity entered for today';
- return '<div class="hub-dashboard"><div class="sectionhead"><div><div class="eyebrow">NOURISH · HEALTH HUB</div><h2>Your daily health overview</h2></div><span class="pill">'+esc(current)+'</span></div>'+
+ return '<div class="hub-dashboard"><div class="sectionhead"><div><div class="eyebrow">FORGE · HEALTH HUB</div><h2>Your daily health overview</h2></div><span class="pill">'+esc(current)+'</span></div>'+
  '<div class="hub-kpis">'+
  card('CALORIES LOGGED',n.count?fmt(n.n.kcal)+' kcal':'Not logged',n.count?'From '+n.count+' food item'+(n.count===1?'':'s'):'Your meal plan is not counted until you log it')+
  card('PROTEIN',n.count?fmt(n.n.protein,1)+' g':'—',n.count?'Your daily reference is '+s.settings.prot+' g':'Log a food to see your intake')+
@@ -250,7 +250,7 @@ function dashboard(){
 function healthPage(){
  const current=data(),old=findDay(selected),goals=current.goals,days=seriesData().slice().reverse();
  const inp=(key,label,value,min,max,step)=>'<label>'+label+'<input id="hub-'+key+'" type="number" inputmode="decimal" min="'+min+'" max="'+max+'" step="'+step+'" value="'+(value??'')+'" placeholder="Optional"></label>';
- return '<div class="sectionhead"><div><div class="eyebrow">NOURISH · ACTIVITY & WEARABLES</div><h2>Watch activity & goals</h2></div><span class="pill">Private to your account</span></div>'+
+ return '<div class="sectionhead"><div><div class="eyebrow">FORGE · ACTIVITY & WEARABLES</div><h2>Watch activity & goals</h2></div><span class="pill">Private to your account</span></div>'+
  '<div class="notice">Samsung Health can share activity via Health Connect on supported Android phones. A web app cannot directly read Health Connect. This screen accepts manual readings or a daily-summary CSV/JSON import; automatic watch syncing is not enabled yet.</div>'+
  '<div class="card"><h3>Personal activity targets</h3><div class="hub-form">'+inp('goal-steps','Steps per day',goals.steps,1000,50000,1000)+inp('goal-sleep','Sleep reference (hours)',goals.sleepMinutes/60,4,12,.5)+'</div><button class="btn dark" onclick="hubSetGoal()">Save activity targets</button></div>'+
  '<div class="hub-insights"><div class="card"><h3>Enter a watch reading</h3><p class="short">Use the day’s totals in Samsung Health; leave any metric you do not have blank. Values replace the same field for that date without duplicating it.</p>'+
@@ -262,7 +262,7 @@ function healthPage(){
  '<button class="btn dark" onclick="hubSaveReading()">Save activity</button><p class="short" role="status">'+esc(manualMessage)+'</p></div>'+
  '<div class="card"><h3>Import Samsung / Health Connect activity</h3><p class="short">Import an agreed daily-summary export, not an arbitrary Samsung Health database ZIP. Files need columns for <b>date</b> and one of <b>steps, active_kcal, sleep_minutes, resting_bpm</b>. Compatible JSON can also be imported.</p>'+
  '<label class="hub-upload">Choose CSV or JSON file<input id="hub-file" type="file" accept=".csv,.tsv,.json,text/csv,application/json" onchange="hubImportChange(this)"></label>'+
- '<p class="short" role="status">'+esc(importMessage)+'</p><p class="short">Data is validated, combined by calendar date and saved to your own Nourish account. Importing again updates the same dates instead of duplicating totals.</p>'+
+ '<p class="short" role="status">'+esc(importMessage)+'</p><p class="short">Data is validated, combined by calendar date and saved to your own FORGE account. Importing again updates the same dates instead of duplicating totals.</p>'+
  '<p class="short">This does <b>not</b> connect your watch automatically or infer burn from step count. See <a href="https://developer.samsung.com/health/health-connect-faq.html" target="_blank" rel="noopener noreferrer">Samsung Health Connect guidance ↗</a>.</p></div></div>'+
  '<div class="card"><h3>Recent recorded activity</h3>'+
  (current.daily.length?current.daily.slice().reverse().slice(0,14).map(x=>
