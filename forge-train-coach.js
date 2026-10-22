@@ -86,7 +86,7 @@ function panel(s){
  '<nav class="fgt-tabs" aria-label="Train screen">'+tabNames.map(t=>'<button type="button" data-fgt-view="'+t+'" aria-pressed="'+(t===active)+'" class="'+(active===t?'on':'')+'">'+t+'</button>').join('')+'</nav>'+
  (active==='History'?'<section class="fgt-snapshot"><span>YOUR TRAINING HISTORY</span><h2>'+s.completedSessions+' completed sessions</h2><p>'+s.logCount+' completed sets recorded across your history. Review individual movements and export your log below.</p></section>':
  '<section class="fgt-snapshot"><div class="fgt-snapshot-top"><span>'+escape(dateNice(s.selected))+'</span><b>'+escape(s.scheduled==='rest'?'RECOVERY DAY':s.finished?'✓ COMPLETE':s.completed?'● SESSION IN PROGRESS':'WORKOUT PLANNED')+'</b></div>'+
- '<h2>'+escape(rest?'Recovery session':(s.session?.id?'Routine '+s.session.id:'Routine '+title))+'</h2>'+
+ '<h2>'+escape(rest?'Recovery session':(s.label||('Routine '+title)))+'</h2>'+
  '<p>'+escape(rest?'Recovery is part of training. Assign a workout below if you want to train today.':'Record weight and repetitions, tick completed sets and swap exercises whenever you need to.')+'</p>'+
  (!rest?'<div class="fgt-progress-head"><span>SESSION PROGRESS</span><strong>'+s.completed+' / '+s.total+' sets</strong></div><div class="fgt-progress"><i style="width:'+s.percent+'%"></i></div>'+
  '<div class="fgt-quick-actions"><button type="button" class="primary" data-fgt-action="jump">▶ '+(s.finished?'View completed session':'Open session')+'</button><button type="button" data-fgt-action="library">＋ Add exercise</button></div>':
@@ -100,6 +100,8 @@ function enhance(){
  const r=root();
  if(!r||!document.querySelector('#nav [data-tab="workouts"].on'))return;
  const s=snapshot(),parts=findParts(r);
+ const sessionTitle=parts.session?.querySelector(':scope > .row h2');
+ if(sessionTitle)s.label=sessionTitle.textContent.trim();
  // A newly opened routine can exist in gym.js memory before its first save.
  // Prefer the actual rendered set rows in that case rather than showing false 0/0.
  if(parts.session&&s.scheduled!=='rest'&&s.total===0){
@@ -136,5 +138,5 @@ document.addEventListener('click',event=>{
 document.addEventListener('change',event=>{const v=event.target.closest?.('[data-fgt-duration]');if(v&&root()?.contains(v))changeTimer(Number(v.value))});
 window.addEventListener('forge:view-rendered',event=>{if(event.detail?.tab==='workouts')enhance()});
 document.addEventListener('DOMContentLoaded',enhance,{once:true});
-window.forgeTrainCoach={enhance,snapshot,changeTimer,timerLabel};
+window.forgeTrainCoach={enhance,snapshot,changeTimer,timerLabel,panel};
 })();
