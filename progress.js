@@ -105,7 +105,7 @@ function progressPage(){
  const p=profile(),rows=measurements(),metric=window.nourishMetric||'weightKg';
  const start=rows[rows.length-1];
  if(p.circleCode)window.nourishSocial?.ensure?.(p.circleCode);
- return '<div class="sectionhead"><div><div class="eyebrow">NOURISH • YOUR PRIVATE PROGRESS</div><h2>Measurements & gym progress</h2></div><span class="pill">Private to your Google account</span></div>'+
+ return '<div class="sectionhead"><div><div class="eyebrow">FORGE · YOUR PRIVATE PROGRESS</div><h2>Measurements & gym progress</h2></div><span class="pill">Private to your Google account</span></div>'+
  '<p class="notice">Log weight and body measurements at your own pace. Body-fat readings from home scales are estimates, not direct measurements of muscle gain; use strength improvements and consistent measurements alongside your weight trend.</p>'+
  '<div class="card"><h2>Your profile</h2><div class="prog-fields"><label>Display name<input id="prog-name" maxlength="30" value="'+esc(p.nickname)+'" placeholder="Name shown in your friend comparison"></label><label>Goal weight (kg)<input id="prog-goal" type="number" min="35" max="350" step=".1" value="'+(p.goalWeightKg??'')+'" placeholder="Optional"></label></div><button class="btn dark" onclick="nourishProfileSave()">Save my profile</button><p class="short">Your nickname and weight goal do not change your calorie target automatically. Each account has its own adjustable meal plan and gym log.</p></div>'+
  '<div class="sectionhead"><h2>Your results</h2></div>'+history()+
