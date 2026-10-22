@@ -2535,14 +2535,14 @@ function validateHealthActivity(value){
  }
  const map=new Map();
  if(Array.isArray(obj.daily))for(const entry of obj.daily.slice(-730)){
-  if(!entry||typeof entry!=='object'||typeof entry.date!=='string'||!/^\\d{4}-\\d{2}-\\d{2}$/.test(entry.date)||Number.isNaN(Date.parse(entry.date+'T12:00:00')))continue;
+  if(!entry||typeof entry!=='object'||typeof entry.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(entry.date)||Number.isNaN(Date.parse(entry.date+'T12:00:00')))continue;
   const item={date:entry.date};
   for(const [key,min,max,precision] of [['steps',0,150000,0],['activeKcal',0,12000,1],['sleepMinutes',0,1440,0],['restingBpm',25,220,0]]){
    const value=safe(entry[key],min,max,precision);if(value!==null)item[key]=value;
   }
   if(Object.keys(item).length===1)continue;
   item.source=['manual','health-connect','samsung-export','imported'].includes(entry.source)?entry.source:'imported';
-  if(typeof entry.updatedAt==='string'&&/^\\d{4}-\\d{2}-\\d{2}T/.test(entry.updatedAt))item.updatedAt=entry.updatedAt.slice(0,35);
+  if(typeof entry.updatedAt==='string'&&/^\d{4}-\d{2}-\d{2}T/.test(entry.updatedAt))item.updatedAt=entry.updatedAt.slice(0,35);
   map.set(item.date,item);
  }
  out.daily=[...map.values()].sort((a,b)=>a.date.localeCompare(b.date)).slice(-400);
