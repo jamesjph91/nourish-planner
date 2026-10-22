@@ -420,7 +420,7 @@ function unitChanged(unit){
  if(label)label.textContent='Nutritional values per '+(unit==='portion'?'one portion':'100 '+unit)+'. If changing units, update the label values too.';
 }
 function diaryPage(){
- return '<div class="sectionhead"><div><div class="eyebrow">FORGE · FUEL</div><h2>What you actually ate</h2></div><span class="pill">Private to your account</span></div>'+
+ return '<div class="sectionhead"><div><div class="eyebrow">FORGE · FOOD DIARY</div><h2>What you actually ate</h2></div><span class="pill">Private to your account</span></div>'+
  '<p class="notice">Track real consumption alongside your planned meals. Nutrition and barcode information are estimates; verify the product label, especially allergies and serving sizes. Your daily reference target is not adjusted automatically for exercise calories.</p>'+dateUI()+dashboard()+planned()+'<div class="fd-columns"><div>'+logRows()+'</div><div>'+inputPanel()+saved()+'</div></div>'+weekIntake();
 }
 function dashboardCard(){
