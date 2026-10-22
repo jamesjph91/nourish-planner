@@ -12,7 +12,7 @@ function boot(state){
  const mount={className:'forge-progress-app',innerHTML:'',contains:()=>true};
  const root={children:[],dataset:{},classList:{add(){}},prepend(node){this.children.unshift(node)},querySelector(selector){return selector==='.forge-progress-app'?this.children.find(x=>x.className==='forge-progress-app')||null:null}};
  const win={addEventListener(name,fn){(listeners[name]??=[]).push(fn)}};
- const doc={head:{append(){}},getElementById(id){return id==='progress'?root:null},querySelector(selector){return selector==='#nav [data-tab="progress"].on'?{}:null},createElement(tag){if(tag==='div')return {...mount};if(tag==='style')return {textContent:'',id:''};throw Error(tag)},addEventListener(name,fn){(listeners[name]??=[]).push(fn)}};
+ const doc={head:{append(){}},getElementById(id){return id==='progress'?root:null},querySelector(selector){return selector==='#nav [data-tab="progress"].on'?{}:null},createElement(tag){if(tag==='div')return {...mount,classList:{contains(v){return v==='forge-progress-app'}}};if(tag==='style')return {textContent:'',id:''};throw Error(tag)},addEventListener(name,fn){(listeners[name]??=[]).push(fn)}};
  const store={getItem(key){assert.equal(key,'nourishHigherDeficitV1');return JSON.stringify(state)}};
  const context={window:win,document:doc,localStorage:store,Date,Intl,URL,console};
  vm.createContext(context);vm.runInContext(code,context,{filename:'forge-progress.js'});
