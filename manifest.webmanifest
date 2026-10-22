@@ -3,14 +3,14 @@
   "name": "FORGE — Gym · Health · Lifestyle",
   "short_name": "FORGE",
   "description": "Train harder. Eat smarter. Live better.",
-  "start_url": "./index.html?v=16",
+  "start_url": "./index.html?v=24",
   "scope": "./",
   "display": "standalone",
   "background_color": "#050806",
   "theme_color": "#050806",
   "icons": [
     {
-      "src": "forge-icon.svg?v=2",
+      "src": "forge-icon.svg?v=24",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
