@@ -321,6 +321,7 @@ style.textContent+='.gym-edit-actions,.gym-ex-actions{display:flex;flex-wrap:wra
 document.head.append(style);
 work();
 window.nourishWorkoutsPage=gymPlanner;
+window.nourishGymExerciseName=id=>definition(id)?.name||'Exercise '+String(id).slice(0,12);
 window.gymSelectDay=selectDay;window.gymSelectWeek=selectWeek;window.gymSetDayPlan=setDayPlan;
 window.gymResetAnchor=resetAnchor;window.gymSetValue=setValue;window.gymTick=tick;
 window.gymSetNote=setNote;window.gymComplete=complete;window.gymAddSet=addSet;window.gymRemoveSet=removeSet;
