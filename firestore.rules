@@ -1,11 +1,66 @@
 rules_version = '2';
 service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{uid}/private/nourish-plan {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
-    }
-    match /{document=**} {
-      allow read, write: if false;
-    }
+ match /databases/{database}/documents {
+  // Meal plans, workout sets, weigh-ins and all raw measurements are private.
+  match /users/{uid}/private/nourish-plan {
+   allow read, write: if request.auth != null && request.auth.uid == uid;
   }
+  function circleAccess(code) {
+   return request.auth != null
+    && exists(/databases/$(database)/documents/circles/$(code))
+    && (get(/databases/$(database)/documents/circles/$(code)).data.ownerUid == request.auth.uid
+      || get(/databases/$(database)/documents/circles/$(code)).data.memberUid == request.auth.uid);
+  }
+  // A 128-bit random invitation ID can be fetched by its holder. Listing is blocked.
+  // The invite itself contains only Firebase UIDs and creation time, never health data.
+  match /circles/{code} {
+   allow get: if request.auth != null;
+   allow list: if false;
+   allow create: if request.auth != null
+     && code.matches('^[a-f0-9]{32}$')
+     && request.resource.data.keys().hasOnly(['ownerUid','memberUid','createdAt'])
+     && request.resource.data.keys().hasAll(['ownerUid','memberUid','createdAt'])
+     && request.resource.data.ownerUid == request.auth.uid
+     && request.resource.data.memberUid == ''
+     && request.resource.data.createdAt is string;
+   // Only a new partner can claim an empty slot. Both participants may empty it.
+   allow update: if request.auth != null
+     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberUid'])
+     && (
+      (resource.data.memberUid == '' && request.auth.uid != resource.data.ownerUid
+       && request.resource.data.memberUid == request.auth.uid)
+      || (request.auth.uid == resource.data.memberUid && request.resource.data.memberUid == '')
+      || (request.auth.uid == resource.data.ownerUid && request.resource.data.memberUid == '')
+     );
+   allow delete: if request.auth != null && resource.data.ownerUid == request.auth.uid;
+  }
+  match /circles/{code}/snapshots/{uid} {
+   // No collection listing, not even for members. Individual summaries only.
+   allow list: if false;
+   allow get: if circleAccess(code);
+   allow create, update: if circleAccess(code)
+     && request.auth.uid == uid
+     && request.resource.data.keys().hasOnly([
+       'displayName','startWeightKg','latestWeightKg','weightChangeKg',
+       'weightPercentChange','waistChangeCm','workoutsCompleted','updatedAt'])
+     && request.resource.data.keys().hasAll([
+       'displayName','startWeightKg','latestWeightKg','weightChangeKg',
+       'weightPercentChange','waistChangeCm','workoutsCompleted','updatedAt'])
+     && request.resource.data.displayName is string
+     && request.resource.data.displayName.size() <= 30
+     && request.resource.data.updatedAt is string
+     && request.resource.data.updatedAt.size() == 10
+     && (request.resource.data.startWeightKg == null || request.resource.data.startWeightKg is number)
+     && (request.resource.data.latestWeightKg == null || request.resource.data.latestWeightKg is number)
+     && (request.resource.data.weightChangeKg == null || request.resource.data.weightChangeKg is number)
+     && (request.resource.data.weightPercentChange == null || request.resource.data.weightPercentChange is number)
+     && (request.resource.data.waistChangeCm == null || request.resource.data.waistChangeCm is number)
+     && (request.resource.data.workoutsCompleted == null || (request.resource.data.workoutsCompleted is int && request.resource.data.workoutsCompleted >= 0));
+   // Owner can always remove their own public summary, including after leaving.
+   allow delete: if request.auth != null && request.auth.uid == uid;
+  }
+  match /{document=**} {
+   allow read, write: if false;
+  }
+ }
 }
