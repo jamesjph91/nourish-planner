@@ -2525,6 +2525,7 @@ function validateFoodDiary(value){
  return result;
 }
 function resetPrivatePlan(){
+ window.nourishFoodReset?.();
  s={tab:'overview',week:1,recipeFilter:'all',query:'',scope:'initial',settings:{restCal:1800,gymCal:2000,prot:160,extraGym:false},swaps:{},checked:{},gym:{},walks:{},favorites:{},workouts:{},profile:{},measurements:[],foodDiary:{entries:[],savedFoods:[]},libraryCat:'all',libraryQuery:'',libraryFav:false,recipeFav:false,shopDirty:false,undo:null};
  moveFrom=null;
  try{localStorage.removeItem('nourishHigherDeficitV1');}catch(e){}
