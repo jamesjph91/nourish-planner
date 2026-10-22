@@ -111,3 +111,65 @@ test('Untrusted backup record is bounded, escaped and malformed entries discarde
  assert.ok(!b.element('diary').innerHTML.includes('<script>alert(1)</script>'));
  assert.match(b.element('diary').innerHTML,/&lt;script&gt;/);
 });
+
+
+test('Current Open Food Facts v3 response populates nutrition and flags any missing value',async()=>{
+ const calls=[];
+ const b=boot({fetch:async url=>{
+  calls.push(url);
+  return {ok:true,status:200,json:async()=>({status:'success',result:{id:'product_found'},product:{
+   product_name:'Example snack',nutriments:{'energy-kcal_100g':190,proteins_100g:13,carbohydrates_100g:12,fat_100g:8}
+  }})};
+ }});
+ b.evaluate("navigate('diary')");
+ await b.context.window.fdLookup('3017624010701');
+ assert.equal(calls.length,1);assert.match(calls[0],/\/api\/v3\/product\//);
+ assert.match(b.element('diary').innerHTML,/Example snack/);
+ assert.match(b.element('diary').innerHTML,/value="190"/);
+ assert.match(b.element('diary').innerHTML,/value="13"/);
+ assert.match(b.element('fd-message').textContent,/fibre/);
+ assert.match(b.element('diary').innerHTML,/fd-fibre[^>]+value=""/);
+});
+test('Falls back to the previous API when v3 is unavailable',async()=>{
+ const calls=[];
+ const b=boot({fetch:async url=>{
+  calls.push(url);
+  if(url.includes('/api/v3/'))return {ok:false,status:502};
+  return {ok:true,status:200,json:async()=>({status:1,product:{
+   product_name:'Example drink',quantity:'500ml',
+   nutriments:{'energy-kcal_100g':45,proteins_100g:0,carbohydrates_100g:11,fat_100g:0,fiber_100g:0}
+  }})};
+ }});
+ b.evaluate("navigate('diary')");await b.context.window.fdLookup('5012345678900');
+ assert.equal(calls.length,2);
+ assert.match(calls[1],/\/api\/v2\/product\//);
+ assert.match(b.element('diary').innerHTML,/Example drink/);
+ assert.match(b.element('diary').innerHTML,/<option value="ml" selected>/);
+});
+test('Unknown barcode remains usable, with no invented nutrition values',async()=>{
+ const b=boot({fetch:async()=>({ok:false,status:404})});
+ b.evaluate("navigate('diary')");await b.context.window.fdLookup('0000000000000');
+ assert.match(b.element('diary').innerHTML,/value="0000000000000"/);
+ assert.match(b.element('fd-message').textContent,/No matching product/);
+ assert.match(b.element('diary').innerHTML,/fd-name/);
+ b.context.window.fdSaveManual();
+ assert.match(b.alerts.join(' '),/Enter a food name/);
+});
+test('Network error retains scanned barcode and offers manual values',async()=>{
+ const b=boot({fetch:async()=>{throw Error('Failed to fetch')}});
+ b.evaluate("navigate('diary')");await b.context.window.fdLookup('12345678');
+ assert.match(b.element('diary').innerHTML,/value="12345678"/);
+ assert.match(b.element('fd-message').textContent,/could not be reached/);
+});
+test('Account switch prevents pending barcode lookup from repopulating private form',async()=>{
+ let release;
+ const b=boot({fetch:()=>new Promise(resolve=>{release=resolve})});
+ b.evaluate("navigate('diary')");
+ const pending=b.context.window.fdLookup('3017624010701');
+ b.context.window.nourishCloudBridge.resetPrivatePlan();
+ release({ok:true,status:200,json:async()=>({status:'success',product:{product_name:'Other user food',nutriments:{'energy-kcal_100g':500}}})});
+ await pending;
+ b.evaluate("navigate('diary')");
+ assert.doesNotMatch(b.element('diary').innerHTML,/Other user food/);
+ assert.doesNotMatch(b.element('diary').innerHTML,/3017624010701/);
+});
