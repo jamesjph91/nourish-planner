@@ -37,7 +37,9 @@ service cloud.firestore {
   match /circles/{code}/snapshots/{uid} {
    // No collection listing, not even for members. Individual summaries only.
    allow list: if false;
-   allow get: if circleAccess(code);
+   allow get: if circleAccess(code)
+     && (uid == get(/databases/$(database)/documents/circles/$(code)).data.ownerUid
+       || uid == get(/databases/$(database)/documents/circles/$(code)).data.memberUid);
    allow create, update: if circleAccess(code)
      && request.auth.uid == uid
      && request.resource.data.keys().hasOnly([
