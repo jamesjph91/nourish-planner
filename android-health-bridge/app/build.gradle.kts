@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.nourish.healthbridge"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.nourish.healthbridge"
         minSdk = 28
