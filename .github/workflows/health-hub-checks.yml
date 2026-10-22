@@ -12,6 +12,8 @@ on:
       - 'forge-dashboard.js'
       - 'forge-master-ui.js'
       - 'forge-train.js'
+      - 'forge-train-coach.js'
+      - 'forge-v27-train.css'
       - 'forge-fuel.js'
       - 'forge-activity.js'
       - 'forge-progress.js'
@@ -32,6 +34,8 @@ on:
       - 'forge-dashboard.js'
       - 'forge-master-ui.js'
       - 'forge-train.js'
+      - 'forge-train-coach.js'
+      - 'forge-v27-train.css'
       - 'forge-fuel.js'
       - 'forge-activity.js'
       - 'forge-progress.js'
@@ -63,6 +67,7 @@ jobs:
           node --check forge-dashboard.js
           node --check forge-master-ui.js
           node --check forge-train.js
+          node --check forge-train-coach.js
           node --check forge-fuel.js
           node --check forge-activity.js
           node --check forge-progress.js
