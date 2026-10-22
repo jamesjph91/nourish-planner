@@ -11,6 +11,10 @@ on:
       - 'forge-original-theme.js'
       - 'forge-dashboard.js'
       - 'forge-master-ui.js'
+      - 'forge-train.js'
+      - 'forge-fuel.js'
+      - 'forge-activity.js'
+      - 'forge-progress.js'
       - 'service-worker.js'
       - 'manifest.webmanifest'
       - 'tests/**'
@@ -25,6 +29,10 @@ on:
       - 'forge-original-theme.js'
       - 'forge-dashboard.js'
       - 'forge-master-ui.js'
+      - 'forge-train.js'
+      - 'forge-fuel.js'
+      - 'forge-activity.js'
+      - 'forge-progress.js'
       - 'service-worker.js'
       - 'tests/**'
   workflow_dispatch:
@@ -50,6 +58,10 @@ jobs:
           node --check forge-original-theme.js
           node --check forge-dashboard.js
           node --check forge-master-ui.js
+          node --check forge-train.js
+          node --check forge-fuel.js
+          node --check forge-activity.js
+          node --check forge-progress.js
           node --check service-worker.js
       - name: Regression tests
         run: node --test tests/*.test.cjs
