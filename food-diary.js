@@ -64,6 +64,85 @@ function useSaved(id){
  if(!item)return;fillDraft({...item,quantity:item.lastQuantity||100,category:item.category||'snack',saveFood:true});
 }
 function cancelDraft(){draft=null;editing='';renderCurrent();}
+
+// Name-based choices, NOT barcode matches. Values from Tesco product listings (per 100 g drained).
+const RETAIL_CHOICES=[
+ {name:'Tesco Tuna Chunks in Spring Water 145g',drained:102,n:{kcal:109,protein:24.9,carbs:0,fat:1,fibre:0},url:'https://www.tesco.com/shop/en-GB/products/303887546'},
+ {name:'Tesco Tuna Chunks in Brine 145g',drained:102,n:{kcal:109,protein:24.9,carbs:0,fat:1,fibre:0},url:'https://www.tesco.com/shop/en-GB/products/303887523'},
+ {name:'Tesco Tuna Chunks in Sunflower Oil 145g',drained:102,n:{kcal:159,protein:25.4,carbs:0,fat:6.4,fibre:0},url:'https://www.tesco.com/shop/en-GB/products/303882199'},
+ {name:'Tesco Tuna Chunks in Spring Water 160g',drained:112,n:{kcal:109,protein:24.9,carbs:0,fat:1,fibre:0},url:'https://www.tesco.com/shop/en-GB/products/283723368'},
+ {name:'Tesco Tuna Chunks in Brine 160g',drained:112,n:{kcal:109,protein:24.9,carbs:0,fat:1,fibre:0},url:'https://www.tesco.com/shop/en-GB/products/283715919'},
+ {name:'Tesco Tuna Chunks in Spring Water 400g',drained:280,n:{kcal:109,protein:24.9,carbs:0,fat:1,fibre:0},url:'https://www.tesco.com/shop/en-GB/products/310092502'}
+];
+let foodSearchQuery='',searchProducts=[],foodSearchMessage='',foodSearchBusy=false,foodSearchController=null;
+function suggestionsHTML(){
+ const query=foodSearchQuery.toLowerCase().trim();
+ if(query.length<2)return '<p class="short">Enter at least two letters (for example “Tesco tuna”) to find foods by name, even when a barcode is missing.</p>';
+ const words=query.split(/\s+/).filter(Boolean);
+ const catalog=RETAIL_CHOICES.map((p,i)=>({...p,index:i})).filter(p=>words.every(w=>p.name.toLowerCase().includes(w)));
+ const entries=catalog.map(p=>
+  '<div class="fd-choose-result"><div><b>'+escape(p.name)+'</b><small>'+p.n.kcal+' kcal · '+p.n.protein+'g protein per 100g drained · '+p.drained+'g drained per tin</small><small>Official Tesco product information · <a href="'+p.url+'" target="_blank" rel="noopener noreferrer">Check Tesco listing ↗</a></small></div><button type="button" class="btn sm dark" onclick="fdChooseVerified('+p.index+')">Choose</button></div>'
+ );
+ for(const [i,p] of searchProducts.entries()){
+  const name=p.product_name_en||p.product_name||'Unnamed product',brand=p.brands||'';
+  const x=parseProduct(p,String(p.code||''));
+  entries.push('<div class="fd-choose-result"><div><b>'+escape(name)+'</b><small>'+escape(brand)+' · '+(x.perUnit.kcal===''?'No calories listed':x.perUnit.kcal+' kcal per 100g')+' · '+escape(String(p.quantity||''))+'</small><small>Open Food Facts search result · verify it matches your packaging</small></div><button type="button" class="btn sm" onclick="fdChooseSearch('+i+')">Choose</button></div>');
+ }
+ return (catalog.length?'<p class="short">Tesco-listed products (nutrition confirmed by retailer, barcode not confirmed):</p>':'')+
+   (entries.length?entries.join(''):'<p class="short">No matching products available here yet. Try different words or enter the packaging values below.</p>')+
+   '<p class="short" role="status">'+escape(foodSearchMessage)+'</p>';
+}
+function searchTyping(q){
+ foodSearchQuery=String(q||'').slice(0,80);
+ searchProducts=[];foodSearchMessage='';
+ const target=document.getElementById('fd-search-results');if(target)target.innerHTML=suggestionsHTML();
+}
+async function searchFoodNames(){
+ const query=foodSearchQuery.trim();if(query.length<2){foodSearchMessage='Enter at least two letters.';renderSearchResults();return}
+ if(searchFoodNames.pending)return;
+ searchFoodNames.pending=true;foodSearchMessage='Searching the wider Open Food Facts catalogue…';renderSearchResults();
+ const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),10000);foodSearchController=abort;
+ try{
+  // Open Food Facts v1 supports full-text queries; its v2 search endpoint does not.
+  const url='https://world.openfoodfacts.org/cgi/search.pl?search_simple=1&action=process&json=1&page_size=12&fields=code,product_name,product_name_en,brands,quantity,nutriments&search_terms='+encodeURIComponent(query);
+  const res=await fetch(url,{signal:abort.signal,headers:{Accept:'application/json'}});
+  if(!res.ok)throw Error('HTTP '+res.status);
+  const data=await res.json();
+  if(query!==foodSearchQuery.trim())return;
+  searchProducts=Array.isArray(data.products)?data.products.filter(p=>p&&typeof p==='object'&&String(p.product_name||p.product_name_en||'').trim()).slice(0,12):[];
+  foodSearchMessage=searchProducts.length?searchProducts.length+' additional community products found.':'No additional community products found for these words.';
+ }catch(e){
+  foodSearchMessage='Wider search unavailable ('+(e.name==='AbortError'?'timed out':e.message)+'). Verified Tesco choices above still work.';
+ }finally{
+  clearTimeout(timer);searchFoodNames.pending=false;foodSearchController=null;renderSearchResults();
+ }
+}
+function renderSearchResults(){
+ const el=document.getElementById('fd-search-results');
+ if(el)el.innerHTML=suggestionsHTML();
+}
+function chooseVerified(i){
+ const p=RETAIL_CHOICES[i];if(!p)return;
+ const code=lastBarcode||'';
+ draft={...blankDraft(),name:p.name,barcode:code,unit:'g',quantity:p.drained,category:'snack',perUnit:{...p.n},saveFood:true};
+ editing='';renderCurrent();
+ showMessage('Selected by product name from Tesco: '+p.name+'. This barcode has NOT been verified as belonging to that listing. Check the tin size, spring water/brine/oil and nutrition label before saving. Your choice will be remembered privately for future scans.');
+ document.getElementById('fd-entry')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function chooseSearch(i){
+ const p=searchProducts[i];if(!p)return;
+ const source=String(p.code||'');
+ draft=parseProduct(p,lastBarcode||source);
+ editing='';renderCurrent();
+ showMessage('Selected a similar product by name, NOT a confirmed barcode match. Check the brand, variety, size and nutrition label before saving. This may differ from your tin.');
+ document.getElementById('fd-entry')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function foodSearchUI(){
+ return '<div class="fd-search-panel"><h4 style="margin:0 0 6px">Find food by name</h4><p class="short">Missing barcode? Search names instead. Our starter Tesco choices use published retailer nutrition; broader results come from Open Food Facts. Confirm the exact type and drained weight.</p>'+
+  '<div class="fd-lookup"><input id="fd-food-query" aria-label="Food name search" placeholder="e.g. Tesco tuna" maxlength="80" value="'+escape(foodSearchQuery)+'" oninput="fdSearchTyping(this.value)"><button class="btn" type="button" onclick="fdSearchNames()">Search more foods</button></div>'+
+  '<div id="fd-search-results">'+suggestionsHTML()+'</div></div>';
+}
+
 function sameBarcode(a,b){
  const x=String(a||''),y=String(b||'');
  return /^\d{8,14}$/.test(x)&&/^\d{8,14}$/.test(y)&&x.replace(/^0+(?=\d)/,'')===y.replace(/^0+(?=\d)/,'');
@@ -176,6 +255,10 @@ async function lookup(code){
   }
   if(token!==lookupToken)return;
   if(!product){
+   if(normalized==='966340011833'){
+    foodSearchQuery='tesco tuna';foodSearchMessage='You identified this barcode as Tesco tuna. Choose the exact tin variety and size below — the barcode itself has not been verified.';
+    renderCurrent();
+   }
    const detail=abort.signal.aborted?'The lookup timed out.':notFound?'No matching product was found in the database.':(failure?.message==='Failed to fetch'?'The food database could not be reached from this browser.':failure?.message||'The product database could not be reached.');
    showMessage('Barcode '+normalized+' saved. '+detail+' Fill in the product name and label values in the form below.');
    return;
@@ -324,6 +407,7 @@ function inputPanel(){
  const d=draft||blankDraft();const input=(id,label,step,maximum)=>'<label>'+label+'<input id="fd-'+id+'" type="number" step="'+step+'" min="0" max="'+maximum+'" inputmode="decimal" value="'+(d.perUnit[id]??'')+'" placeholder="Enter label value"></label>';
  return '<div class="card" id="fd-entry"><div class="row" style="justify-content:space-between;flex-wrap:wrap"><div><h3 style="margin:0">Add extra food</h3><p class="short">Snacks, drinks, takeaways, supplements or anything outside the plan.</p></div><button class="btn" onclick="fdBeginManual()">＋ New manual food</button></div>'+
  '<div class="fd-lookup"><button class="btn dark" onclick="fdOpenScanner()">▦ Scan barcode</button><label class="short" for="fd-lookup-code">Barcode digits</label><input id="fd-lookup-code" inputmode="numeric" pattern="[0-9]*" maxlength="14" placeholder="EAN/UPC barcode" aria-label="Barcode digits" value="'+escape(lastBarcode)+'"><button class="btn" onclick="fdLookup(document.getElementById(\'fd-lookup-code\').value)">Find product</button></div><div id="fd-scan-holder" hidden></div><div class="actions" style="margin:8px 0"><button class="btn sm" onclick="fdTestLookup()">Test food database connection</button></div><p class="short" id="fd-message" role="status">'+escape(lookupMessage||"Scan or enter a barcode to look up a product. Barcode data comes from Open Food Facts; verify against the label.")+'</p>'+(lastBarcode?'<p class="short">Scanned code: <b>'+escape(lastBarcode)+'</b> · <a href="https://world.openfoodfacts.org/product/'+encodeURIComponent(lastBarcode)+'" target="_blank" rel="noopener noreferrer">Check this barcode on Open Food Facts ↗</a></p>':'')+
+ foodSearchUI()+
  (draft?'<form onsubmit="event.preventDefault();fdSaveManual()"><div class="fd-inputs"><label class="fd-wide">Product / food name<input id="fd-name" maxlength="100" required value="'+escape(d.name)+'" placeholder="e.g. Chicken sandwich"></label><label>Meal<select id="fd-category">'+CATS.map(c=>'<option value="'+c+'" '+(d.category===c?'selected':'')+'>'+c[0].toUpperCase()+c.slice(1)+'</option>').join('')+'</select></label><label>Quantity eaten<input id="fd-quantity" required type="number" inputmode="decimal" min="0.1" max="5000" step="0.1" value="'+f(d.quantity)+'"></label><label>Unit<select id="fd-unit" onchange="fdUnitChanged(this.value)">'+['g','ml','portion'].map(u=>'<option value="'+u+'" '+(d.unit===u?'selected':'')+'>'+escape(u==='portion'?'Portions':u==='ml'?'Millilitres (ml)':'Grams (g)')+'</option>').join('')+'</select></label><label>Barcode (optional)<input id="fd-barcode" inputmode="numeric" maxlength="14" value="'+escape(d.barcode||'')+'" placeholder="Optional"></label></div><p class="short fd-base-label" id="fd-base-label">Nutritional values per '+(d.unit==='portion'?'one portion':'100 '+d.unit)+'. You can change values to match the package label.</p><div class="fd-inputs">'+input('kcal','Calories (kcal)',.1,5000)+input('protein','Protein (g)',.1,300)+input('carbs','Carbohydrates (g)',.1,500)+input('fat','Fat (g)',.1,300)+input('fibre','Fibre (g)',.1,200)+'</div><label class="fd-check"><input type="checkbox" id="fd-save-food" '+(d.saveFood?'checked':'')+'> Save food for next time</label><div class="actions"><button class="btn dark" type="submit">'+(editing?'Update diary entry':'Add to my diary')+'</button><button type="button" class="btn" onclick="fdCancelDraft()">Cancel</button></div></form>':'<p class="short">Scan or find a barcode to fill the nutrition values, or choose “New manual food” to enter values from the packaging.</p>')+'</div>';
 }
 function unitChanged(unit){
@@ -340,6 +424,7 @@ function dashboardCard(){
 }
 const css=document.createElement('style');
 css.textContent='.fd-date{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:14px 0}.fd-date input,.fd-inputs input,.fd-inputs select,.fd-lookup input{border:1px solid var(--line);background:#fff;color:var(--ink);padding:11px;border-radius:9px;font:inherit;min-width:0;max-width:100%;font-size:16px}.fd-date label{font-weight:700}.fd-summary{margin-bottom:16px}.fd-remaining{text-align:right}.fd-remaining strong{display:block;font-size:19px}.fd-remaining small{color:var(--muted)}.fd-meter{height:7px;overflow:hidden;background:#e3eae4;border-radius:99px;margin:7px 0}.fd-meter.big{height:12px;margin:16px 0}.fd-meter>div{height:100%;background:#34795c;border-radius:99px}.fd-nutrients{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.fd-stat{font-size:12px}.fd-stat .row{gap:4px;flex-wrap:wrap}.fd-columns{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;align-items:start}.fd-columns .card{margin-bottom:16px}.fd-planned{border-top:1px solid var(--line);padding:14px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}.fd-planned small,.fd-log small{display:block;font-size:12px;color:var(--muted);margin-top:4px}.fd-planned-actions{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.fd-planned-actions select{display:block;margin-top:3px}.fd-log-group{border-top:1px solid var(--line);margin-top:16px}.fd-log-group h4{margin:13px 0 6px}.fd-log{padding:10px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:start}.fd-log-actions{display:flex;flex-direction:column;align-items:flex-end;gap:6px}.fd-log-actions strong{white-space:nowrap}.fd-lookup{display:flex;flex-wrap:wrap;gap:9px;align-items:end;margin:15px 0}.fd-lookup label{width:100%}.fd-lookup input{flex:1;min-width:120px}.fd-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}.fd-inputs label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:700;min-width:0}.fd-inputs .fd-wide{grid-column:1/-1}.fd-check{display:flex;gap:9px;align-items:center;margin:15px 0}.fd-check input{width:20px;height:20px;accent-color:var(--green)}.fd-saved{display:flex;flex-wrap:wrap;gap:8px}.fd-saved .btn{text-align:left;white-space:normal}#fd-scan-holder{margin:12px 0;max-width:100%;overflow:hidden}#fd-scan-holder video{max-width:100%}@media(max-width:850px){.fd-columns{grid-template-columns:1fr}}@media(max-width:540px){.fd-nutrients{grid-template-columns:1fr}.fd-inputs{grid-template-columns:1fr}.fd-remaining{text-align:left}.fd-planned-actions{width:100%}}';
+css.textContent+='.fd-search-panel{margin:15px 0;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fbfdfa}.fd-choose-result{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.fd-choose-result div{min-width:0}.fd-choose-result small{display:block;color:var(--muted);font-size:12px;margin-top:4px}.fd-choose-result .btn{flex-shrink:0}@media(max-width:480px){.fd-choose-result{align-items:flex-start;flex-wrap:wrap}}';
 css.textContent+='.fd-week-numbers{text-align:right}.fd-week-numbers small{display:block;color:var(--muted)}';document.head.append(css);
 window.nourishFoodDiaryPage=diaryPage;
 window.nourishFoodDashboard=dashboardCard;
@@ -347,6 +432,7 @@ window.nourishFoodTodaySummary=()=>({date:localDate(new Date()),totals:grand(dia
 window.fdChangeDate=changeDate;window.fdAdjustDate=adjustDate;window.fdAddPlanned=addPlanned;
 window.fdDeleteEntry=deleteEntry;window.fdEditEntry=editEntry;window.fdUseSaved=useSaved;
 window.fdBeginManual=beginManual;window.fdCancelDraft=cancelDraft;window.fdSaveManual=saveManual;
+window.fdSearchTyping=searchTyping;window.fdSearchNames=searchFoodNames;window.fdChooseVerified=chooseVerified;window.fdChooseSearch=chooseSearch;
 window.fdLookup=lookup;window.fdTestLookup=testFoodDatabase;window.fdExport=exportDiary;window.fdOpenScanner=openScanner;window.fdStopScanner=stopScanner;window.fdUnitChanged=unitChanged;
 window.nourishFoodCleanup=stopScanner;window.nourishFoodReset=resetDiaryUI;
 if(s.tab==='diary'||s.tab==='overview')renderCurrent();
