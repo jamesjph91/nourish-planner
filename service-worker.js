@@ -1,6 +1,6 @@
 /* FORGE v23. Static native HTML, network-first, no script injection. */
-const CACHE='forge-v26-performance';
-const CORE=['./','./index.html','./manifest.webmanifest','./forge-icon.svg','./forge-native.css','./gym.js','./food-diary.js','./health-hub.js','./progress.js','./compare.js','./cloud-sync.js','./firebase-config.js','./forge-dashboard.js','./forge-master-ui.js','./forge-train.js','./forge-fuel.js','./forge-activity.js','./forge-progress.js','./forge-progress.css','./forge-v26.css','./forge-fuel-insights.js'];
+const CACHE='forge-v27-train';
+const CORE=['./','./index.html','./manifest.webmanifest','./forge-icon.svg','./forge-native.css','./gym.js','./food-diary.js','./health-hub.js','./progress.js','./compare.js','./cloud-sync.js','./firebase-config.js','./forge-dashboard.js','./forge-master-ui.js','./forge-train.js','./forge-fuel.js','./forge-activity.js','./forge-progress.js','./forge-progress.css','./forge-v26.css','./forge-fuel-insights.js','./forge-train-coach.js','./forge-v27-train.css'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);
   await Promise.allSettled(CORE.map(url=>cache.add(new Request(url,{cache:'reload'}))));
