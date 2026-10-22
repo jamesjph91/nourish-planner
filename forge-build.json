@@ -1,0 +1,10 @@
+{
+  "version": 28,
+  "name": "FORGE",
+  "released": "2026-10-23",
+  "features": [
+    "Phone update manager",
+    "Stable PWA entry",
+    "Safe refresh page"
+  ]
+}
