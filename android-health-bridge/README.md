@@ -13,7 +13,7 @@ When the generated JSON is imported into the Nourish website, the web app's exis
 ## Setup and use (prototype)
 
 1. Install the Android Health Connect app if your OS is Android 13 or older, and grant Samsung Health permission to share relevant types through Health Connect.
-2. Build with Android Studio or run `gradle -p android-health-bridge :app:assembleDebug` using Android SDK 35 and Java 17. No keys or API subscription are required for the local bridge.
+2. Build with Android Studio or run `gradle -p android-health-bridge :app:assembleDebug` using Android SDK 36, Gradle 8.11.1 and Java 17. No keys or API subscription are required for the local bridge.
 3. Install the debug APK for **testing** in an Android device. It is **not a published Play Store app** and has **not been verified on a physical Galaxy Watch**. Check the package permissions carefully.
 4. Open **Nourish Health Bridge**, allow its requested Health Connect read permissions, and tap **Export the last seven days**.
 5. Save JSON on the phone. Open the installed Nourish website/app → **Health hub & watch** → choose the generated file.
@@ -23,7 +23,7 @@ Build outputs, if CI succeeds, are visible in GitHub Actions under the `Nourish 
 
 ## Technology
 
-- Kotlin / Android Gradle Plugin 8.7.3, minSdk 28, targetSdk 35.
+- Kotlin / Android Gradle Plugin 8.9.2, minSdk 28, targetSdk 35.
 - androidx.health.connect:connect-client:1.1.0.
 - `StepsRecord.COUNT_TOTAL`, `ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL`, `SleepSessionRecord.SLEEP_DURATION_TOTAL`, `RestingHeartRateRecord.BPM_AVG`.
 - Aggregation windows use local midnight boundaries, accounting for daylight-saving time.
