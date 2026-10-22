@@ -365,7 +365,7 @@ function planned(){
  const index=planIndex(selected);
  if(!index)return '<div class="card"><h3>Your planned meals</h3><p class="short">This date is outside your current 28-day plan. You can still log anything using the scanner or manual food entry. Adjust Gym & Workouts → Plan starts on Monday to align your plan with your diary dates.</p></div>';
  const row=days()[index-1];
- return '<div class="card"><div class="row" style="flex-wrap:wrap;justify-content:space-between"><div><div class="eyebrow">NOURISH 28-DAY PLAN • DAY '+index+'</div><h3 style="margin:6px 0">Mark planned meals as eaten</h3></div><span class="pill">'+(row.gym?'Gym day':'Rest day')+'</span></div><p class="short">Your meal schedule is a plan, not an intake record. Add each meal after eating. Actual portions can be adjusted before logging.</p>'+
+ return '<div class="card"><div class="row" style="flex-wrap:wrap;justify-content:space-between"><div><div class="eyebrow">FORGE · 28-DAY MEAL PLAN • DAY '+index+'</div><h3 style="margin:6px 0">Mark planned meals as eaten</h3></div><span class="pill">'+(row.gym?'Gym day':'Rest day')+'</span></div><p class="short">Your meal schedule is a plan, not an intake record. Add each meal after eating. Actual portions can be adjusted before logging.</p>'+
  ['breakfast','lunch','dinner'].map((cat,i)=>{
   const id=row.ids[i],item=rs[id],macro=portion(id,row.gym).n;
   const already=diaryFor(selected).find(x=>x.category===cat&&x.source==='plan');
@@ -378,7 +378,7 @@ function logRows(){
  (all.length?CATS.map(cat=>{
   const items=all.filter(x=>x.category===cat);if(!items.length)return '';
   return '<div class="fd-log-group"><h4>'+cat[0].toUpperCase()+cat.slice(1)+'</h4>'+items.map(item=>
-   '<div class="fd-log"><div><b>'+escape(item.name)+'</b><small>'+f(item.quantity)+' '+escape(item.unit==='portion'?'portion(s)':item.unit)+' · '+escape(item.source==='plan'?'Nourish meal':item.source==='barcode'?'Scanned product':'Manual / saved food')+'</small><small>'+f(item.totals.protein)+'g protein · '+f(item.totals.carbs)+'g carbs · '+f(item.totals.fat)+'g fat</small></div><div class="fd-log-actions"><strong>'+Math.round(item.totals.kcal)+' kcal</strong><button class="btn sm" onclick="fdEditEntry(\''+item.id+'\')">Edit</button><button class="btn sm" onclick="fdDeleteEntry(\''+item.id+'\')">Delete</button></div></div>').join('')+'</div>';
+   '<div class="fd-log"><div><b>'+escape(item.name)+'</b><small>'+f(item.quantity)+' '+escape(item.unit==='portion'?'portion(s)':item.unit)+' · '+escape(item.source==='plan'?'Planned meal':item.source==='barcode'?'Scanned product':'Manual / saved food')+'</small><small>'+f(item.totals.protein)+'g protein · '+f(item.totals.carbs)+'g carbs · '+f(item.totals.fat)+'g fat</small></div><div class="fd-log-actions"><strong>'+Math.round(item.totals.kcal)+' kcal</strong><button class="btn sm" onclick="fdEditEntry(\''+item.id+'\')">Edit</button><button class="btn sm" onclick="fdDeleteEntry(\''+item.id+'\')">Delete</button></div></div>').join('')+'</div>';
  }).join(''):'<p class="short">Nothing logged yet. Tap “I ate this” on a planned meal or add any other food below.</p>')+'</div>';
 }
 function exportDiary(){
@@ -393,7 +393,7 @@ function exportDiary(){
  const rows=[keys.join(',')].concat(entries.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(x=>
   [x.date,x.category,x.name,x.source,x.barcode,x.quantity,x.unit,...NUT.map(k=>x.totals[k])].map(quote).join(',')
  ));
- download('nourish-food-diary.csv','\uFEFF'+rows.join('\r\n'),'text/csv;charset=utf-8');
+ download('forge-food-diary.csv','\uFEFF'+rows.join('\r\n'),'text/csv;charset=utf-8');
  notify('Your food diary CSV was downloaded.');
 }
 function weekIntake(){
@@ -420,7 +420,7 @@ function unitChanged(unit){
  if(label)label.textContent='Nutritional values per '+(unit==='portion'?'one portion':'100 '+unit)+'. If changing units, update the label values too.';
 }
 function diaryPage(){
- return '<div class="sectionhead"><div><div class="eyebrow">NOURISH • FOOD DIARY 2.0</div><h2>What you actually ate</h2></div><span class="pill">Private to your account</span></div>'+
+ return '<div class="sectionhead"><div><div class="eyebrow">FORGE · FUEL</div><h2>What you actually ate</h2></div><span class="pill">Private to your account</span></div>'+
  '<p class="notice">Track real consumption alongside your planned meals. Nutrition and barcode information are estimates; verify the product label, especially allergies and serving sizes. Your daily reference target is not adjusted automatically for exercise calories.</p>'+dateUI()+dashboard()+planned()+'<div class="fd-columns"><div>'+logRows()+'</div><div>'+inputPanel()+saved()+'</div></div>'+weekIntake();
 }
 function dashboardCard(){
