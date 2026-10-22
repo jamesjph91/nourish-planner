@@ -49,3 +49,14 @@ test('Progress photos clearly state that they are local and not cloud-synced',()
  assert.match(v.current(),/Photos are not uploaded or cloud synced/);
  assert.match(v.current(),/JPG, PNG or WebP/);
 });
+test('Goals shows real saved targets without inventing progress',()=>{
+ const v=boot({profile:{goalWeightKg:75},measurements:[{date:dateAgo(0),weightKg:78}],healthActivity:{daily:[],goals:{steps:10000}}});
+ const target={closest(selector){return selector==='[data-fp-tab]'?{dataset:{fpTab:'Goals'}}:null}};
+ v.emit('click',{target});
+ assert.match(v.current(),/WEIGHT GOAL/);
+ assert.match(v.current(),/75\.0 kg/);
+ assert.match(v.current(),/3\.0 kg above your goal/);
+ assert.match(v.current(),/STEP GOAL/);
+ assert.match(v.current(),/10,000 steps/);
+ assert.match(v.current(),/friend comparisons below/);
+});
