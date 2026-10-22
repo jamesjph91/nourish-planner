@@ -1,3 +1,66 @@
-/* FORGE Today — master visualiser UI over the existing app data. */
-(()=>{'use strict';const $=s=>document.querySelector(s),day=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};function state(){try{return JSON.parse(localStorage.getItem('nourishHigherDeficitV1')||'{}')}catch{return {}}}const n=v=>Number.isFinite(Number(v))?Number(v):0,f=v=>Math.round(n(v)).toLocaleString('en-GB');function food(s){return(s.foodDiary?.entries||[]).filter(e=>e.date===day()).reduce((a,e)=>{const t=e.totals||{};a.k+=n(t.kcal);a.p+=n(t.protein);a.c+=n(t.carbs);a.f+=n(t.fat);return a},{k:0,p:0,c:0,f:0})}function activity(s){const d=s.healthActivity?.daily?.[day()]||s.health?.daily?.[day()]||{};return{steps:n(d.steps),active:n(d.activeCalories??d.activeKcal??d.calories),distance:n(d.distanceKm??d.distance),sleep:n(d.sleepHours??d.sleep)}}function target(s,key,alt,fb){return n(s.settings?.[key]??s.settings?.[alt]??s.targets?.[key]??fb)||fb}function go(t){document.querySelector(`#nav [data-tab="${t}"]`)?.click()}function ring(label,value,sub,pct,cls=''){return `<div class="fg-ring ${cls}" style="--p:${Math.max(4,Math.min(100,pct))*3.6}deg"><div><b>${value}</b><small>${label}</small><em>${sub}</em></div></div>`}function render(){const root=$('#overview');if(!root)return;const s=state(),x=food(s),a=activity(s),cal=target(s,'calories','gymCal',2300),pro=target(s,'protein','prot',180),w=s.workouts||{},session=w.sessions?.[day()],done=!!session?.completed,date=new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'short'}).format(new Date());root.innerHTML=`<div class="fg-home"><header class="fg-head"><div><div class="fg-wordmark"><span><i></i><i></i></span>FORGE</div><h1>Today</h1><p>${date}</p></div><button class="fg-status">● ON TRACK</button></header><section class="fg-hero"><div class="fg-rings">${ring('KCAL',f(x.k),`of ${f(cal)}`,x.k/cal*100,'hot')}${ring('PROTEIN',`${f(x.p)}g`,`of ${f(pro)}g`,x.p/pro*100)}${ring('STEPS',f(a.steps),'of 10,000',a.steps/10000*100,'blue')}${ring('SLEEP',a.sleep?`${a.sleep.toFixed(1)}h`:'—','of 8h',a.sleep/8*100,'violet')}</div></section><section class="fg-quote"><b>“Discipline today<br>builds the freedom<br>tomorrow.”</b><i></i></section><section class="fg-focus"><div class="fg-section"><div><span>TODAY'S FOCUS</span><h2>${done?'Workout complete':'Build your day'}</h2></div><small>${done?'4':'2'} of 5 complete</small></div><button data-go="workouts"><i class="done">✓</i> Complete workout</button><button data-go="diary"><i class="${x.p>=pro?'done':''}">${x.p>=pro?'✓':'○'}</i> Hit protein target</button><button data-go="health"><i>○</i> Stay hydrated</button><button data-go="diary"><i class="${x.k?'done':''}">${x.k?'✓':'○'}</i> Log all meals</button><button data-go="progress"><i>○</i> Make progress</button></section><section class="fg-actions"><button data-go="workouts">▶ <b>${session?'Resume':'Start'} workout</b></button><button data-go="diary">＋ <b>Log food</b></button></section></div>`;root.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go))}
-const css=document.createElement('style');css.id='forge-today-master';css.textContent=`.fg-home{max-width:560px;margin:0 auto;padding-bottom:10px}.fg-head{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 2px 14px}.fg-wordmark{display:flex;align-items:center;gap:7px;color:#b9ff16;font-style:italic;font-weight:950;font-size:14px;letter-spacing:-.3px}.fg-wordmark>span{position:relative;width:18px;height:16px}.fg-wordmark i{position:absolute;left:1px;height:5px;background:#b9ff16;transform:skew(-25deg)}.fg-wordmark i:first-child{top:2px;width:16px}.fg-wordmark i:last-child{top:9px;width:12px}.fg-head h1{font-size:34px;line-height:1;margin:17px 0 4px;letter-spacing:-1.5px}.fg-head p{margin:0;color:#8b978f;font-size:12px}.fg-status{margin-top:31px;border:1px solid #35501c;background:#101b10;color:#b9ff16;border-radius:999px;padding:7px 10px;font-size:9px;font-weight:900}.fg-hero{position:relative;overflow:hidden;border:1px solid #1c2921;background:radial-gradient(circle at 78% 20%,#263f1a,transparent 26%),linear-gradient(145deg,#0b130e,#060a07);border-radius:17px;padding:17px 12px}.fg-hero:after{content:'';position:absolute;right:-28px;bottom:-54px;width:190px;height:190px;border-radius:48% 52% 44% 56%;background:radial-gradient(ellipse,#172c17 0,#0a100c 50%,transparent 70%);opacity:.85}.fg-rings{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.fg-ring{aspect-ratio:1;border-radius:50%;padding:5px;background:conic-gradient(#b9ff16 var(--p),#1a261e 0);display:grid;place-items:center}.fg-ring.hot{background:conic-gradient(#ff8a24 var(--p),#1a261e 0)}.fg-ring.blue{background:conic-gradient(#23d7d7 var(--p),#1a261e 0)}.fg-ring.violet{background:conic-gradient(#9b75ff var(--p),#1a261e 0)}.fg-ring>div{width:100%;height:100%;border-radius:50%;background:#09100c;display:grid;place-items:center;align-content:center;text-align:center}.fg-ring b{font-size:15px;line-height:1}.fg-ring small{font-size:7px;font-weight:900;margin-top:3px}.fg-ring em{font-size:6px;color:#7d8b82;font-style:normal;margin-top:1px}.fg-quote{position:relative;overflow:hidden;min-height:147px;margin-top:11px;border:1px solid #1c2921;border-radius:17px;background:linear-gradient(90deg,#0c1510 35%,transparent),radial-gradient(circle at 85% 50%,#20331b,#080d0a 58%);padding:22px}.fg-quote:after{content:'▲';position:absolute;right:28px;bottom:-15px;font-size:135px;color:#101b14;transform:scaleX(.7);opacity:.8}.fg-quote b{position:relative;z-index:2;font-size:22px;line-height:1.32;font-weight:600}.fg-quote i{display:block;width:31px;height:3px;background:#b9ff16;margin-top:16px}.fg-focus{margin-top:11px;border:1px solid #1c2921;border-radius:17px;background:linear-gradient(145deg,#0c1510,#080d0a);padding:16px}.fg-section{display:flex;justify-content:space-between;align-items:end;margin-bottom:10px}.fg-section span{font-size:8px;color:#b9ff16;font-weight:900;letter-spacing:1.5px}.fg-section h2{font-size:18px;margin:3px 0 0}.fg-section small{color:#849188;font-size:9px}.fg-focus button{display:flex;align-items:center;gap:10px;width:100%;border:0;border-top:1px solid #162019;background:transparent;color:#e8ece9;text-align:left;padding:10px 2px;font-size:12px}.fg-focus button i{width:20px;height:20px;border:1px solid #5b675f;border-radius:50%;display:grid;place-items:center;font-style:normal;color:#829087}.fg-focus button i.done{background:#b9ff16;border-color:#b9ff16;color:#071008;font-weight:950}.fg-actions{display:grid;grid-template-columns:1.45fr 1fr;gap:8px;margin-top:11px}.fg-actions button{border:1px solid #b9ff16;border-radius:13px;background:transparent;color:#b9ff16;padding:13px 9px;font-size:11px}.fg-actions button:first-child{background:#b9ff16;color:#061008}.fg-actions b{font-weight:900}@media(max-width:390px){.fg-ring b{font-size:13px}.fg-ring{padding:4px}.fg-quote b{font-size:20px}}`;document.head.appendChild(css);document.addEventListener('DOMContentLoaded',()=>setTimeout(render,100));window.addEventListener('forge:view-rendered',e=>{if(e.detail?.tab==='overview')render()});window.addEventListener('storage',render);window.addEventListener('forge:data-changed',render);window.forgeTodayRender=render;})();
+/* FORGE Today v26 — real-time visual command centre bound to the existing saved engine. */
+(()=>{'use strict';
+const root=()=>document.getElementById('overview');
+const iso=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+const num=v=>v!==undefined&&v!==null&&v!==''&&Number.isFinite(Number(v))?Number(v):0;
+const has=v=>v!==undefined&&v!==null&&v!==''&&Number.isFinite(Number(v));
+const fmt=(v,d=0)=>Number(v||0).toLocaleString('en-GB',{maximumFractionDigits:d});
+const escape=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function state(){try{return JSON.parse(localStorage.getItem('nourishHigherDeficitV1')||'{}')||{}}catch{return {}}}
+function data(){
+ const s=state(),today=iso(),entries=(s.foodDiary?.entries||[]).filter(e=>e?.date===today);
+ const totals=entries.reduce((a,e)=>{for(const k of ['kcal','protein','carbs','fat'])a[k]+=num(e.totals?.[k]);return a},{kcal:0,protein:0,carbs:0,fat:0});
+ const activity=(Array.isArray(s.healthActivity?.daily)?s.healthActivity.daily:[]).find(x=>x.date===today)||{};
+ const stepsGoal=Math.max(1000,num(s.healthActivity?.goals?.steps)||8000);
+ const sleepGoal=Math.max(240,num(s.healthActivity?.goals?.sleepMinutes)||480);
+ const proteinGoal=Math.max(1,num(s.settings?.prot)||160);
+ const api=typeof window.nourishFoodTodaySummary==='function'?window.nourishFoodTodaySummary():null;
+ const kcalGoal=num(api?.target)||num(s.settings?.restCal)||1800;
+ const todaySession=s.workouts?.sessions?.[today];
+ const completed=!!todaySession?.completed;
+ const measurement=Array.isArray(s.measurements)&&s.measurements.some(x=>x.date===today);
+ const steps=has(activity.steps)?num(activity.steps):null;
+ const sleep=has(activity.sleepMinutes)?num(activity.sleepMinutes):null;
+ const goals=[
+  {text:'Record today’s food',done:entries.length>0,tab:'diary'},
+  {text:'Reach protein target',done:entries.length>0&&totals.protein>=proteinGoal,tab:'diary'},
+  {text:'Reach your step goal',done:steps!==null&&steps>=stepsGoal,tab:'health'},
+  {text:'Complete a workout',done:completed,tab:'workouts'},
+  {text:'Record a progress measurement',done:measurement,tab:'progress'}
+ ];
+ return {s,today,entries,totals,activity,stepsGoal,sleepGoal,proteinGoal,kcalGoal,todaySession,completed,goals,steps,sleep};
+}
+function ring(title,value,goal,unit,cls,display,sub){
+ const known=value!==null&&value!==undefined;
+ const progress=known&&goal>0?Math.max(0,Math.min(100,Number(value)/goal*100)):0;
+ return '<div class="fg26-ringitem"><div class="fg26-ring '+cls+'" style="--fill:'+((progress*3.6).toFixed(1))+'deg"><div><b>'+escape(known?display:'—')+'</b><small>'+escape(title)+'</small></div></div><span>'+escape(known?sub:'Not recorded')+'</span></div>';
+}
+function render(){
+ const el=root();if(!el)return;const d=data();
+ const done=d.goals.filter(x=>x.done).length;
+ const date=new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'long'}).format(new Date());
+ const status=done===5?'ALL GOALS MET':done?'IN PROGRESS':'READY WHEN YOU ARE';
+ const calor=d.totals.kcal,protein=d.totals.protein;
+ const source=d.activity.source==='health-connect'?'Health Connect':d.activity.source==='samsung-export'?'Samsung import':d.activity.source==='manual'?'Manual activity':'Activity';
+ const sleepLabel=d.sleep===null?'Not recorded':fmt(d.sleep/60,1)+'h of '+fmt(d.sleepGoal/60,1)+'h';
+ el.innerHTML='<div class="fg26"><header class="fg26-heading"><div><div class="fg26-eyebrow"><img alt="" src="./forge-icon.svg?v=24"> FORGE / YOUR DAY</div><h1>Today<span>.</span></h1><p>'+escape(date)+'</p></div><div class="fg26-status"><span class="fg26-spark">●</span>'+escape(status)+'</div></header>'+
+ '<section class="fg26-hero"><div class="fg26-hero-top"><span>DAILY PERFORMANCE</span><b>'+done+' / 5 FOCUS POINTS</b></div><h2>Build strength.<br><em>Own your day.</em></h2><p>Your food, training and activity in one place — updated from what you actually log.</p><div class="fg26-rings">'+
+ ring('KCAL',calor,d.kcalGoal,'kcal','fg26-orange',fmt(calor),fmt(calor)+' / '+fmt(d.kcalGoal)+' kcal')+
+ ring('PROTEIN',protein,d.proteinGoal,'g','fg26-lime',fmt(protein)+'g',fmt(protein)+' / '+fmt(d.proteinGoal)+'g')+
+ ring('STEPS',d.steps,d.stepsGoal,'steps','fg26-cyan',d.steps===null?'—':fmt(d.steps),(d.steps===null?'—':fmt(d.steps))+' / '+fmt(d.stepsGoal))+
+ ring('SLEEP',d.sleep,d.sleepGoal,'minutes','fg26-purple',d.sleep===null?'—':fmt(d.sleep/60,1)+'h',sleepLabel)+
+ '</div><p class="fg26-footnote">Activity: '+escape(source)+' · Calorie target follows your meal plan; exercise energy is not added automatically.</p></section>'+
+ '<section class="fg26-motto"><div><span>THE FORGE MINDSET</span><strong>DISCIPLINE TODAY.<br>FREEDOM TOMORROW.</strong><i></i></div><div class="fg26-f-graphic" aria-hidden="true">F</div></section>'+
+ '<section class="fg26-focus"><header><div><small>DAILY DISCIPLINE</small><h2>Today’s focus</h2></div><span>'+done+' of 5 complete</span></header><div class="fg26-focus-progress"><i style="width:'+(done*20)+'%"></i></div>'+
+ d.goals.map(goal=>'<button type="button" data-fg26-tab="'+goal.tab+'"><span class="fg26-check '+(goal.done?'done':'')+'">'+(goal.done?'✓':'')+'</span><b>'+escape(goal.text)+'</b><span class="fg26-go-arrow">↗</span></button>').join('')+'</section>'+
+ '<div class="fg26-actions"><button data-fg26-tab="workouts" class="primary">⚒ '+(d.completed?'View workout':'Open workout')+'</button><button data-fg26-tab="diary">＋ Log food</button></div>'+
+ '<div class="fg26-bottom"><button data-fg26-tab="planner">▦ Meal plan <span>↗</span></button><button data-fg26-tab="health">◇ Activity <span>↗</span></button><button data-fg26-tab="progress">▥ Progress <span>↗</span></button></div>'+
+ '<p class="fg26-data-note">Unrecorded activities show “—”. This dashboard does not assume missing data means zero activity.</p></div>';
+}
+document.addEventListener('click',e=>{const button=e.target.closest?.('[data-fg26-tab]');if(button&&root()?.contains(button)){document.querySelector('#nav [data-tab="'+button.dataset.fg26Tab+'"]')?.click()}});
+document.addEventListener('DOMContentLoaded',render,{once:true});
+window.addEventListener('forge:view-rendered',e=>{if(e.detail?.tab==='overview')render()});
+window.addEventListener('storage',()=>{if(document.querySelector('#nav [data-tab="overview"].on'))render()});
+window.forgeTodayRender=render;
+window.forgeTodayData=data;
+})();
