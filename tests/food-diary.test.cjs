@@ -197,3 +197,49 @@ test('Food database diagnostic does not log a test item or replace the current d
  assert.equal(b.cloud().foodDiary.entries.length,0);
  assert.equal(b.cloud().foodDiary.savedFoods.length,0);
 });
+
+
+test('Tesco tuna barcode without public record suggests retailer-based variants but never auto-assigns',async()=>{
+ const b=boot({fetch:async()=>({ok:false,status:404})});
+ b.evaluate("navigate('diary')");
+ await b.context.window.fdLookup('966340011833');
+ assert.match(b.element('diary').innerHTML,/Tesco Tuna Chunks in Brine 145g/);
+ assert.match(b.element('diary').innerHTML,/Tesco Tuna Chunks in Sunflower Oil 145g/);
+ assert.match(b.element('diary').innerHTML,/fdChooseVerified/);
+ assert.match(b.element('fd-message').textContent,/No matching product/);
+ assert.equal(b.cloud().foodDiary.entries.length,0,'do not guess a Tesco variety or log it automatically');
+});
+test('Choosing a Tesco variant fills retailer calories and drained tin weight, then saves for repeat scans',async()=>{
+ let requests=0;
+ const b=boot({fetch:async()=>{requests++;return {ok:false,status:404}}});
+ b.evaluate("navigate('diary')");
+ await b.context.window.fdLookup('966340011833');
+ b.context.window.fdChooseVerified(1);
+ assert.match(b.element('diary').innerHTML,/value="109"/);
+ assert.match(b.element('diary').innerHTML,/value="24.9"/);
+ assert.match(b.element('diary').innerHTML,/value="102"/);
+ assert.match(b.element('fd-message').textContent,/NOT been verified/);
+ manualFill(b.element,{name:'Tesco Tuna Chunks in Brine 145g',quantity:'102',code:'966340011833',
+  kcal:'109',protein:'24.9',carbs:'0',fat:'1',fibre:'0',saveFood:true});
+ b.context.window.fdSaveManual();
+ assert.equal(b.cloud().foodDiary.savedFoods.length,1);
+ assert.equal(b.cloud().foodDiary.entries[0].totals.kcal,111.2);
+ const prior=requests;
+ await b.context.window.fdLookup('966340011833');
+ assert.equal(requests,prior,'repeated scans resolve locally, not by network');
+ assert.match(b.element('fd-message').textContent,/Found in My saved foods/);
+});
+test('Name-based search returns community products without assigning an unconfirmed barcode match',async()=>{
+ const b=boot({fetch:async url=>url.includes('cgi/search.pl')?{ok:true,json:async()=>({
+  products:[{code:'5050000000000',product_name:'Tesco tuna chunks in spring water',
+   brands:'Tesco',quantity:'145 g',nutriments:{'energy-kcal_100g':109,proteins_100g:24.9,carbohydrates_100g:0,fat_100g:1,fiber_100g:0}}]
+ })}:{ok:false,status:404}});
+ b.evaluate("navigate('diary')");
+ b.context.window.fdSearchTyping('Tesco tuna');
+ await b.context.window.fdSearchNames();
+ assert.match(b.element('fd-search-results').innerHTML,/Tesco tuna chunks in spring water/);
+ assert.match(b.element('fd-search-results').innerHTML,/fdChooseSearch/);
+ b.context.window.fdChooseSearch(0);
+ assert.match(b.element('fd-message').textContent,/NOT a confirmed barcode match/);
+ assert.equal(b.cloud().foodDiary.entries.length,0);
+});
