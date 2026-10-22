@@ -1,0 +1,18 @@
+/* FORGE v28 — installed app updates */
+#forge-update-panel[hidden],#forge-new-version[hidden]{display:none!important}
+.forge-version-btn{background:#111e15!important;color:#b9ff16!important;border:1px solid #354c2f!important;border-radius:11px!important;padding:9px!important;font-size:10px!important;font-weight:900!important;white-space:nowrap;cursor:pointer}
+.forge-mobile-header .forge-version-btn{margin-left:auto!important;width:auto!important;min-width:54px!important}
+.forge-mobile-header .forge-version-btn~button{margin-left:0!important}
+.sidebar>.forge-version-btn{margin:-15px 0 14px!important;text-align:center!important}
+#forge-new-version{position:fixed;z-index:1200;bottom:86px;left:50%;transform:translateX(-50%);max-width:560px;width:calc(100% - 25px);background:#152517;border:1px solid #b9ff16;border-radius:14px;padding:13px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#e9f5e9;box-shadow:0 18px 40px #000a}
+#forge-new-version span{font-size:10px;font-weight:950;letter-spacing:.9px}
+#forge-new-version button,.forge-update-buttons [data-refresh]{background:#b9ff16;color:#071107;border:1px solid #b9ff16;padding:12px;border-radius:10px;font-size:11px;font-weight:950;white-space:nowrap}
+#forge-update-panel{position:fixed;z-index:1800;inset:0;background:#000b;display:grid;place-items:center;padding:17px}
+.forge-update-dialog{max-width:420px;width:100%;background:#0b180f;border:1px solid #355333;border-radius:20px;padding:22px;color:#f5f8f4;box-shadow:0 22px 65px #000c}
+.forge-update-dialog header{display:flex;align-items:center;justify-content:space-between;color:#b9ff16;letter-spacing:1px;font-size:13px}
+.forge-update-dialog header button{background:transparent;border:0;color:#e7efe7;font-size:19px}
+.forge-update-dialog p{font-size:13px;line-height:1.6;margin:20px 0;color:#d0ddd0}
+.forge-update-buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.forge-update-buttons button{border:1px solid #365335;background:#142319;color:#b9ff16;border-radius:10px;padding:12px;font-size:11px;font-weight:900}
+.forge-update-dialog small{display:block;margin-top:17px;font-size:10px;line-height:1.6;color:#9db09c}
+@media(min-width:761px){#forge-new-version{bottom:20px}}
