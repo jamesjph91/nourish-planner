@@ -56,7 +56,7 @@ function overview(d){
 function goals(d){
  const goal=d.s.profile?.goalWeightKg,latest=series(d.all,'weightKg').at(-1),diff=finite(goal)&&latest?latest.value-Number(goal):null,stepGoal=d.s.healthActivity?.goals?.steps??8000;
  return '<div class="fp-two"><article class="fp-panel"><small>WEIGHT GOAL</small><h3>'+(finite(goal)?fmt(goal,1)+' kg':'Not set')+'</h3><p class="fp-help">'+(diff===null?'Save a weight goal and a measurement to view the difference.':Math.abs(diff)<.05?'Latest reading matches your target.':fmt(Math.abs(diff),1)+' kg '+(diff>0?'above':'below')+' your goal.')+'</p></article>'+
- '<article class="fp-panel"><small>STEP GOAL</small><h3>'+fmt(stepGoal)+' steps</h3><p class="fp-help">Your Activity screen controls this daily step target.</p><button data-fp-go="health">Change step goal ↗</button></article></div><p class="fp-help">Changing a weight goal does not automatically change calorie targets.</p>';
+ '<article class="fp-panel"><small>STEP GOAL</small><h3>'+fmt(stepGoal)+' steps</h3><p class="fp-help">Your Activity screen controls this daily step target.</p><button data-fp-go="health">Change step goal ↗</button></article></div><p class="fp-help">Update your weight goal and manage opt-in friend comparisons below. Changing a weight goal does not automatically change calorie targets.</p>';
 }
 function photoView(){
  return '<article class="fp-panel"><div class="fp-heading"><div><small>PRIVATE PHOTO JOURNAL</small><h3>Progress photos</h3></div><span>'+photos.length+' saved</span></div><p class="fp-help"><b>Stored on this device only.</b> Photos are not uploaded or cloud synced. Clearing browser data or changing devices can permanently remove them.</p>'+
@@ -66,10 +66,12 @@ function photoView(){
 function classify(r){
  const children=[...r.children].filter(x=>!x.classList.contains('forge-progress-app'));
  children.forEach(x=>{let kind='other';const t=(x.querySelector('h2,h3')?.textContent||'').toLowerCase();
- if(x.id==='measurement-form'||t.includes('add a measurement')||t.includes('measurement history')||t.includes('measurement trend')||t.includes('compare progress')||t.includes('your results'))kind='stats';
- if(t.includes('your profile'))kind='goals';
+ if(x.id==='measurement-form'||t.includes('add a measurement')||t.includes('measurement history')||t.includes('measurement trend')||t.includes('your results'))kind='stats';
+ if(t.includes('your profile')||t.includes('compare progress'))kind='goals';
  x.dataset.fpLegacy=kind;
  });
+ const shareHeading=children.find(x=>x.dataset.fpLegacy==='goals'&&/compare progress/i.test(x.textContent||''));
+ if(shareHeading?.nextElementSibling&&children.includes(shareHeading.nextElementSibling))shareHeading.nextElementSibling.dataset.fpLegacy='goals';
 }
 function render(){
  const r=section(),mount=r?.querySelector('.forge-progress-app');if(!mount)return;
