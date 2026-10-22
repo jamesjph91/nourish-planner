@@ -1,0 +1,64 @@
+/* FORGE v23: permanent visual shell, no DOM relocation or observers */
+:root{--bg:#050806;--card:#0a110d;--ink:#f6f8f6;--muted:#8b978f;--line:#1c2921;--green:#b9ff16;--dark:#050806;--mint:#101a14;--lime:#b9ff16;--shadow:0 18px 45px #0008;color-scheme:dark}
+html,body{background:#050806!important;color:#f6f8f6!important}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+.shell{background:#050806!important;grid-template-columns:232px minmax(0,1fr)!important}
+.sidebar{background:linear-gradient(180deg,#090f0b,#050806)!important;border-right:1px solid #1b2920!important;padding:28px 15px!important;z-index:10}
+.brand{display:flex;gap:11px;align-items:center;margin:3px 8px 30px!important}
+.brand-icon{display:grid;place-items:center!important;width:43px!important;height:43px!important;background:#b9ff16!important;color:#050806!important;font-size:33px!important;line-height:1!important;transform:skew(-10deg);font-weight:1000;font-style:italic;border-radius:9px!important}
+.brand b{font-size:24px!important;font-weight:950;font-style:italic;letter-spacing:1px!important;color:#f6f8f6!important}
+.brand small{color:#8a988e!important;font-size:8px!important;letter-spacing:1.05px!important}
+.nav{gap:6px!important}
+.nav button{display:flex;align-items:center;gap:12px;white-space:nowrap;background:transparent!important;color:#91a096!important;padding:14px 13px!important;font-size:12px!important;font-weight:850!important;border-radius:12px!important}
+.nav button .fn-icon{width:22px;text-align:center;font-size:18px;font-weight:800;line-height:1}
+.nav button.on,.nav button:hover{background:#142019!important;color:#b9ff16!important}
+.sidenote{margin-top:auto!important;background:#0d1710!important;color:#88988c!important;border-color:#1c2921!important;border-radius:14px!important}
+.sidenote strong{color:#b9ff16!important}
+main{padding:24px clamp(14px,3vw,48px) 80px!important;max-width:1300px!important}
+.topline{margin-bottom:14px!important;align-items:center!important}
+.topline .eyebrow{color:#b9ff16!important;letter-spacing:1.7px!important;font-weight:900!important}
+.pill,.chip{background:#101b14!important;color:#b9ff16!important;border-color:#26342a!important}
+.card,.stat,.day,.shophead,.notice{background:linear-gradient(145deg,#0d1711,#080e0a)!important;border:1px solid #1c2921!important;color:#f6f8f6!important;box-shadow:none!important;border-radius:16px!important}
+.hero{background:radial-gradient(circle at 92% 9%,#2b471688,transparent 35%),linear-gradient(145deg,#0e1711,#070b08)!important;border:1px solid #233127!important;border-radius:18px!important}
+.eyebrow,.mini{color:#b9ff16!important}
+.btn,.tab,.weekbtn,input,select,textarea,.search{background:#0e1812!important;color:#f6f8f6!important;border-color:#26342a!important;border-radius:11px!important}
+.btn.primary,.btn.dark,.tab.on,.weekbtn.on{background:#b9ff16!important;color:#050806!important;border-color:#b9ff16!important;font-weight:900!important}
+a{color:#b9ff16!important}
+.footer{color:#647169!important}
+#cloud-banner{display:none!important}
+body:has(#settings:not(.hidden)) #cloud-banner{display:flex!important}
+.forge-mobile-header{display:none}
+#overview>.fg-home{max-width:600px}
+.tabpage>.sectionhead:first-child h2{color:#f6f8f6!important}
+section.tabpage{min-width:0}
+#workouts,#diary,#health,#progress{max-width:790px;margin:0 auto}
+.tabpage .card{margin-bottom:11px}
+.tabpage table{color:#eff2f0}
+.modal{background:#0c1510!important;color:#f6f8f6!important;border-color:#253329!important}
+.modalback{z-index:3000!important}
+@media(max-width:760px){
+body{padding:0 0 77px!important}
+.shell{display:block!important;min-height:100dvh!important}
+.forge-mobile-header{display:flex;position:sticky;top:0;z-index:90;height:65px;align-items:center;gap:10px;padding:9px 17px;background:#050806f2;border-bottom:1px solid #1b2920;backdrop-filter:blur(16px)}
+.forge-mobile-header .fn-mobile-mark{width:33px;height:33px;border-radius:8px;background:#b9ff16;color:#050806;font-style:italic;font-weight:1000;display:grid;place-items:center;font-size:27px;transform:skew(-9deg)}
+.forge-mobile-header b{font-size:20px;font-weight:1000;letter-spacing:1px;font-style:italic;display:block;line-height:1}
+.forge-mobile-header small{display:block;font-size:7px;color:#91a097;letter-spacing:1.5px;margin-top:4px}
+.forge-mobile-header button{margin-left:auto;background:#111b13;border:1px solid #26342a;color:#b9ff16;width:39px;height:36px;border-radius:11px;font-size:19px}
+.sidebar{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;height:75px!important;z-index:100!important;padding:4px 5px max(5px,env(safe-area-inset-bottom))!important;border:0!important;border-top:1px solid #1b2920!important;background:#050806f5!important;backdrop-filter:blur(18px)}
+.sidebar>.brand,.sidebar>.sidenote{display:none!important}
+.nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;height:100%;gap:0!important;align-items:stretch}
+.nav button{display:none!important;text-align:center!important;font-size:9px!important;line-height:1.15!important;padding:5px 1px!important;flex-direction:column;justify-content:center;align-items:center;gap:5px!important;border-radius:9px!important}
+.nav button[data-tab="overview"],.nav button[data-tab="workouts"],.nav button[data-tab="diary"],.nav button[data-tab="health"],.nav button[data-tab="progress"]{display:flex!important}
+.nav button .fn-icon{font-size:20px!important;width:auto!important}
+.nav button.on{background:transparent!important;color:#b9ff16!important}
+main{padding:12px 12px 22px!important;width:100%!important;max-width:760px!important}
+main>.topline{display:none!important}
+#overview>.fg-home{max-width:600px}
+#cloud-banner{display:none!important}
+body:has(#settings:not(.hidden)) #cloud-banner{display:flex!important}
+.grid4{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.tabpage>.sectionhead:first-child{margin-top:6px!important}
+.tabpage>.sectionhead:first-child h2{font-size:32px!important;letter-spacing:-1px!important}
+.modalback{align-items:flex-end!important;padding:0!important}
+.modal{border-radius:22px 22px 0 0!important;max-height:92dvh!important}
+}
