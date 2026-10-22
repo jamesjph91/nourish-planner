@@ -2403,26 +2403,65 @@ function quickLibrary(){return `<div class="sectionhead" id="library"><div><div 
 function openAssign(id){if(!rs[id])return;window.assignId=id;window.assignWeek=s.week;drawAssign();document.getElementById('modalback').classList.add('open');}
 function drawAssign(){const r=rs[window.assignId],w=window.assignWeek;document.getElementById('modalinner').innerHTML=`<div class="eyebrow">REPLACE A ${esc(r.cat).toUpperCase()} IN YOUR PLAN</div><h2>${esc(r.name)}</h2><p class="short">Choose a week and day. The existing ${esc(r.cat)} will be replaced and your grocery totals will recalculate. This is different from swapping two existing slots.</p><div class="weeks" style="margin:15px 0">${[1,2,3,4].map(x=>`<button class="weekbtn ${w===x?'on':''}" onclick="window.assignWeek=${x};drawAssign()">Week ${x}</button>`).join('')}</div><div class="assign-grid">${days().filter(x=>x.week===w).map(d=>{const now=rs[getSlot(d.day,r.cat)];return `<button class="assign-day" onclick="addRecipeForDay(${d.day},'${r.id}')"><b>${d.weekday} · Day ${d.day}</b><small>Currently: ${esc(now.name)}</small><span>Use here →</span></button>`}).join('')}</div>`;}
 function validateWorkouts(value){
- const out={schedule:{},sessions:{},week:1};
+ const out={schedule:{},sessions:{},templates:{},customExercises:{},week:1};
  if(!value||typeof value!=='object'||Array.isArray(value))return out;
  const validDate=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&!Number.isNaN(Date.parse(v+'T12:00:00'));
+ const exId=id=>typeof id==='string'&&/^[a-z][a-z0-9_]{2,36}$/.test(id);
  if(validDate(value.startDate))out.startDate=value.startDate;
  if(validDate(value.selected))out.selected=value.selected;
  if(Number.isInteger(value.week)&&value.week>=1&&value.week<=4)out.week=value.week;
- if(value.schedule&&typeof value.schedule==='object')for(const [date,id] of Object.entries(value.schedule).slice(0,200))
+ if(value.schedule&&typeof value.schedule==='object'&&!Array.isArray(value.schedule)){
+  for(const [date,id] of Object.entries(value.schedule).slice(0,200))
    if(validDate(date)&&['A','B','C','D','rest'].includes(id))out.schedule[date]=id;
- if(value.sessions&&typeof value.sessions==='object')for(const [date,entry] of Object.entries(value.sessions).slice(0,200)){
+ }
+ if(value.customExercises&&typeof value.customExercises==='object'&&!Array.isArray(value.customExercises)){
+  for(const [key,v] of Object.entries(value.customExercises).slice(0,40)){
+   if(!/^own_[a-z0-9]{6,32}$/.test(key)||!v||typeof v!=='object'||Array.isArray(v))continue;
+   if(typeof v.name!=='string'||v.name.trim().length<3)continue;
+   const unit=['reps','sec','min'].includes(v.unit)?v.unit:'reps';
+   const min=Number(v.min),max=Number(v.max),sets=Number(v.sets);
+   out.customExercises[key]={
+    name:v.name.trim().slice(0,48),
+    focus:typeof v.focus==='string'?v.focus.slice(0,30):'Other',
+    equip:typeof v.equip==='string'?v.equip.slice(0,40):'Other',
+    unit,load:v.load===true,
+    sets:Number.isInteger(sets)?Math.max(1,Math.min(8,sets)):3,
+    min:Number.isFinite(min)?Math.max(1,Math.min(1000,min)):8,
+    max:Number.isFinite(max)?Math.max(1,Math.min(1000,max)):12,
+    cue:typeof v.cue==='string'?v.cue.slice(0,200):'Use good form.',
+    alt:typeof v.alt==='string'?v.alt.slice(0,100):'Choose an easier exercise.'
+   };
+  }
+ }
+ if(value.templates&&typeof value.templates==='object'&&!Array.isArray(value.templates)){
+  for(const [id,arr] of Object.entries(value.templates))
+   if(['A','B','C','D'].includes(id)&&Array.isArray(arr)){
+    out.templates[id]=[...new Set(arr.filter(exId))].slice(0,20);
+   }
+ }
+ if(value.sessions&&typeof value.sessions==='object'&&!Array.isArray(value.sessions)){
+  for(const [date,entry] of Object.entries(value.sessions).slice(0,250)){
    if(!validDate(date)||!entry||typeof entry!=='object'||!['A','B','C','D'].includes(entry.id))continue;
-   const clean={id:entry.id,sets:{},notes:typeof entry.notes==='string'?entry.notes.slice(0,750):'',completed:entry.completed===true,updatedAt:typeof entry.updatedAt==='string'?entry.updatedAt.slice(0,35):''};
-   if(entry.sets&&typeof entry.sets==='object')for(const [id,arr] of Object.entries(entry.sets)){
-     if(!/^[a-z]{3,16}$/.test(id)||!Array.isArray(arr))continue;
+   const clean={
+    id:entry.id,sets:{},
+    notes:typeof entry.notes==='string'?entry.notes.slice(0,750):'',
+    completed:entry.completed===true,
+    customized:entry.customized===true,
+    updatedAt:typeof entry.updatedAt==='string'?entry.updatedAt.slice(0,35):''
+   };
+   if(Array.isArray(entry.exerciseIds))clean.exerciseIds=[...new Set(entry.exerciseIds.filter(exId))].slice(0,20);
+   if(entry.sets&&typeof entry.sets==='object'&&!Array.isArray(entry.sets)){
+    for(const [id,arr] of Object.entries(entry.sets).slice(0,80)){
+     if(!exId(id)||!Array.isArray(arr))continue;
      clean.sets[id]=arr.slice(0,8).map(z=>{
-       const v=z&&typeof z==='object'?z:{};
-       const num=(n,max)=>n===''?'':(typeof n==='number'||typeof n==='string')&&String(n).trim()!==''&&Number.isFinite(Number(n))&&Number(n)>=0&&Number(n)<=max?Number(n):'';
-       return {kg:num(v.kg,600),reps:num(v.reps,1000),done:v.done===true};
+      const v=z&&typeof z==='object'&&!Array.isArray(z)?z:{};
+      const num=(n,max)=>n===''?'':(typeof n==='number'||typeof n==='string')&&String(n).trim()!==''&&Number.isFinite(Number(n))&&Number(n)>=0&&Number(n)<=max?Number(n):'';
+      return {kg:num(v.kg,600),reps:num(v.reps,1000),done:v.done===true};
      });
+    }
    }
    out.sessions[date]=clean;
+  }
  }
  return out;
 }
