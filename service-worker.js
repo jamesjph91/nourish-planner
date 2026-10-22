@@ -1,5 +1,5 @@
 /* FORGE v23. Static native HTML, network-first, no script injection. */
-const CACHE='forge-v23-native';
+const CACHE='forge-v24-brand-polish';
 const CORE=['./','./index.html','./manifest.webmanifest','./forge-icon.svg','./forge-native.css','./gym.js','./food-diary.js','./health-hub.js','./progress.js','./compare.js','./cloud-sync.js','./firebase-config.js','./forge-dashboard.js','./forge-master-ui.js','./forge-train.js','./forge-fuel.js','./forge-activity.js'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);
