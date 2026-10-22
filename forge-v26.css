@@ -1,0 +1,79 @@
+/* FORGE v26 — premium Today / Fuel, dark-lime performance identity */
+:root{--forge-ink:#f4f8f2;--forge-lime:#b9ff16;--forge-panel:#0b140e;--forge-edge:#203126}
+#overview .fg26{max-width:680px;margin:0 auto;padding:3px 0 18px;color:#f5f8f4}
+.fg26-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:13px;margin:0 0 17px}
+.fg26-eyebrow{display:flex;align-items:center;gap:7px;color:#b9ff16;font-size:9px;letter-spacing:1.7px;font-weight:950}
+.fg26-eyebrow img{width:22px;height:22px;object-fit:contain}
+.fg26-heading h1{font-size:clamp(32px,6vw,46px)!important;line-height:1!important;letter-spacing:-2px!important;font-style:italic;margin:9px 0 5px!important;font-weight:950!important}
+.fg26-heading h1 span{color:#b9ff16}
+.fg26-heading p{font-size:12px;color:#90a095;margin:0;text-transform:capitalize}
+.fg26-status{font-size:9px;letter-spacing:.8px;white-space:nowrap;color:#b9ff16;border:1px solid #36502e;border-radius:999px;background:#132215;padding:9px 11px;margin-top:33px;font-weight:950}
+.fg26-spark{margin-right:6px}
+.fg26-hero{overflow:hidden;position:relative;background:radial-gradient(ellipse at 93% 12%,#395c284b,transparent 47%),linear-gradient(144deg,#111f13,#08110c 68%,#060906)!important;border:1px solid #2b3f2d;border-radius:20px;padding:21px 19px 16px;isolation:isolate}
+.fg26-hero:before{content:'';position:absolute;z-index:-1;right:-6%;top:7%;width:52%;height:66%;opacity:.28;transform:rotate(19deg);background:repeating-linear-gradient(115deg,transparent 0 12px,#b9ff1613 14px 16px,transparent 17px 31px);-webkit-mask-image:linear-gradient(to left,#000,transparent);mask-image:linear-gradient(to left,#000,transparent)}
+.fg26-hero:after{content:'F';position:absolute;z-index:-1;right:4%;top:-61px;color:#b9ff1609;font-size:310px;font-style:italic;font-weight:1000;line-height:1;transform:skew(-10deg);pointer-events:none}
+.fg26-hero-top{display:flex;justify-content:space-between;align-items:center;gap:6px;color:#b9ff16;font-size:9px;font-weight:900;letter-spacing:1.35px}
+.fg26-hero-top b{color:#b4c3b5;font-size:9px;letter-spacing:.7px}
+.fg26-hero h2{font-size:clamp(25px,4.5vw,36px)!important;line-height:1.08!important;font-weight:970!important;letter-spacing:-1.1px!important;text-transform:uppercase;margin:20px 0 9px!important;font-style:italic}
+.fg26-hero h2 em{font-style:italic;color:#b9ff16}
+.fg26-hero>p:not(.fg26-footnote){color:#a7b5a8;font-size:11px;line-height:1.55;max-width:380px;margin:0 0 22px}
+.fg26-rings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.fg26-ringitem{min-width:0;text-align:center}
+.fg26-ringitem>span{display:block;font-size:9px;color:#9daa9d;margin:8px auto 2px}
+.fg26-ring{width:min(100%,114px);aspect-ratio:1;border-radius:50%;padding:6px;display:grid;place-items:center;margin:auto;background:conic-gradient(#b9ff16 var(--fill),#243527 0);box-shadow:0 0 20px #b9ff1610}
+.fg26-ring>div{border-radius:50%;width:100%;height:100%;background:#0b140e;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px}
+.fg26-ring b{font-size:clamp(14px,2.8vw,22px);font-weight:950;letter-spacing:-.7px;color:#f5f8f4}
+.fg26-ring small{font-size:8px;letter-spacing:1px;color:#8b9f8f;font-weight:850}
+.fg26-orange{background:conic-gradient(#ff9a46 var(--fill),#253127 0)}
+.fg26-cyan{background:conic-gradient(#39d8d0 var(--fill),#253127 0)}
+.fg26-purple{background:conic-gradient(#ae8cff var(--fill),#253127 0)}
+.fg26-footnote{font-size:9px!important;line-height:1.5!important;color:#788e7c!important;margin:19px 0 0!important;border-top:1px solid #213124;padding-top:12px}
+.fg26-motto{min-height:132px;position:relative;overflow:hidden;margin-top:11px;padding:22px;background:radial-gradient(ellipse at 95% 0,#1f3e1b,transparent 63%),linear-gradient(130deg,#101b13,#070d09);border:1px solid #223127;border-radius:18px}
+.fg26-motto span{font-size:8px;letter-spacing:1.5px;color:#b9ff16;font-weight:950}
+.fg26-motto strong{font-size:clamp(18px,3.6vw,25px);letter-spacing:-.5px;line-height:1.18;font-weight:950;font-style:italic;display:block;margin:12px 0}
+.fg26-motto i{display:block;width:37px;height:3px;background:#b9ff16;border-radius:9px}
+.fg26-f-graphic{font-size:175px;position:absolute;right:27px;top:-22px;color:#b9ff1618;letter-spacing:-29px;line-height:1;font-style:italic;font-weight:1000;transform:skew(-15deg)}
+.fg26-focus{margin-top:11px;background:linear-gradient(145deg,#0f1b12,#09110c);border:1px solid #223128;border-radius:18px;padding:18px}
+.fg26-focus>header{display:flex;justify-content:space-between;align-items:end;gap:6px}
+.fg26-focus header small{font-size:8px;letter-spacing:1.35px;font-weight:950;color:#b9ff16}
+.fg26-focus h2{font-size:21px;letter-spacing:-.5px;margin:5px 0!important;font-weight:950}
+.fg26-focus header>span{font-size:10px;color:#a8b6a9;padding-bottom:4px}
+.fg26-focus-progress{height:5px;background:#213025;border-radius:10px;overflow:hidden;margin:12px 0 6px}
+.fg26-focus-progress i{height:100%;display:block;border-radius:10px;background:#b9ff16;transition:width .2s ease}
+.fg26-focus>button{width:100%;background:transparent;border:0;border-bottom:1px solid #1c2a20;display:flex;align-items:center;text-align:left;gap:12px;color:#e7f0e6;padding:13px 1px;cursor:pointer}
+.fg26-focus>button:last-child{border-bottom:0}
+.fg26-focus>button b{font-size:12px;font-weight:750;flex:1}
+.fg26-check{border:1px solid #617362;width:23px;height:23px;border-radius:50%;flex:none;display:grid;place-items:center}
+.fg26-check.done{background:#b9ff16;border-color:#b9ff16;color:#07100b;font-weight:950}
+.fg26-go-arrow{color:#7e907f;font-size:14px}
+.fg26-actions{display:grid;grid-template-columns:1.3fr 1fr;gap:9px;margin-top:12px}
+.fg26-actions button{background:#0a150e;border:1px solid #b9ff16;color:#b9ff16;border-radius:13px;padding:15px 10px;font-size:12px;font-weight:950}
+.fg26-actions button.primary{background:#b9ff16;color:#06100a}
+.fg26-bottom{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.fg26-bottom button{display:flex;justify-content:space-between;gap:4px;padding:12px 9px;border:1px solid #26382a;color:#a7b9a7;background:#0c160e;border-radius:11px;font-size:10px;font-weight:850}
+.fg26-bottom button span{color:#b9ff16}
+.fg26-data-note{font-size:9px;color:#697d6c;line-height:1.5;margin:12px 2px 0}
+@media(max-width:520px){.fg26-hero{padding:17px 11px 13px}.fg26-rings{gap:5px}.fg26-ring{padding:4px}.fg26-ringitem>span{font-size:7px;line-height:1.3}.fg26-ring b{font-size:15px}.fg26-ring small{font-size:7px}.fg26-hero-top{font-size:8px}.fg26-hero-top b{font-size:8px}.fg26-motto{padding:18px}.fg26-motto strong{font-size:19px}.fg26-f-graphic{font-size:130px;right:15px;top:-10px}.fg26-focus{padding:14px}.fg26-status{font-size:8px;padding:8px}.fg26-heading h1{font-size:34px!important}.fg26-bottom button{font-size:9px}}
+/* Fuel: fit the original diary engine to the approved card design */
+#diary.forge-fuel{max-width:690px!important}
+#diary .forge-fuel-summary{border-radius:16px!important}
+#diary .forge-fuel-label{letter-spacing:1.5px!important}
+#diary .fgi-rings-panel{margin-bottom:12px;padding:17px 14px 13px;border:1px solid #273c2b;border-radius:19px;background:radial-gradient(circle at 100% 0%,#2b441c65,transparent 54%),#09120c}
+.fgi-panel-title{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:13px}
+.fgi-panel-title span{font-size:9px;color:#b9ff16;letter-spacing:1.4px;font-weight:950}
+.fgi-panel-title b{font-size:9px;color:#96a697}
+.fgi-rings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.fgi-ring-cell{text-align:center;min-width:0}
+.fgi-ring{display:grid;place-items:center;width:min(100%,113px);aspect-ratio:1;border-radius:50%;padding:6px;margin:0 auto;background:conic-gradient(var(--ring-color,#b9ff16) var(--ring-fill),#223026 0)}
+.fgi-ring>div{display:flex;justify-content:center;align-items:center;flex-direction:column;width:100%;height:100%;border-radius:50%;background:#0a130d}
+.fgi-ring b{font-size:clamp(13px,2.8vw,20px);font-weight:950;color:#f5f8f5}
+.fgi-ring small{font-size:7px;letter-spacing:.8px;font-weight:850;color:#8ca08d;margin-top:4px}
+.fgi-ring-cell>span{display:block;margin-top:8px;color:#98a998;font-size:9px}
+.fgi-note{font-size:9px;line-height:1.5;color:#829486;margin:14px 2px 0}
+#diary .forge-meals .fd-planned{border-top:1px solid #243528!important;padding:14px 3px!important}
+#diary .forge-meal-num{font-size:8px!important;color:#b9ff16;letter-spacing:1.6px;font-weight:950}
+#diary .forge-meals .fd-planned b{color:#f4f7f4}
+#diary .forge-log-food .forge-scan{background:#b9ff16!important;color:#08100b!important}
+#diary .fd-summary .fd-nutrients{gap:7px!important}
+#diary input,#diary select{font-size:16px}
+@media(max-width:520px){.fgi-rings{gap:5px}.fgi-ring{padding:4px}.fgi-ring b{font-size:14px}.fgi-ring small{font-size:7px}.fgi-ring-cell>span{font-size:8px}.fgi-rings-panel{padding:14px 9px!important}}
