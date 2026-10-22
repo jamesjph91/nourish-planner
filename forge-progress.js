@@ -4,7 +4,7 @@
 const section=()=>document.getElementById('progress');
 const TABS=['Overview','Stats','Photos','Goals'];
 const PERIODS={'7D':7,'30D':30,'90D':90,'1Y':365,'All':0};
-let tab='Overview',range='30D',photoItems=[],photoStatus='',photoBusy=false,urls=[],photoGeneration=0;
+let tab='Overview',range='30D',photos=[],photoStatus='',photoBusy=false,urls=[],photoGeneration=0;
 const finite=v=>v!==undefined&&v!==null&&v!==''&&Number.isFinite(Number(v));
 const fmt=(n,d=0)=>finite(n)?Number(n).toLocaleString('en-GB',{maximumFractionDigits:d,minimumFractionDigits:d}):'—';
 const signed=n=>finite(n)?(n>0?'+':n<0?'−':'')+fmt(Math.abs(n),1):'—';
