@@ -191,6 +191,24 @@ async function lookup(code){
   if(token===lookupToken)showMessage('Barcode '+normalized+' captured but the lookup failed ('+(e?.message||'connection error')+'). You can enter the nutrition label below.');
  }finally{clearTimeout(timer);if(token===lookupToken){lookupBusy=false;lookupController=null;}}
 }
+async function testFoodDatabase(){
+ if(lookupBusy){showMessage('A barcode lookup is already running. Try the test afterwards.');return;}
+ showMessage('Testing the public food database using a known example barcode…');
+ const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),10000);
+ try{
+  const res=await fetch('https://world.openfoodfacts.org/api/v3/product/3017624010701.json?fields=product_name,nutriments',
+   {signal:abort.signal,headers:{Accept:'application/json'}});
+  if(!res.ok)throw Error('HTTP '+res.status);
+  const data=await res.json();
+  if(!data?.product||!['success','success_with_warnings','success_with_errors'].includes(data.status))
+   throw Error('The example product could not be retrieved.');
+  const info=parseProduct(data.product,'3017624010701');
+  if(info.perUnit.kcal==='')throw Error('The example has no calorie value.');
+  showMessage('Database connection works: '+info.name+' ('+info.perUnit.kcal+' kcal/100g). If your barcode still has no nutrition, its product record may be missing. Save the label values privately to recognise it next time.');
+ }catch(e){
+  showMessage('Database test failed ('+(e.name==='AbortError'?'timed out':e.message)+'). This points to a food-API or network access issue on this device.');
+ }finally{clearTimeout(timer)}
+}
 function showMessage(msg){
  lookupMessage=String(msg||'').slice(0,600);
  const el=document.getElementById('fd-message');if(el){el.textContent=lookupMessage;el.setAttribute('role','status');}
@@ -305,7 +323,7 @@ function saved(){
 function inputPanel(){
  const d=draft||blankDraft();const input=(id,label,step,maximum)=>'<label>'+label+'<input id="fd-'+id+'" type="number" step="'+step+'" min="0" max="'+maximum+'" inputmode="decimal" value="'+(d.perUnit[id]??'')+'" placeholder="Enter label value"></label>';
  return '<div class="card" id="fd-entry"><div class="row" style="justify-content:space-between;flex-wrap:wrap"><div><h3 style="margin:0">Add extra food</h3><p class="short">Snacks, drinks, takeaways, supplements or anything outside the plan.</p></div><button class="btn" onclick="fdBeginManual()">＋ New manual food</button></div>'+
- '<div class="fd-lookup"><button class="btn dark" onclick="fdOpenScanner()">▦ Scan barcode</button><label class="short" for="fd-lookup-code">Barcode digits</label><input id="fd-lookup-code" inputmode="numeric" pattern="[0-9]*" maxlength="14" placeholder="EAN/UPC barcode" aria-label="Barcode digits" value="'+escape(lastBarcode)+'"><button class="btn" onclick="fdLookup(document.getElementById(\'fd-lookup-code\').value)">Find product</button></div><div id="fd-scan-holder" hidden></div><p class="short" id="fd-message" role="status">'+escape(lookupMessage||"Scan or enter a barcode to look up a product. Barcode data comes from Open Food Facts; verify against the label.")+'</p>'+(lastBarcode?'<p class="short">Scanned code: <b>'+escape(lastBarcode)+'</b> · <a href="https://world.openfoodfacts.org/product/'+encodeURIComponent(lastBarcode)+'" target="_blank" rel="noopener noreferrer">Check this barcode on Open Food Facts ↗</a></p>':'')+
+ '<div class="fd-lookup"><button class="btn dark" onclick="fdOpenScanner()">▦ Scan barcode</button><label class="short" for="fd-lookup-code">Barcode digits</label><input id="fd-lookup-code" inputmode="numeric" pattern="[0-9]*" maxlength="14" placeholder="EAN/UPC barcode" aria-label="Barcode digits" value="'+escape(lastBarcode)+'"><button class="btn" onclick="fdLookup(document.getElementById(\'fd-lookup-code\').value)">Find product</button></div><div id="fd-scan-holder" hidden></div><div class="actions" style="margin:8px 0"><button class="btn sm" onclick="fdTestLookup()">Test food database connection</button></div><p class="short" id="fd-message" role="status">'+escape(lookupMessage||"Scan or enter a barcode to look up a product. Barcode data comes from Open Food Facts; verify against the label.")+'</p>'+(lastBarcode?'<p class="short">Scanned code: <b>'+escape(lastBarcode)+'</b> · <a href="https://world.openfoodfacts.org/product/'+encodeURIComponent(lastBarcode)+'" target="_blank" rel="noopener noreferrer">Check this barcode on Open Food Facts ↗</a></p>':'')+
  (draft?'<form onsubmit="event.preventDefault();fdSaveManual()"><div class="fd-inputs"><label class="fd-wide">Product / food name<input id="fd-name" maxlength="100" required value="'+escape(d.name)+'" placeholder="e.g. Chicken sandwich"></label><label>Meal<select id="fd-category">'+CATS.map(c=>'<option value="'+c+'" '+(d.category===c?'selected':'')+'>'+c[0].toUpperCase()+c.slice(1)+'</option>').join('')+'</select></label><label>Quantity eaten<input id="fd-quantity" required type="number" inputmode="decimal" min="0.1" max="5000" step="0.1" value="'+f(d.quantity)+'"></label><label>Unit<select id="fd-unit" onchange="fdUnitChanged(this.value)">'+['g','ml','portion'].map(u=>'<option value="'+u+'" '+(d.unit===u?'selected':'')+'>'+escape(u==='portion'?'Portions':u==='ml'?'Millilitres (ml)':'Grams (g)')+'</option>').join('')+'</select></label><label>Barcode (optional)<input id="fd-barcode" inputmode="numeric" maxlength="14" value="'+escape(d.barcode||'')+'" placeholder="Optional"></label></div><p class="short fd-base-label" id="fd-base-label">Nutritional values per '+(d.unit==='portion'?'one portion':'100 '+d.unit)+'. You can change values to match the package label.</p><div class="fd-inputs">'+input('kcal','Calories (kcal)',.1,5000)+input('protein','Protein (g)',.1,300)+input('carbs','Carbohydrates (g)',.1,500)+input('fat','Fat (g)',.1,300)+input('fibre','Fibre (g)',.1,200)+'</div><label class="fd-check"><input type="checkbox" id="fd-save-food" '+(d.saveFood?'checked':'')+'> Save food for next time</label><div class="actions"><button class="btn dark" type="submit">'+(editing?'Update diary entry':'Add to my diary')+'</button><button type="button" class="btn" onclick="fdCancelDraft()">Cancel</button></div></form>':'<p class="short">Scan or find a barcode to fill the nutrition values, or choose “New manual food” to enter values from the packaging.</p>')+'</div>';
 }
 function unitChanged(unit){
@@ -329,7 +347,7 @@ window.nourishFoodTodaySummary=()=>({date:localDate(new Date()),totals:grand(dia
 window.fdChangeDate=changeDate;window.fdAdjustDate=adjustDate;window.fdAddPlanned=addPlanned;
 window.fdDeleteEntry=deleteEntry;window.fdEditEntry=editEntry;window.fdUseSaved=useSaved;
 window.fdBeginManual=beginManual;window.fdCancelDraft=cancelDraft;window.fdSaveManual=saveManual;
-window.fdLookup=lookup;window.fdExport=exportDiary;window.fdOpenScanner=openScanner;window.fdStopScanner=stopScanner;window.fdUnitChanged=unitChanged;
+window.fdLookup=lookup;window.fdTestLookup=testFoodDatabase;window.fdExport=exportDiary;window.fdOpenScanner=openScanner;window.fdStopScanner=stopScanner;window.fdUnitChanged=unitChanged;
 window.nourishFoodCleanup=stopScanner;window.nourishFoodReset=resetDiaryUI;
 if(s.tab==='diary'||s.tab==='overview')renderCurrent();
 })();
