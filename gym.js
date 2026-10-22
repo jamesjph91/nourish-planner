@@ -26,6 +26,49 @@ const PLANS={
  C:{name:'Full Body C',tag:'Single-leg • push • pull',ids:['split','incline','cablerow','curl','carry']},
  D:{name:'Optional recovery + cardio',tag:'Low-impact fourth session',ids:['cardio','mobility']}
 };
+
+const EXTRA={
+ smithsquat:{name:'Smith machine squat',focus:'Legs',equip:'Smith machine',sets:3,min:8,max:12,cue:'Control the lowering and keep foot pressure even.',alt:'Leg press',load:true},
+ squat:{name:'Barbell back squat',focus:'Legs',equip:'Barbell',sets:3,min:6,max:10,cue:'Use safeties and learn technique with a light load.',alt:'Goblet squat',load:true},
+ hack:{name:'Hack squat machine',focus:'Legs',equip:'Machine',sets:3,min:8,max:12,cue:'Keep your back supported and lower smoothly.',alt:'Leg press',load:true},
+ lunge:{name:'Reverse dumbbell lunges',focus:'Legs',equip:'Dumbbells',sets:3,min:8,max:12,cue:'Step backward and maintain steady balance.',alt:'Supported split squat',load:true},
+ extension:{name:'Leg extension machine',focus:'Legs',equip:'Machine',sets:3,min:10,max:15,cue:'Align your knees and avoid using momentum.',alt:'Bodyweight squat',load:true},
+ calves:{name:'Standing calf raise',focus:'Legs',equip:'Machine',sets:3,min:12,max:20,cue:'Pause at the top and lower with control.',alt:'Bodyweight heel raise',load:true},
+ bench:{name:'Barbell bench press',focus:'Chest',equip:'Barbell',sets:3,min:6,max:10,cue:'Use a spotter or safety arms; keep shoulders stable.',alt:'Machine chest press',load:true},
+ dbbench:{name:'Flat dumbbell bench press',focus:'Chest',equip:'Dumbbells',sets:3,min:8,max:12,cue:'Lower in control and avoid flaring the elbows.',alt:'Machine chest press',load:true},
+ fly:{name:'Pec deck chest fly',focus:'Chest',equip:'Machine',sets:2,min:10,max:15,cue:'Use a comfortable stretch and steady return.',alt:'Cable chest fly',load:true},
+ cablefly:{name:'Cable chest fly',focus:'Chest',equip:'Cable',sets:3,min:10,max:15,cue:'Keep elbows slightly bent and avoid swinging.',alt:'Pec deck',load:true},
+ pushups:{name:'Press-ups',focus:'Chest',equip:'Bodyweight',sets:3,min:6,max:15,cue:'Brace your body and lower chest between hands.',alt:'Incline press-up',load:false},
+ assistedpull:{name:'Assisted pull-up',focus:'Back',equip:'Machine',sets:3,min:6,max:10,cue:'Select adequate assistance and pull steadily.',alt:'Lat pulldown',load:true},
+ dbrow:{name:'One-arm dumbbell row',focus:'Back',equip:'Dumbbell',sets:3,min:8,max:12,cue:'Support one hand and pull elbow toward hip.',alt:'Seated cable row',load:true},
+ chestrow:{name:'Chest-supported machine row',focus:'Back',equip:'Machine',sets:3,min:8,max:12,cue:'Keep chest against pad while pulling smoothly.',alt:'Cable row',load:true},
+ rearfly:{name:'Reverse pec deck',focus:'Shoulders',equip:'Machine',sets:3,min:10,max:15,cue:'Keep neck relaxed and lead with upper arms.',alt:'Rear delt raise',load:true},
+ lateral:{name:'Dumbbell lateral raise',focus:'Shoulders',equip:'Dumbbells',sets:3,min:12,max:15,cue:'Raise arms smoothly without shrugging.',alt:'Cable lateral raise',load:true},
+ facepull:{name:'Cable face pull',focus:'Shoulders',equip:'Cable',sets:3,min:12,max:15,cue:'Pull rope toward forehead with control.',alt:'Band pull-aparts',load:true},
+ curlbiceps:{name:'Dumbbell biceps curl',focus:'Arms',equip:'Dumbbells',sets:3,min:10,max:12,cue:'Keep elbows still; avoid body swing.',alt:'Cable biceps curl',load:true},
+ hammercurl:{name:'Hammer curl',focus:'Arms',equip:'Dumbbells',sets:3,min:10,max:12,cue:'Palms face in and upper arms stay still.',alt:'Rope cable curl',load:true},
+ triceps:{name:'Rope triceps pushdown',focus:'Arms',equip:'Cable',sets:3,min:10,max:15,cue:'Keep elbows by sides and straighten smoothly.',alt:'Machine triceps press',load:true},
+ overheadtri:{name:'Overhead triceps extension',focus:'Arms',equip:'Cable',sets:3,min:10,max:15,cue:'Keep elbows stable without arching back.',alt:'Triceps pushdown',load:true},
+ glute:{name:'Glute bridge',focus:'Glutes',equip:'Mat',sets:3,min:12,max:15,cue:'Push through heels without over-arching.',alt:'Hip thrust',load:false},
+ kettlebell:{name:'Kettlebell deadlift',focus:'Glutes',equip:'Kettlebell',sets:3,min:8,max:12,cue:'Hinge at hips and keep weight close.',alt:'Dumbbell RDL',load:true},
+ bike:{name:'Stationary bike',focus:'Cardio',equip:'Bike',sets:1,min:10,max:40,unit:'min',cue:'Find a conversational pace.',alt:'Treadmill walk',load:false},
+ treadmill:{name:'Incline treadmill walk',focus:'Cardio',equip:'Treadmill',sets:1,min:10,max:40,unit:'min',cue:'Start with a gentle incline.',alt:'Stationary bike',load:false},
+ rowing:{name:'Rowing machine',focus:'Cardio',equip:'Rower',sets:1,min:8,max:25,unit:'min',cue:'Push with legs first and finish with arms.',alt:'Stationary bike',load:false},
+ crunch:{name:'Cable crunch',focus:'Core',equip:'Cable',sets:3,min:10,max:15,cue:'Curl ribs toward pelvis steadily.',alt:'Dead bug',load:true},
+ sideplank:{name:'Side plank (each side)',focus:'Core',equip:'Mat',sets:2,min:15,max:35,unit:'sec',cue:'Keep hips level and breathe.',alt:'Knee side plank',load:false},
+ pallof:{name:'Cable Pallof press (each side)',focus:'Core',equip:'Cable',sets:3,min:10,max:12,cue:'Press out without torso rotation.',alt:'Resistance-band Pallof press',load:true}
+};
+Object.assign(EX,EXTRA);
+function definition(id){return EX[id]||work().customExercises?.[id];}
+function validExercise(id){return typeof id==='string'&&!!definition(id);}
+function routineIds(id){return (work().templates?.[id]||PLANS[id]?.ids||[]).filter(validExercise);}
+function hasLog(session){return Object.values(session?.sets||{}).some(a=>Array.isArray(a)&&a.some(z=>z.done||z.reps!==''||z.kg!==''));}
+function fillSets(session,ids){
+ for(const exid of ids)if(!session.sets[exid]){
+  const ex=definition(exid);if(ex)session.sets[exid]=Array.from({length:ex.sets},()=>({kg:'',reps:'',done:false}));
+ }
+}
+
 const weekdays=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const dateLocal=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
 const plus=(day,delta)=>{const d=new Date(day+'T12:00:00');d.setDate(d.getDate()+delta);return dateLocal(d);};
@@ -37,6 +80,8 @@ function work(){
  if(!/^\d{4}-\d{2}-\d{2}$/.test(w.selected||''))w.selected=dateLocal(new Date());
  if(!w.schedule||typeof w.schedule!=='object')w.schedule={};
  if(!w.sessions||typeof w.sessions!=='object')w.sessions={};
+ if(!w.templates||typeof w.templates!=='object')w.templates={};
+ if(!w.customExercises||typeof w.customExercises!=='object')w.customExercises={};
  if(!Number.isInteger(w.week)||w.week<1||w.week>4)w.week=1;
  return w;
 }
@@ -56,10 +101,9 @@ function setDayPlan(iso,id){
  if(!['A','B','C','D','rest'].includes(id))return;
  const w=work(),prior=planFor(iso);
  if(prior===id)return;
- if(w.sessions[iso]&&Object.values(w.sessions[iso].sets||{}).some(v=>v.some(z=>z.done||z.reps||z.kg))){
-   if(!confirm('Changing this session will hide its previous exercise log. Continue?'))return;
- }
- w.schedule[iso]=id;delete w.sessions[iso];
+ if(w.sessions[iso]&&hasLog(w.sessions[iso])&&!confirm('Change this routine? Previously logged sets remain in your history and CSV export.'))return;
+ w.schedule[iso]=id;
+ if(id!=='rest')getSession(iso,id);
  const num=dayNum(iso);
  if(num){s.gym[num]=id!=='rest';s.shopDirty=true;}
  save();renderCurrent();notify('Workout schedule and meal-day nutrition updated.');
@@ -75,17 +119,29 @@ function resetAnchor(){
  w.startDate=value;w.week=1;w.selected=value;save();renderCurrent();
 }
 function newSession(iso,id){
- const sets={};
- for(const exid of PLANS[id].ids){const x=EX[exid];sets[exid]=Array.from({length:x.sets},()=>({kg:'',reps:'',done:false}));}
- return {id,sets,notes:'',completed:false,updatedAt:''};
+ const exerciseIds=routineIds(id),session={id,exerciseIds,sets:{},notes:'',completed:false,customized:false,updatedAt:''};
+ fillSets(session,exerciseIds);
+ return session;
 }
 function getSession(iso,id){
- const w=work();
- if(!w.sessions[iso]||w.sessions[iso].id!==id)w.sessions[iso]=newSession(iso,id);
- return w.sessions[iso];
+ const w=work();let session=w.sessions[iso];
+ if(!session){session=newSession(iso,id);w.sessions[iso]=session;}
+ else if(session.id!==id){
+  // Retain historic logged sets even if the workout assigned to this day changes.
+  session.id=id;session.exerciseIds=routineIds(id);session.customized=false;session.completed=false;
+  fillSets(session,session.exerciseIds);
+ }else if(!Array.isArray(session.exerciseIds)){
+  session.exerciseIds=(PLANS[id]?.ids||[]).filter(exid=>session.sets?.[exid]);
+  if(!session.exerciseIds.length)session.exerciseIds=routineIds(id);
+  session.customized=false;fillSets(session,session.exerciseIds);
+ }else if(!session.customized&&!hasLog(session)){
+  session.exerciseIds=routineIds(id);fillSets(session,session.exerciseIds);
+ }
+ return session;
 }
+function sessionIds(iso,id){return getSession(iso,id).exerciseIds.filter(validExercise);}
 function setValue(iso,exid,idx,field,value){
- if(!EX[exid]||!['kg','reps'].includes(field))return;
+ if(!validExercise(exid)||!['kg','reps'].includes(field))return;
  const id=planFor(iso);if(id==='rest')return;
  const session=getSession(iso,id),set=session.sets[exid]?.[idx];if(!set)return;
  const n=value===''?'':Number(value),max=field==='kg'?600:1000;
@@ -95,7 +151,7 @@ function setValue(iso,exid,idx,field,value){
 function tick(iso,exid,idx,checked){
  const id=planFor(iso),session=getSession(iso,id),set=session.sets[exid]?.[idx];
  if(!set)return;
- if(checked&&(set.reps===''|| (EX[exid].load&&set.kg===''))){alert('Enter reps/time and weight (0 for bodyweight) before ticking this set.');renderCurrent();return;}
+ if(checked&&(set.reps===''|| (definition(exid).load&&set.kg===''))){alert('Enter reps/time and weight (0 for bodyweight) before ticking this set.');renderCurrent();return;}
  set.done=checked;session.updatedAt=new Date().toISOString();save();renderCurrent();
 }
 function setNote(iso,v){const id=planFor(iso);if(id==='rest')return;const session=getSession(iso,id);session.notes=String(v).slice(0,750);save();}
@@ -107,16 +163,16 @@ function complete(iso,yes){
 }
 function addSet(iso,exid){
  const id=planFor(iso),session=getSession(iso,id);
- if(!EX[exid]||!PLANS[id]?.ids.includes(exid)||session.sets[exid].length>=8)return;
+ if(!validExercise(exid)||!session.exerciseIds.includes(exid)||session.sets[exid].length>=8)return;
  session.sets[exid].push({kg:'',reps:'',done:false});save();renderCurrent();
 }
 function removeSet(iso,exid,idx){
  const id=planFor(iso),session=getSession(iso,id);
- if(!EX[exid]||!PLANS[id]?.ids.includes(exid)||session.sets[exid].length<=1)return;
+ if(!validExercise(exid)||!session.exerciseIds.includes(exid)||session.sets[exid].length<=1)return;
  session.sets[exid].splice(idx,1);save();renderCurrent();
 }
 function openGuide(exid){
- const x=EX[exid];if(!x)return;
+ const x=definition(exid);if(!x)return;
  document.getElementById('modalinner').innerHTML='<div class="eyebrow">EXERCISE LIBRARY • '+esc(x.focus)+'</div><h2>'+esc(x.name)+'</h2><p class="short"><b>Equipment:</b> '+esc(x.equip)+'<br><b>Suggested sets:</b> '+x.sets+' × '+x.min+'–'+x.max+' '+(x.unit||'reps')+'</p><h3>Technique</h3><p class="short">'+esc(x.cue)+'</p><h3>Easier alternative</h3><p class="short">'+esc(x.alt)+'</p><a class="btn dark" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query='+encodeURIComponent(x.name+' exercise form beginner tutorial')+'">▶ Find technique videos ↗</a><p class="short">Videos are external demonstrations, not individual coaching. Stop if pain or dizziness occurs; seek qualified guidance for unfamiliar movements.</p>';
  document.getElementById('modalback').classList.add('open');
 }
@@ -125,9 +181,9 @@ function history(){
  const rows=[];
  for(const [date,session] of Object.entries(work().sessions)){
   if(!session||!session.sets)continue;
-  for(const [id,sets] of Object.entries(session.sets))if(EX[id]&&Array.isArray(sets)){
-   const done=sets.filter(v=>v.done&&v.reps!==''&&(!EX[id].load||v.kg!==''));
-   if(done.length)rows.push({date,id,count:done.length,best:Math.max(...done.map(v=>Number(v.kg)||0)),total:done.reduce((a,v)=>a+(EX[id].load?Number(v.kg)*Number(v.reps):0),0)});
+  for(const [id,sets] of Object.entries(session.sets))if(definition(id)&&Array.isArray(sets)){
+   const done=sets.filter(v=>v.done&&v.reps!==''&&(!definition(id).load||v.kg!==''));
+   if(done.length)rows.push({date,id,count:done.length,best:Math.max(...done.map(v=>Number(v.kg)||0)),total:done.reduce((a,v)=>a+(definition(id).load?Number(v.kg)*Number(v.reps):0),0)});
   }
  }
  return rows.sort((a,b)=>b.date.localeCompare(a.date));
@@ -135,7 +191,7 @@ function history(){
 function logsCsv(){
  const rows=[['Date','Workout','Completed workout','Exercise','Set','Reps or time','Unit','Weight kg','Set completed']];
  for(const [date,v] of Object.entries(work().sessions).sort())if(PLANS[v.id]){
-  for(const [id,sets] of Object.entries(v.sets||{}))if(EX[id])sets.forEach((z,i)=>rows.push([date,v.id,v.completed?'yes':'no',EX[id].name,i+1,z.reps,EX[id].unit||'reps',z.kg,z.done?'yes':'no']));
+  for(const [id,sets] of Object.entries(v.sets||{}))if(definition(id))sets.forEach((z,i)=>rows.push([date,v.id,v.completed?'yes':'no',definition(id).name,i+1,z.reps,definition(id).unit||'reps',z.kg,z.done?'yes':'no']));
  }
  download('nourish-workout-log.csv',rows.map(row=>row.map(csvCell).join(',')).join('\r\n'));
 }
@@ -144,7 +200,7 @@ function calendar(){
  return '<div class="card"><div class="row" style="flex-wrap:wrap"><div><div class="eyebrow">4-WEEK WORKOUT CALENDAR</div><h2 style="margin:7px 0 0">Your training week</h2></div><div class="weeks">'+[1,2,3,4].map(i=>'<button class="weekbtn '+(w.week===i?'on':'')+'" onclick="gymSelectWeek('+i+')">Week '+i+'</button>').join('')+'</div></div><div class="gym-calendar">'+Array.from({length:7},(_,i)=>{const iso=plus(from,i),id=planFor(iso),log=w.sessions[iso];return '<button class="gym-day '+(w.selected===iso?'sel':'')+'" onclick="gymSelectDay(\''+iso+'\')"><b>'+safeDate(iso)+'</b><span>'+(id==='rest'?'○ Rest':esc(PLANS[id].name))+'</span><small>'+(log?.completed?'✓ Completed':id==='rest'?'Recovery':log?'● In progress':'Planned')+'</small></button>'}).join('')+'</div><p class="short" style="margin-bottom:0">The starting date anchors these four weeks to your meal calendar. Assign a workout or Rest to any day. Changes to training days also update meal portions and grocery calculations for these 28 days.</p></div>';
 }
 function exerciseRows(iso,exid){
- const x=EX[exid],ses=getSession(iso,planFor(iso)),list=ses.sets[exid]||[];
+ const x=definition(exid),ses=getSession(iso,planFor(iso)),list=ses.sets[exid]||[];
  const unit=x.unit||'reps';
  return '<div class="gym-exercise"><div class="row" style="flex-wrap:wrap"><div><strong>'+esc(x.name)+'</strong><div class="short">'+x.sets+' sets · '+x.min+'–'+x.max+' '+unit+' · '+esc(x.focus)+'</div></div><button class="btn sm" onclick="gymOpenGuide(\''+exid+'\')">How to do it ↗</button></div><div class="gym-sethead"><span>Set</span><span>'+(x.load?'Weight (kg)':'Bodyweight')+'</span><span>'+ (unit==='reps'?'Reps':unit==='sec'?'Seconds':'Minutes')+'</span><span>Done</span><span></span></div>'+list.map((set,i)=>'<div class="gym-setrow"><b>'+ (i+1)+'</b>'+(x.load?'<input inputmode="decimal" aria-label="'+esc(x.name)+' set '+(i+1)+' weight in kilograms" type="number" min="0" step="0.5" max="600" value="'+esc(set.kg??'')+'" placeholder="kg" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'kg\',this.value)">':'<span class="gym-bodyweight">—</span>')+'<input inputmode="numeric" aria-label="'+esc(x.name)+' set '+(i+1)+' reps or time" type="number" min="0" max="1000" step="1" value="'+esc(set.reps??'')+'" placeholder="'+x.min+'–'+x.max+'" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'reps\',this.value)"><input type="checkbox" aria-label="Completed '+esc(x.name)+' set '+(i+1)+'" '+(set.done?'checked':'')+' onchange="gymTick(\''+iso+'\',\''+exid+'\','+i+',this.checked)"><button class="btn sm" aria-label="Remove set" onclick="gymRemoveSet(\''+iso+'\',\''+exid+'\','+i+')">−</button></div>').join('')+'<div style="margin-top:9px"><button class="btn sm" onclick="gymAddSet(\''+iso+'\',\''+exid+'\')">＋ Add set</button></div></div>';
 }
@@ -153,13 +209,13 @@ function selectedSession(){
  return '<div class="card"><div class="eyebrow">YOUR SESSION · '+esc(label)+'</div><div class="row" style="flex-wrap:wrap;align-items:flex-end"><div><h2 style="margin:8px 0 6px">'+(id==='rest'?'Recovery day':esc(PLANS[id].name))+'</h2><p class="short">'+(id==='rest'?'Choose a workout below if you would like to train this day.':'Start with 5–10 minutes of comfortable movement and lighter warm-up sets; work at a controlled effort.')+'</p></div><label class="short">Assign workout<br><select class="select" aria-label="Assign workout" onchange="gymSetDayPlan(\''+iso+'\',this.value)">'+[['rest','Rest day'],...Object.entries(PLANS).map(([k,p])=>[k,p.name])].map(([k,name])=>'<option value="'+k+'" '+(id===k?'selected':'')+'>'+esc(name)+'</option>').join('')+'</select></label></div>'+
  (id==='rest'?'<div class="notice">Rest is part of training. A dog walk or gentle mobility is enough today.</div>':
  '<div class="notice">Choose a weight that leaves about 2–3 good repetitions in reserve. Rest 1–3 minutes between harder sets. When all sets reach the top of the range with controlled technique, add a small amount of weight next time. No need to train to failure.</div>'+
- PLANS[id].ids.map(exid=>exerciseRows(iso,exid)).join('')+
+ sessionIds(iso,id).map(exid=>exerciseRows(iso,exid)).join('')+
  '<label class="short" for="gym-note">Workout notes</label><textarea id="gym-note" rows="2" maxlength="750" class="gym-notes" placeholder="Energy, exercise substitutions, anything to remember…" onchange="gymSetNote(\''+iso+'\',this.value)">'+esc(getSession(iso,id).notes||'')+'</textarea><div class="actions" style="margin-top:14px"><button class="btn '+(getSession(iso,id).completed?'':'dark')+'" onclick="gymComplete(\''+iso+'\','+(!getSession(iso,id).completed)+')">'+(getSession(iso,id).completed?'↶ Mark in progress':'✓ Finish workout')+'</button></div>')+'</div>';
 }
 function progress(){
  const w=work(),hist=history(),done=Object.values(w.sessions).filter(x=>x.completed).length,sets=hist.reduce((sum,x)=>sum+x.count,0);
  const unique=[...new Set(hist.map(x=>x.id))];
- return '<div class="grid4"><div class="stat"><div class="mini">WORKOUTS COMPLETED</div><strong>'+done+'</strong><small>Logged in your training history</small></div><div class="stat"><div class="mini">COMPLETED EXERCISE SETS</div><strong>'+sets+'</strong><small>Across all sessions</small></div><div class="stat"><div class="mini">EXERCISES LOGGED</div><strong>'+unique.length+'</strong><small>Different movements</small></div><div class="stat"><div class="mini">WEEKS IN ROTATION</div><strong>4</strong><small>Three strength days; optional fourth</small></div></div><div class="card"><div class="row" style="flex-wrap:wrap"><div><div class="eyebrow">PROGRESS & HISTORY</div><h2 style="margin:8px 0">Your recent exercise results</h2></div><button class="btn" onclick="gymExport()">↓ Export workout CSV</button></div>'+(hist.length?'<div class="gym-history">'+hist.slice(0,16).map(x=>'<div class="gym-history-row"><span><b>'+esc(EX[x.id].name)+'</b><br><small>'+esc(safeDate(x.date))+' · '+x.count+' sets</small></span><span>'+ (EX[x.id].load?x.best+' kg best logged':'Bodyweight / time')+'</span></div>').join('')+'</div>':'<p class="short">Your progress appears here as soon as you tick completed sets. Compare the same exercise over time rather than comparing different machines.</p>')+'</div>';
+ return '<div class="grid4"><div class="stat"><div class="mini">WORKOUTS COMPLETED</div><strong>'+done+'</strong><small>Logged in your training history</small></div><div class="stat"><div class="mini">COMPLETED EXERCISE SETS</div><strong>'+sets+'</strong><small>Across all sessions</small></div><div class="stat"><div class="mini">EXERCISES LOGGED</div><strong>'+unique.length+'</strong><small>Different movements</small></div><div class="stat"><div class="mini">WEEKS IN ROTATION</div><strong>4</strong><small>Three strength days; optional fourth</small></div></div><div class="card"><div class="row" style="flex-wrap:wrap"><div><div class="eyebrow">PROGRESS & HISTORY</div><h2 style="margin:8px 0">Your recent exercise results</h2></div><button class="btn" onclick="gymExport()">↓ Export workout CSV</button></div>'+(hist.length?'<div class="gym-history">'+hist.slice(0,16).map(x=>'<div class="gym-history-row"><span><b>'+esc(definition(x.id).name)+'</b><br><small>'+esc(safeDate(x.date))+' · '+x.count+' sets</small></span><span>'+ (definition(x.id).load?x.best+' kg best logged':'Bodyweight / time')+'</span></div>').join('')+'</div>':'<p class="short">Your progress appears here as soon as you tick completed sets. Compare the same exercise over time rather than comparing different machines.</p>')+'</div>';
 }
 function gymPlanner(){
  const w=work();
