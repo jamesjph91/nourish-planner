@@ -1,2 +1,24 @@
-// FORGE network-first PWA. Existing app engine + locked FORGE visual system.
-const CACHE='forge-v19-activity';const PRECACHE=['./','./index.html','./manifest.webmanifest','./forge-icon.svg','./gym.js','./food-diary.js','./health-hub.js','./progress.js','./compare.js','./cloud-sync.js','./firebase-config.js','./forge-original-theme.js','./forge-dashboard.js','./forge-master-ui.js','./forge-train.js','./forge-fuel.js','./forge-activity.js'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(PRECACHE)).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));function decorate(html){const scripts=['forge-original-theme.js','forge-master-ui.js','forge-train.js','forge-fuel.js','forge-activity.js'];for(const file of scripts)if(!html.includes(file))html=html.replace('</body>',`<script src="./${file}?v=19"></script></body>`);return html}async function themedNavigation(request){const response=await fetch(request);if(!response.ok)return response;const html=decorate(await response.text()),headers=new Headers(response.headers);headers.delete('content-length');headers.delete('content-encoding');return new Response(html,{status:response.status,statusText:response.statusText,headers})}self.addEventListener('fetch',e=>{const r=e.request,u=new URL(r.url);if(u.origin!==location.origin||r.method!=='GET')return;if(r.mode==='navigate'){e.respondWith(themedNavigation(r).catch(async()=>{const cached=await caches.match('./index.html');if(!cached)return new Response('FORGE is offline.',{status:503});return new Response(decorate(await cached.text()),{headers:{'Content-Type':'text/html; charset=utf-8'}})}));return}e.respondWith(fetch(r).then(resp=>{if(resp.ok)caches.open(CACHE).then(c=>c.put(r,resp.clone()));return resp}).catch(()=>caches.match(r)))})
+/* FORGE v23. Static native HTML, network-first, no script injection. */
+const CACHE='forge-v23-native';
+const CORE=['./','./index.html','./manifest.webmanifest','./forge-icon.svg','./forge-native.css','./gym.js','./food-diary.js','./health-hub.js','./progress.js','./compare.js','./cloud-sync.js','./firebase-config.js','./forge-dashboard.js','./forge-master-ui.js','./forge-train.js','./forge-fuel.js','./forge-activity.js'];
+self.addEventListener('install',event=>event.waitUntil((async()=>{
+  const cache=await caches.open(CACHE);
+  await Promise.allSettled(CORE.map(url=>cache.add(new Request(url,{cache:'reload'}))));
+  await self.skipWaiting();
+})()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{
+ const keys=await caches.keys();
+ await Promise.all(keys.filter(x=>x!==CACHE).map(x=>caches.delete(x)));
+ await self.clients.claim();
+})()));
+self.addEventListener('fetch',event=>{
+ const req=event.request,url=new URL(req.url);
+ if(req.method!=='GET'||url.origin!==self.location.origin)return;
+ if(req.mode==='navigate'){
+  event.respondWith((async()=>{
+   try{const res=await fetch(req);if(res.ok){const cache=await caches.open(CACHE);await cache.put('./index.html',res.clone())}return res}
+   catch(e){return (await caches.match('./index.html'))||new Response('FORGE is offline. Reconnect and reload.',{status:503,headers:{'Content-Type':'text/plain'}})}
+  })());return;
+ }
+ event.respondWith(fetch(req).then(res=>{if(res.ok&&url.pathname.startsWith(new URL('./',self.registration.scope).pathname))caches.open(CACHE).then(c=>c.put(req,res.clone())).catch(()=>{});return res}).catch(async()=>await caches.match(req)||Response.error()));
+});
