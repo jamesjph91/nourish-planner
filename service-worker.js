@@ -1,7 +1,15 @@
-// Network-first strategy lets the same URL pick up new published app versions.
-const CACHE='nourish-cloud-v11-health-hub';
-const PRECACHE=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./gym.js','./food-diary.js','./health-hub.js','./progress.js','./compare.js','./cloud-sync.js','./firebase-config.js'];
+// FORGE network-first PWA. The original app remains the functional engine; navigation HTML is decorated with the FORGE visual layer at response time.
+const CACHE='forge-v12-original-engine';
+const PRECACHE=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./gym.js','./food-diary.js','./health-hub.js','./progress.js','./compare.js','./cloud-sync.js','./firebase-config.js','./forge-original-theme.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(PRECACHE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+async function themedNavigation(request){
+ const response=await fetch(request);if(!response.ok)return response;
+ let html=await response.text();
+ if(!html.includes('forge-original-theme.js'))html=html.replace('</body>','<script src="./forge-original-theme.js?v=12"></script></body>');
+ return new Response(html,{status:response.status,statusText:response.statusText,headers:new Headers(response.headers)});
+}
 self.addEventListener('fetch',e=>{const r=e.request,u=new URL(r.url);if(u.origin!==location.origin||r.method!=='GET')return;
- e.respondWith(fetch(r).then(resp=>{if(resp.ok){let copy=resp.clone();caches.open(CACHE).then(c=>c.put(r,copy));}return resp;}).catch(()=>caches.match(r)));});
+ if(r.mode==='navigate'){e.respondWith(themedNavigation(r).catch(async()=>{const cached=await caches.match('./index.html');if(!cached)return new Response('FORGE is offline.',{status:503});let html=await cached.text();if(!html.includes('forge-original-theme.js'))html=html.replace('</body>','<script src="./forge-original-theme.js?v=12"></script></body>');return new Response(html,{headers:{'Content-Type':'text/html; charset=utf-8'}})}));return;}
+ e.respondWith(fetch(r).then(resp=>{if(resp.ok)caches.open(CACHE).then(c=>c.put(r,resp.clone()));return resp}).catch(()=>caches.match(r)));
+});
