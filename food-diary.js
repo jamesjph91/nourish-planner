@@ -108,7 +108,7 @@ function parseProduct(p,code){
  // No guessed calories or nutrition when an Open Food Facts record lacks values.
  if(n['energy-kcal_100g']===undefined&&n['energy-kj_100g']===undefined&&n.energy_100g===undefined)
   throw Error('This product has no calorie data. Please enter the label values manually.');
- const quantity=String(p?.quantity||'').toLowerCase(),unit=/\bml\b|\bl\b/.test(quantity)&&!/\bg\b|\bkg\b/.test(quantity)?'ml':'g';
+ const quantity=String(p?.quantity||'').toLowerCase(),unit=/(?:ml|cl|litres?|liters?|\d\s*l\b)/.test(quantity)&&!/(?:\d\s*kg\b|\d\s*g\b)/.test(quantity)?'ml':'g';
  return {...blankDraft(),name,barcode:code,unit,quantity:100,perUnit};
 }
 async function lookup(code){
