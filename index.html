@@ -1,0 +1,2497 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#173a32"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><title>Nourish | Meal Planner for Chromebook & Phone</title>
+<style>
+
+:root{--bg:#f6f7f1;--card:#fff;--ink:#24352c;--muted:#68756b;--line:#e3e8df;--green:#245b46;--dark:#173a32;--mint:#e4f2e7;--lime:#d9ed92;--orange:#fff0da;--coral:#b96748;--shadow:0 10px 26px #1e453012}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,Arial,sans-serif;font-size:14px}button,input,select{font:inherit}button{cursor:pointer}a{color:var(--green)}.shell{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}.sidebar{background:var(--dark);color:#e6f1e7;padding:30px 18px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:20px}.brand{display:flex;align-items:center;gap:11px;margin:0 10px 20px}.brand-icon{width:42px;height:42px;display:grid;place-items:center;background:var(--lime);border-radius:13px;font-size:24px}.brand b{display:block;font-size:21px;letter-spacing:-.8px}.brand small{display:block;color:#b7d1c3;font-size:11px}.nav{display:grid;gap:6px}.nav button{background:transparent;border:0;color:#b9d2c5;text-align:left;border-radius:13px;padding:14px 15px;font-weight:700}.nav button.on,.nav button:hover{background:#31594a;color:white}.sidenote{margin-top:auto;padding:16px;border:1px solid #47695c;border-radius:16px;font-size:12px;line-height:1.6;color:#ccded3}.sidenote strong{color:var(--lime)}main{min-width:0;padding:30px clamp(16px,3.1vw,50px) 70px;max-width:1500px;width:100%;margin:0 auto}.eyebrow{font-size:11px;font-weight:800;letter-spacing:1.9px;text-transform:uppercase;color:#467861}.topline{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:20px;flex-wrap:wrap}.muted{color:var(--muted)}.pill{background:#edf3e9;border:1px solid #dae8db;border-radius:100px;padding:7px 12px;color:var(--green);font-weight:700;font-size:12px;white-space:nowrap}.hero{display:grid;grid-template-columns:1.4fr .65fr;gap:20px;align-items:center;background:var(--dark);padding:30px 35px;border-radius:24px;color:#effbf0;position:relative;overflow:hidden;margin-bottom:20px}.hero h1{font-size:clamp(29px,3.4vw,45px);line-height:1.14;letter-spacing:-1.8px;margin:10px 0}.hero p{max-width:630px;color:#c6dbcf;line-height:1.6}.hero .eyebrow{color:var(--lime)}.hero-art{font-size:100px;text-align:center;filter:drop-shadow(0 18px 10px #11291c);z-index:1}.hero:after{content:'';position:absolute;width:320px;height:320px;background:#38684b;opacity:.32;right:-85px;top:-70px;border-radius:50%}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btn{border:1px solid #d3ded3;background:#fff;border-radius:10px;padding:10px 14px;font-weight:800;color:var(--dark);font-size:13px;display:inline-flex;align-items:center;gap:7px}.btn:hover{filter:brightness(.97)}.btn.primary{background:var(--lime);border-color:var(--lime);color:var(--dark)}.btn.dark{background:var(--green);border-color:var(--green);color:white}.btn.sm{padding:7px 10px;font-size:12px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:18px 0}.stat{border:1px solid var(--line);background:white;border-radius:17px;padding:19px 18px;box-shadow:var(--shadow)}.stat .mini{color:var(--muted);font-weight:700;font-size:11px}.stat strong{font-size:28px;letter-spacing:-.8px;display:block;margin:8px 0 3px}.stat small{color:var(--muted)}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:29px 0 15px;flex-wrap:wrap}.sectionhead h2{font-size:22px;margin:0;letter-spacing:-.6px}.card{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:18px;padding:20px}.weeks{display:flex;gap:9px;flex-wrap:wrap}.weekbtn{border:1px solid var(--line);background:white;padding:10px 18px;border-radius:12px;font-weight:800;color:var(--muted)}.weekbtn.on{border-color:var(--dark);background:var(--dark);color:white}.days{display:grid;grid-template-columns:repeat(7,minmax(145px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}.day{background:#fff;border:1px solid var(--line);border-radius:17px;min-width:145px;padding:14px;display:flex;flex-direction:column;gap:12px}.day-head{display:flex;justify-content:space-between;align-items:center}.weekday{font-size:13px;font-weight:800}.daynum{color:#90a098;font-size:12px}.gym{background:var(--mint);color:var(--green);border:0;padding:6px 9px;border-radius:12px;font-size:11px;font-weight:800}.gym.off{background:#f0f0ef;color:#858b86}.daytotal{font-size:22px;font-weight:800;letter-spacing:-1px}.daytotal small{font-size:11px;font-weight:600;color:var(--muted)}.prog{height:6px;border-radius:8px;background:#e9eee8;overflow:hidden;margin-top:6px}.prog i{display:block;height:100%;background:#7cbf8d;border-radius:10px}.meal{border:0;border-top:1px solid var(--line);padding:11px 0 0;background:none;text-align:left;color:var(--ink);width:100%}.meal small{display:block;color:var(--muted);font-size:10px;margin-bottom:4px;text-transform:uppercase;font-weight:700}.meal b{display:block;font-size:12px;line-height:1.4}.meal span{color:#51806b;font-size:11px;display:block;margin-top:5px}.notice{padding:16px 18px;background:#fff5e8;border:1px solid #fae2bf;border-radius:16px;color:#6c5437;line-height:1.6;font-size:13px}.twocol{display:grid;grid-template-columns:1.45fr 1fr;gap:16px}.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{display:inline-block;padding:7px 10px;background:#f1f6ef;color:#3c6b54;border-radius:20px;font-size:12px;font-weight:700}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.mini-chart{display:flex;gap:5px;align-items:end;height:130px;border-bottom:1px solid #d9e2db;padding:12px 2px 0}.bar-wrap{flex:1;height:100%;display:flex;align-items:end;position:relative;gap:2px}.bar{width:100%;border-radius:6px 6px 0 0;background:#83b99b;min-height:5px}.bar.gymbar{background:#3d8061}.daynames{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:7px}.filterbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.search{border:1px solid var(--line);padding:11px 14px;border-radius:11px;background:white;min-width:225px;color:var(--ink);outline-color:#4d8b6c}.recipegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:15px}.recipe-card{display:flex;flex-direction:column;gap:11px}.foodhead{display:flex;justify-content:space-between;align-items:center}.foodicon{width:52px;height:52px;border-radius:15px;background:#eaf2e4;display:grid;place-items:center;font-size:26px}.recipe-card h3{font-size:17px;line-height:1.35;margin:0;letter-spacing:-.3px;min-height:45px}.recstats{display:flex;gap:9px;flex-wrap:wrap;color:var(--muted);font-size:12px}.recstats b{color:var(--green)}.recipe-card .btn{margin-top:auto;justify-content:center}.tabs{display:flex;flex-wrap:wrap;gap:8px}.tab{border:1px solid var(--line);background:white;color:var(--muted);border-radius:9px;padding:9px 13px;font-weight:800;font-size:12px}.tab.on{background:var(--dark);color:#fff}.shopping{display:grid;grid-template-columns:1fr 1fr;gap:17px}.shopgroup h3{font-size:14px;margin:0 0 12px}.shopitem{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line);align-items:center}.shopitem input{accent-color:var(--green);width:17px;height:17px;flex-shrink:0}.shopitem .label{font-weight:700;font-size:13px}.shopitem .qty{font-size:12px;color:var(--muted);margin-top:3px}.shopitem.done .label,.shopitem.done .qty{text-decoration:line-through;opacity:.5}.shophead{padding:17px;border:1px solid var(--line);background:#fdfefb;border-radius:14px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.prepgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.prepstep{display:grid;grid-template-columns:32px 1fr;gap:12px;margin:12px 0}.stepnumber{width:31px;height:31px;border-radius:50%;background:#e6f2e8;color:var(--green);font-weight:800;display:grid;place-items:center}.stepnote{color:var(--muted);line-height:1.5}.settingrow{display:grid;grid-template-columns:1fr 140px;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}.settingrow input{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px}.footer{padding-top:30px;color:var(--muted);font-size:12px;line-height:1.7}.modalback{position:fixed;inset:0;background:#0a1e18b8;z-index:20;display:none;align-items:center;justify-content:center;padding:14px}.modalback.open{display:flex}.modal{background:white;border-radius:22px;width:min(900px,100%);max-height:92vh;overflow-y:auto;box-shadow:0 20px 70px #0004;padding:26px;position:relative}.modal h2{font-size:25px;line-height:1.3;margin:6px 0}.close{border:0;position:absolute;right:22px;top:19px;background:#edf2ed;width:34px;height:34px;border-radius:50%;font-size:21px}.modalcols{display:grid;grid-template-columns:.85fr 1fr;gap:30px;margin-top:21px}.ing{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:9px 0;font-size:13px}.method{counter-reset:m;list-style:none;padding:0}.method li{counter-increment:m;position:relative;padding:0 0 17px 37px;line-height:1.7;color:#3e5046}.method li:before{content:counter(m);position:absolute;left:0;top:0;width:25px;height:25px;display:grid;place-items:center;background:var(--mint);border-radius:50%;color:var(--green);font-weight:800}.videobox{background:#f0f5ee;border-radius:14px;margin:16px 0;padding:13px}.videobox iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:10px}.select{border:1px solid var(--line);border-radius:9px;padding:10px 13px;background:#fff;color:var(--ink);max-width:100%}.swaprow{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;margin:10px 0}.hidden{display:none!important}.short{font-size:12px;color:var(--muted);line-height:1.6}@media(max-width:1100px){.days{grid-template-columns:repeat(7,184px)}.grid4{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr 170px}.hero-art{font-size:80px}}@media(max-width:760px){.shell{display:block}.sidebar{height:auto;position:sticky;top:0;z-index:10;padding:8px 12px;gap:6px;box-shadow:0 5px 12px #071a1633}.brand{margin:2px 8px;gap:7px}.brand-icon{width:29px;height:29px;font-size:17px;border-radius:10px}.brand b{font-size:15px}.brand small{display:none}.nav{display:flex;overflow-x:auto;gap:4px;padding-bottom:2px}.nav button{padding:10px 13px;font-size:12px;white-space:nowrap}.sidenote{display:none}main{padding:19px 13px 50px}.hero{padding:21px;grid-template-columns:1fr 65px;border-radius:20px}.hero h1{font-size:27px}.hero-art{font-size:43px}.hero p{font-size:12px}.grid4{gap:9px}.stat{padding:15px}.stat strong{font-size:23px}.days{grid-template-columns:repeat(7,173px)}.twocol,.shopping,.prepgrid,.modalcols{grid-template-columns:1fr}.modal{padding:20px}.topline{margin-bottom:14px}.sectionhead h2{font-size:20px}.recipegrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.recipe-card{padding:13px}.recipe-card h3{font-size:14px}.filterbar{display:grid;grid-template-columns:1fr}.search{width:100%}}@media(max-width:380px){.recipegrid{grid-template-columns:1fr}.hero-art{display:none}.hero{grid-template-columns:1fr}}
+@media print{.sidebar,.actions,.weekbtn,.btn,.modalback,.footer{display:none!important}.shell{display:block}main{padding:0}.days{grid-template-columns:repeat(7,minmax(100px,1fr));overflow:visible}.card,.stat{box-shadow:none}body{background:white}}
+.walkgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:12px 0}.walktick{background:#f6f9f4;border:1px solid var(--line);border-radius:10px;padding:12px 5px;color:var(--ink);display:flex;flex-direction:column;gap:5px;align-items:center}.walktick span{font-size:12px}.walktick small{font-size:11px;color:var(--muted)}.walkdone{background:var(--mint);border-color:#7bb395}@media(max-width:760px){.walkgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* Meal arranging and favourites */
+.meal-block{border-top:1px solid var(--line);padding:5px 0 7px;position:relative;cursor:grab;outline-offset:4px}.meal-block:active{cursor:grabbing}.meal-block.dragover{background:#e0f1dd;border:2px dashed var(--green);border-radius:12px}.meal-block.selected{background:#e9f5dc;outline:2px solid #86ae54;border-radius:12px;padding:5px}.meal-block .meal{border:0;padding:5px 0 3px}.meal-actions{display:flex;align-items:center;gap:8px;justify-content:space-between}.swap-btn,.fav-mini{border:1px solid var(--line);background:#f6faf5;color:var(--green);font-size:12px;font-weight:800;padding:7px 10px;border-radius:9px;min-height:33px}.swap-btn.active{background:var(--dark);color:white}.fav-mini{font-size:19px;line-height:1;padding:5px 11px}.fav-mini.faved,.heart.faved{color:#bd5b63;background:#fff1f0}.swapbanner{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0;background:#ebf4dd;border:2px solid #abd083}.swapbanner span{flex:1}.subtle-hint{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:12px 0;padding:10px 13px;border:1px solid var(--line);border-radius:12px;background:white;color:#466655;font-size:12px}.heart{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);border-radius:50%;background:#f7faf5;font-size:24px;color:#577662}.library-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:12px 0 20px}.library-tools .search{flex:1}.quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:450px;overflow-y:auto}.quick-card{display:flex;gap:10px;align-items:center;border:1px solid var(--line);padding:11px;border-radius:14px;min-width:0;background:#fbfcf8}.quick-card .foodicon{width:40px;height:40px;font-size:21px;flex:0 0 40px}.quick-details{flex:1;min-width:0}.quick-details b{display:block;font-size:12px}.quick-details small{display:block;color:var(--muted);margin-top:4px}.quick-card .heart{width:34px;height:34px;flex:0 0 34px;font-size:18px}.assign-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.assign-day{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:13px;padding:15px;color:var(--ink);cursor:pointer}.assign-day:hover{border-color:var(--green);background:#f2faf1}.assign-day small{color:var(--muted)}.assign-day span{color:var(--green);font-weight:800}.backup-box{padding:17px;background:#f0f6eb;border:1px solid #d6e6d1;border-radius:16px;margin-top:20px}.backup-box .btn{margin-right:7px;margin-bottom:7px}.backup-box h3{margin:0 0 8px}.toast{position:fixed;bottom:26px;right:25px;z-index:100;background:#173a32;color:white;padding:14px 20px;border-radius:14px;max-width:min(90vw,440px);box-shadow:0 8px 30px #173a3259;transform:translateY(20px);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}.toast.show{transform:translateY(0);opacity:1}
+@media(max-width:820px){.quick-grid{grid-template-columns:1fr}.quick-card .btn{white-space:nowrap}.assign-grid{grid-template-columns:1fr}}
+@media(max-width:760px){main{padding:20px 14px 75px}.days{grid-template-columns:1fr;overflow:visible}.day{min-width:0;gap:10px;padding:15px;box-shadow:var(--shadow)}.day-head{align-items:center}.day .meal-block{padding:7px 0}.day .meal b{font-size:14px}.meal-actions{justify-content:flex-end}.swap-btn{min-height:40px;min-width:110px}.nav button{min-height:43px}.modalback{padding:0;align-items:flex-end}.modal{width:100%;max-height:94dvh;border-radius:20px 20px 0 0;padding:22px 17px 40px;overscroll-behavior:contain}.modal .close{right:14px;top:12px}.library-tools .tabs{display:flex;overflow-x:auto;width:100%}.library-tools .search{width:100%}.swapbanner{display:grid}.toast{left:14px;right:14px;bottom:20px}.btn{min-height:41px}}
+@media(max-width:430px){.quick-card{gap:6px;padding:8px}.quick-card .foodicon{display:none}.quick-card .btn{padding:9px 8px;font-size:11px}.quick-details b{font-size:12px}.quick-details small{font-size:10px}.settingrow{grid-template-columns:1fr;gap:6px}.settingrow input{max-width:190px}}
+@media print{.meal-actions,.heart,.swapbanner,.subtle-hint,.quick-grid,.backup-box,.toast{display:none!important}}
+
+.cloud-banner{display:flex;gap:14px;align-items:center;justify-content:space-between;margin-bottom:15px;padding:12px 16px;background:#edf6ee;flex-wrap:wrap}
+.cloud-banner p{margin:4px 0 0}.cloud-banner .actions{justify-content:flex-end}
+@media(max-width:760px){.cloud-banner{align-items:flex-start;flex-direction:column}.cloud-banner .actions{width:100%}.cloud-banner .actions .btn{flex:1;justify-content:center}}
+</style></head>
+<body><div class="shell"><aside class="sidebar"><div class="brand"><div class="brand-icon">🥑</div><div><b>nourish.</b><small>Meals · fitness · walking</small></div></div><nav class="nav" id="nav"><button data-tab="overview" class="on">◫ &nbsp; Dashboard</button><button data-tab="planner">▦ &nbsp; 28-day plan</button><button data-tab="recipes">♡ &nbsp; Recipes & favourites</button><button data-tab="shopping">▤ &nbsp; Shopping lists</button><button data-tab="prep">◷ &nbsp; Meal prep</button><button data-tab="settings">⚙ &nbsp; Settings</button></nav><div class="sidenote"><strong>Your base plan</strong><br>28 days · 84 meals · 1 person<br>3 gym sessions per week, with an optional fourth.<br><br>Ready for optional secure cloud sync. Sign in on both devices after Firebase setup.</div></aside>
+<main><div class="topline"><div class="eyebrow">PERSONAL NUTRITION SYSTEM / CLOUD EDITION 3.0</div><span class="pill" id="topstatus">● Single-person plan</span></div>
+<section class="cloud-banner card" id="cloud-banner" aria-live="polite"><div><b>☁ Cloud sync</b><p class="short" id="cloud-status">Loading cloud connection…</p></div><div class="actions" id="cloud-actions"></div></section>
+<section class="tabpage" id="overview"></section><section class="tabpage hidden" id="planner"></section><section class="tabpage hidden" id="recipes"></section><section class="tabpage hidden" id="shopping"></section><section class="tabpage hidden" id="prep"></section><section class="tabpage hidden" id="settings"></section><div class="footer">Nutrition is estimated from generic ingredient data (not measured laboratory values or your product labels). Foods weighed raw or dry unless specifically labelled otherwise. The meal planner is informational, not an individual medical or dietitian assessment. For allergies or medical dietary needs, review ingredients carefully. Saved locally as a backup. Once cloud is configured and you sign in, changes synchronise across devices when online. Edits made simultaneously can conflict; back up important changes. No supermarket basket is connected.</div></main></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div><div class="modalback" id="modalback"><div class="modal" role="dialog" aria-modal="true" aria-label="Recipe details" id="modal"><button class="close" onclick="closeModal()" aria-label="Close">×</button><div id="modalinner"></div></div></div>
+<script>const DATA={
+  "foods": {
+    "oats": {
+      "name": "Rolled oats (dry)",
+      "kcal": 380,
+      "protein": 13,
+      "carbs": 67,
+      "fat": 7,
+      "fibre": 10,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "skyr": {
+      "name": "Plain Skyr",
+      "kcal": 60,
+      "protein": 11,
+      "carbs": 4,
+      "fat": 0,
+      "fibre": 0,
+      "unit": "g",
+      "store": "topup",
+      "group": "Dairy & eggs"
+    },
+    "greek": {
+      "name": "0% Greek yoghurt",
+      "kcal": 59,
+      "protein": 10,
+      "carbs": 4,
+      "fat": 0,
+      "fibre": 0,
+      "unit": "g",
+      "store": "topup",
+      "group": "Dairy & eggs"
+    },
+    "cottage": {
+      "name": "Low-fat cottage cheese",
+      "kcal": 82,
+      "protein": 12,
+      "carbs": 3,
+      "fat": 2,
+      "fibre": 0,
+      "unit": "g",
+      "store": "topup",
+      "group": "Dairy & eggs"
+    },
+    "whey": {
+      "name": "Whey protein powder",
+      "kcal": 400,
+      "protein": 80,
+      "carbs": 8,
+      "fat": 6,
+      "fibre": 0,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "berries": {
+      "name": "Frozen mixed berries",
+      "kcal": 50,
+      "protein": 1,
+      "carbs": 10,
+      "fat": 0.5,
+      "fibre": 5,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Frozen fruit & veg"
+    },
+    "banana": {
+      "name": "Banana",
+      "kcal": 89,
+      "protein": 1.1,
+      "carbs": 23,
+      "fat": 0.3,
+      "fibre": 2.6,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "apple": {
+      "name": "Apple",
+      "kcal": 52,
+      "protein": 0.3,
+      "carbs": 14,
+      "fat": 0.2,
+      "fibre": 2.4,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "kiwi": {
+      "name": "Kiwi",
+      "kcal": 61,
+      "protein": 1.1,
+      "carbs": 15,
+      "fat": 0.5,
+      "fibre": 3,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "eggs": {
+      "name": "Medium eggs",
+      "kcal": 72,
+      "protein": 6.3,
+      "carbs": 0.5,
+      "fat": 4.8,
+      "fibre": 0,
+      "unit": "each",
+      "store": "topup",
+      "group": "Dairy & eggs"
+    },
+    "eggwhite": {
+      "name": "Liquid egg whites",
+      "kcal": 48,
+      "protein": 10.5,
+      "carbs": 1,
+      "fat": 0.2,
+      "fibre": 0,
+      "unit": "g",
+      "store": "topup",
+      "group": "Dairy & eggs"
+    },
+    "milk": {
+      "name": "Semi-skimmed milk",
+      "kcal": 47,
+      "protein": 3.5,
+      "carbs": 4.8,
+      "fat": 1.8,
+      "fibre": 0,
+      "unit": "ml",
+      "store": "topup",
+      "group": "Dairy & eggs"
+    },
+    "chia": {
+      "name": "Chia seeds",
+      "kcal": 486,
+      "protein": 17,
+      "carbs": 42,
+      "fat": 31,
+      "fibre": 34,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "pb": {
+      "name": "Peanut butter",
+      "kcal": 600,
+      "protein": 25,
+      "carbs": 20,
+      "fat": 50,
+      "fibre": 6,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "almonds": {
+      "name": "Almonds",
+      "kcal": 575,
+      "protein": 21,
+      "carbs": 22,
+      "fat": 50,
+      "fibre": 12,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "bread": {
+      "name": "Wholemeal bread",
+      "kcal": 94,
+      "protein": 4,
+      "carbs": 16,
+      "fat": 1.3,
+      "fibre": 2.8,
+      "unit": "slice",
+      "store": "freezer",
+      "group": "Bread & wraps"
+    },
+    "bagel": {
+      "name": "Wholemeal bagel thin",
+      "kcal": 130,
+      "protein": 6,
+      "carbs": 25,
+      "fat": 1.3,
+      "fibre": 3,
+      "unit": "each",
+      "store": "freezer",
+      "group": "Bread & wraps"
+    },
+    "wrap": {
+      "name": "Wholemeal wrap (medium)",
+      "kcal": 170,
+      "protein": 6,
+      "carbs": 28,
+      "fat": 4,
+      "fibre": 4,
+      "unit": "each",
+      "store": "freezer",
+      "group": "Bread & wraps"
+    },
+    "pitta": {
+      "name": "Wholemeal pitta",
+      "kcal": 165,
+      "protein": 6,
+      "carbs": 32,
+      "fat": 1,
+      "fibre": 4,
+      "unit": "each",
+      "store": "freezer",
+      "group": "Bread & wraps"
+    },
+    "spinach": {
+      "name": "Baby spinach",
+      "kcal": 23,
+      "protein": 2.9,
+      "carbs": 3.6,
+      "fat": 0.4,
+      "fibre": 2.2,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "mushroom": {
+      "name": "Mushrooms",
+      "kcal": 22,
+      "protein": 3,
+      "carbs": 3,
+      "fat": 0.3,
+      "fibre": 1,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "tomato": {
+      "name": "Tomatoes",
+      "kcal": 18,
+      "protein": 0.9,
+      "carbs": 4,
+      "fat": 0.2,
+      "fibre": 1.2,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "cucumber": {
+      "name": "Cucumber",
+      "kcal": 15,
+      "protein": 0.7,
+      "carbs": 3.6,
+      "fat": 0.1,
+      "fibre": 0.5,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "pepper": {
+      "name": "Bell peppers",
+      "kcal": 30,
+      "protein": 1,
+      "carbs": 6,
+      "fat": 0.3,
+      "fibre": 2,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "onion": {
+      "name": "Onions",
+      "kcal": 40,
+      "protein": 1.1,
+      "carbs": 9,
+      "fat": 0.1,
+      "fibre": 1.7,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "broccoli": {
+      "name": "Frozen broccoli",
+      "kcal": 34,
+      "protein": 2.8,
+      "carbs": 5,
+      "fat": 0.4,
+      "fibre": 3,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Frozen fruit & veg"
+    },
+    "courgette": {
+      "name": "Courgettes",
+      "kcal": 17,
+      "protein": 1.2,
+      "carbs": 3.1,
+      "fat": 0.3,
+      "fibre": 1,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "carrot": {
+      "name": "Carrots",
+      "kcal": 41,
+      "protein": 0.9,
+      "carbs": 10,
+      "fat": 0.2,
+      "fibre": 2.8,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "lettuce": {
+      "name": "Mixed lettuce",
+      "kcal": 16,
+      "protein": 1.2,
+      "carbs": 2.9,
+      "fat": 0.2,
+      "fibre": 1.7,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "avocado": {
+      "name": "Avocado",
+      "kcal": 160,
+      "protein": 2,
+      "carbs": 9,
+      "fat": 15,
+      "fibre": 7,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "lemon": {
+      "name": "Lemon juice",
+      "kcal": 25,
+      "protein": 0.4,
+      "carbs": 7,
+      "fat": 0,
+      "fibre": 0.3,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "beetroot": {
+      "name": "Cooked beetroot (vacuum pack)",
+      "kcal": 43,
+      "protein": 1.6,
+      "carbs": 9,
+      "fat": 0.1,
+      "fibre": 2.8,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "peas": {
+      "name": "Frozen peas",
+      "kcal": 79,
+      "protein": 5.5,
+      "carbs": 12,
+      "fat": 0.4,
+      "fibre": 5.5,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Frozen fruit & veg"
+    },
+    "mixedveg": {
+      "name": "Frozen stir-fry vegetables",
+      "kcal": 40,
+      "protein": 2,
+      "carbs": 7,
+      "fat": 0.5,
+      "fibre": 3.3,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Frozen fruit & veg"
+    },
+    "greenbeans": {
+      "name": "Frozen green beans",
+      "kcal": 31,
+      "protein": 2,
+      "carbs": 7,
+      "fat": 0.2,
+      "fibre": 3.4,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Frozen fruit & veg"
+    },
+    "edamame": {
+      "name": "Frozen edamame (shelled)",
+      "kcal": 121,
+      "protein": 12,
+      "carbs": 9,
+      "fat": 5,
+      "fibre": 5,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Frozen fruit & veg"
+    },
+    "corn": {
+      "name": "Sweetcorn (drained)",
+      "kcal": 90,
+      "protein": 3.4,
+      "carbs": 19,
+      "fat": 1.5,
+      "fibre": 3,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "salmon": {
+      "name": "Salmon fillet (raw)",
+      "kcal": 208,
+      "protein": 20,
+      "carbs": 0,
+      "fat": 13,
+      "fibre": 0,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Meat & fish"
+    },
+    "smokedsalmon": {
+      "name": "Smoked salmon",
+      "kcal": 117,
+      "protein": 18,
+      "carbs": 0,
+      "fat": 4,
+      "fibre": 0,
+      "unit": "g",
+      "store": "topup",
+      "group": "Meat & fish"
+    },
+    "cannedsalmon": {
+      "name": "Tinned salmon (drained)",
+      "kcal": 140,
+      "protein": 23,
+      "carbs": 0,
+      "fat": 5,
+      "fibre": 0,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Tins & jars"
+    },
+    "mackerel": {
+      "name": "Tinned mackerel in water (drained)",
+      "kcal": 180,
+      "protein": 22,
+      "carbs": 0,
+      "fat": 10,
+      "fibre": 0,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Tins & jars"
+    },
+    "cod": {
+      "name": "Cod fillet (raw)",
+      "kcal": 82,
+      "protein": 18,
+      "carbs": 0,
+      "fat": 0.7,
+      "fibre": 0,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Meat & fish"
+    },
+    "prawns": {
+      "name": "Prawns (raw, peeled)",
+      "kcal": 85,
+      "protein": 20,
+      "carbs": 0,
+      "fat": 0.5,
+      "fibre": 0,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Meat & fish"
+    },
+    "chicken": {
+      "name": "Chicken breast (raw)",
+      "kcal": 110,
+      "protein": 23,
+      "carbs": 0,
+      "fat": 1.5,
+      "fibre": 0,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Meat & fish"
+    },
+    "turkey": {
+      "name": "5% turkey mince (raw)",
+      "kcal": 122,
+      "protein": 20,
+      "carbs": 0,
+      "fat": 5,
+      "fibre": 0,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Meat & fish"
+    },
+    "beef": {
+      "name": "5% beef mince (raw)",
+      "kcal": 137,
+      "protein": 21,
+      "carbs": 0,
+      "fat": 5,
+      "fibre": 0,
+      "unit": "g",
+      "store": "freezer",
+      "group": "Meat & fish"
+    },
+    "tuna": {
+      "name": "Tuna in spring water (drained)",
+      "kcal": 110,
+      "protein": 25,
+      "carbs": 0,
+      "fat": 1,
+      "fibre": 0,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Tins & jars"
+    },
+    "tofu": {
+      "name": "Firm tofu (drained)",
+      "kcal": 120,
+      "protein": 13,
+      "carbs": 2,
+      "fat": 7,
+      "fibre": 1,
+      "unit": "g",
+      "store": "topup",
+      "group": "Dairy & eggs"
+    },
+    "rice": {
+      "name": "Brown rice (dry)",
+      "kcal": 360,
+      "protein": 7,
+      "carbs": 76,
+      "fat": 3,
+      "fibre": 4,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "quinoa": {
+      "name": "Quinoa (dry)",
+      "kcal": 368,
+      "protein": 14,
+      "carbs": 64,
+      "fat": 6,
+      "fibre": 7,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "couscous": {
+      "name": "Wholewheat couscous (dry)",
+      "kcal": 370,
+      "protein": 13,
+      "carbs": 73,
+      "fat": 2,
+      "fibre": 7,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "pasta": {
+      "name": "Wholewheat pasta (dry)",
+      "kcal": 350,
+      "protein": 13,
+      "carbs": 67,
+      "fat": 2,
+      "fibre": 8,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "noodles": {
+      "name": "Wholewheat noodles (dry)",
+      "kcal": 354,
+      "protein": 12,
+      "carbs": 68,
+      "fat": 3,
+      "fibre": 7,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "potato": {
+      "name": "Potatoes (raw)",
+      "kcal": 77,
+      "protein": 2,
+      "carbs": 17,
+      "fat": 0.1,
+      "fibre": 2.2,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "sweetpotato": {
+      "name": "Sweet potatoes (raw)",
+      "kcal": 86,
+      "protein": 1.6,
+      "carbs": 20,
+      "fat": 0.1,
+      "fibre": 3,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    },
+    "hummus": {
+      "name": "Hummus",
+      "kcal": 220,
+      "protein": 6,
+      "carbs": 14,
+      "fat": 15,
+      "fibre": 5,
+      "unit": "g",
+      "store": "topup",
+      "group": "Dairy & eggs"
+    },
+    "chickpeas": {
+      "name": "Chickpeas (tinned, drained)",
+      "kcal": 120,
+      "protein": 7,
+      "carbs": 16,
+      "fat": 2.5,
+      "fibre": 7.5,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Tins & jars"
+    },
+    "kidney": {
+      "name": "Kidney beans (tinned, drained)",
+      "kcal": 100,
+      "protein": 7,
+      "carbs": 14,
+      "fat": 0.5,
+      "fibre": 6.5,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Tins & jars"
+    },
+    "blackbeans": {
+      "name": "Black beans (tinned, drained)",
+      "kcal": 110,
+      "protein": 7.5,
+      "carbs": 16,
+      "fat": 0.7,
+      "fibre": 7.5,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Tins & jars"
+    },
+    "lentils": {
+      "name": "Lentils (tinned, drained)",
+      "kcal": 100,
+      "protein": 7,
+      "carbs": 14,
+      "fat": 0.5,
+      "fibre": 6,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Tins & jars"
+    },
+    "passata": {
+      "name": "Tomato passata",
+      "kcal": 30,
+      "protein": 1.5,
+      "carbs": 5.5,
+      "fat": 0.2,
+      "fibre": 1.5,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Tins & jars"
+    },
+    "chopped": {
+      "name": "Chopped tomatoes (tinned)",
+      "kcal": 27,
+      "protein": 1.4,
+      "carbs": 5,
+      "fat": 0.2,
+      "fibre": 1.5,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Tins & jars"
+    },
+    "coconut": {
+      "name": "Light coconut milk",
+      "kcal": 85,
+      "protein": 0.7,
+      "carbs": 3,
+      "fat": 8,
+      "fibre": 0,
+      "unit": "ml",
+      "store": "monthly",
+      "group": "Tins & jars"
+    },
+    "oil": {
+      "name": "Olive oil",
+      "kcal": 900,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 100,
+      "fibre": 0,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "sesameoil": {
+      "name": "Sesame oil",
+      "kcal": 900,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 100,
+      "fibre": 0,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "soy": {
+      "name": "Reduced-salt soy sauce",
+      "kcal": 53,
+      "protein": 5,
+      "carbs": 5,
+      "fat": 0,
+      "fibre": 0,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "currypaste": {
+      "name": "Thai curry paste",
+      "kcal": 120,
+      "protein": 2,
+      "carbs": 15,
+      "fat": 5,
+      "fibre": 2,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "mustard": {
+      "name": "Wholegrain mustard",
+      "kcal": 65,
+      "protein": 4,
+      "carbs": 6,
+      "fat": 3,
+      "fibre": 3,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "feta": {
+      "name": "Reduced-fat feta",
+      "kcal": 180,
+      "protein": 22,
+      "carbs": 3,
+      "fat": 10,
+      "fibre": 0,
+      "unit": "g",
+      "store": "topup",
+      "group": "Dairy & eggs"
+    },
+    "cheese": {
+      "name": "Reduced-fat grated cheddar",
+      "kcal": 250,
+      "protein": 31,
+      "carbs": 2,
+      "fat": 13,
+      "fibre": 0,
+      "unit": "g",
+      "store": "topup",
+      "group": "Dairy & eggs"
+    },
+    "parmesan": {
+      "name": "Parmesan",
+      "kcal": 430,
+      "protein": 38,
+      "carbs": 4,
+      "fat": 29,
+      "fibre": 0,
+      "unit": "g",
+      "store": "topup",
+      "group": "Dairy & eggs"
+    },
+    "cinnamon": {
+      "name": "Ground cinnamon",
+      "kcal": 250,
+      "protein": 4,
+      "carbs": 81,
+      "fat": 1,
+      "fibre": 53,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "paprika": {
+      "name": "Smoked paprika",
+      "kcal": 282,
+      "protein": 14,
+      "carbs": 54,
+      "fat": 13,
+      "fibre": 35,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "cumin": {
+      "name": "Ground cumin",
+      "kcal": 375,
+      "protein": 18,
+      "carbs": 44,
+      "fat": 22,
+      "fibre": 11,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "italian": {
+      "name": "Dried mixed Italian herbs",
+      "kcal": 270,
+      "protein": 9,
+      "carbs": 60,
+      "fat": 5,
+      "fibre": 40,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "curry": {
+      "name": "Curry powder",
+      "kcal": 325,
+      "protein": 14,
+      "carbs": 58,
+      "fat": 14,
+      "fibre": 33,
+      "unit": "g",
+      "store": "monthly",
+      "group": "Pantry"
+    },
+    "garlic": {
+      "name": "Garlic",
+      "kcal": 149,
+      "protein": 6.4,
+      "carbs": 33,
+      "fat": 0.5,
+      "fibre": 2.1,
+      "unit": "g",
+      "store": "topup",
+      "group": "Fresh fruit & veg"
+    }
+  },
+  "recipes": {
+    "b1": {
+      "id": "b1",
+      "cat": "breakfast",
+      "name": "Berry protein overnight oats",
+      "time": 5,
+      "items": {
+        "oats": 30,
+        "whey": 25,
+        "skyr": 290,
+        "berries": 120,
+        "chia": 8
+      },
+      "steps": [
+        "Combine oats, whey and Skyr with a splash of water until spoonable.",
+        "Fold in frozen berries and chia seeds.",
+        "Cover and chill overnight (or at least 2 hours)."
+      ],
+      "desc": "Make the night before. Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": "https://www.youtube.com/watch?v=NeBf5ewmI0A",
+      "nutrition": {
+        "kcal": 486.9,
+        "protein": 58.4,
+        "carbs": 49.1,
+        "fat": 6.7,
+        "fibre": 11.7
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Berry%20protein%20overnight%20oats%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "banana": 100
+      },
+      "gymNote": "Include the banana alongside this breakfast."
+    },
+    "b2": {
+      "id": "b2",
+      "cat": "breakfast",
+      "name": "Eggs, cottage cheese & toast",
+      "time": 12,
+      "items": {
+        "eggs": 2,
+        "cottage": 250,
+        "bread": 1.5,
+        "spinach": 60,
+        "tomato": 120
+      },
+      "steps": [
+        "Toast the bread and wilt spinach in a non-stick pan.",
+        "Scramble or poach the eggs until cooked; serve with cottage cheese.",
+        "Add sliced tomato and season with pepper."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 525.4,
+        "protein": 51.4,
+        "carbs": 39.5,
+        "fat": 17.0,
+        "fibre": 7.0
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Eggs%2C%20cottage%20cheese%20%26%20toast%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "banana": 100
+      },
+      "gymNote": "Include the banana alongside this breakfast."
+    },
+    "b3": {
+      "id": "b3",
+      "cat": "breakfast",
+      "name": "Banana peanut Skyr oats",
+      "time": 5,
+      "items": {
+        "skyr": 230,
+        "oats": 32,
+        "banana": 100,
+        "pb": 12,
+        "cinnamon": 1,
+        "whey": 18,
+        "berries": 60
+      },
+      "steps": [
+        "Mix Skyr and oats in a bowl, loosening with water if needed.",
+        "Slice banana over the top, drizzle peanut butter and sprinkle cinnamon."
+      ],
+      "desc": "Also works as overnight oats. Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": "https://www.youtube.com/watch?v=NeBf5ewmI0A",
+      "nutrition": {
+        "kcal": 525.1,
+        "protein": 48.6,
+        "carbs": 64.3,
+        "fat": 9.9,
+        "fibre": 10.1
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Banana%20peanut%20Skyr%20oats%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "oats": 25
+      },
+      "gymNote": "Use the larger oat portion in the same method."
+    },
+    "b4": {
+      "id": "b4",
+      "cat": "breakfast",
+      "name": "High-protein berry pancakes",
+      "time": 15,
+      "items": {
+        "oats": 45,
+        "eggs": 1,
+        "eggwhite": 120,
+        "whey": 18,
+        "berries": 110,
+        "skyr": 160
+      },
+      "steps": [
+        "Blend oats, egg, egg whites and whey with a splash of water into a batter.",
+        "Cook small pancakes in a well-heated non-stick pan, flipping when set.",
+        "Warm the berries and serve with Skyr."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": "https://www.youtube.com/watch?v=yIx39oKoDsU",
+      "nutrition": {
+        "kcal": 523.6,
+        "protein": 57.9,
+        "carbs": 50.7,
+        "fat": 9.8,
+        "fibre": 10.0
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=High-protein%20berry%20pancakes%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "banana": 100
+      },
+      "gymNote": "Include the banana alongside this breakfast."
+    },
+    "b5": {
+      "id": "b5",
+      "cat": "breakfast",
+      "name": "Savoury breakfast egg wrap",
+      "time": 12,
+      "items": {
+        "wrap": 1,
+        "eggs": 1,
+        "eggwhite": 230,
+        "cheese": 25,
+        "mushroom": 100,
+        "pepper": 100
+      },
+      "steps": [
+        "Cook mushrooms and pepper in a non-stick pan until softened.",
+        "Add beaten egg and egg whites; stir until fully cooked.",
+        "Scatter cheese on the wrap, add filling, fold and toast briefly."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 466.9,
+        "protein": 48.2,
+        "carbs": 40.3,
+        "fat": 13.1,
+        "fibre": 7.0
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Savoury%20breakfast%20egg%20wrap%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "banana": 100
+      },
+      "gymNote": "Include the banana alongside this breakfast."
+    },
+    "b6": {
+      "id": "b6",
+      "cat": "breakfast",
+      "name": "Apple cinnamon cottage oats",
+      "time": 5,
+      "items": {
+        "cottage": 220,
+        "oats": 32,
+        "apple": 150,
+        "chia": 8,
+        "cinnamon": 1,
+        "skyr": 150
+      },
+      "steps": [
+        "Mix the oats with cottage cheese and a spoon of water.",
+        "Chop apple, add cinnamon and chia, and stir through.",
+        "Eat immediately or refrigerate overnight."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 511.4,
+        "protein": 48.9,
+        "carbs": 59.2,
+        "fat": 9.4,
+        "fibre": 10.0
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Apple%20cinnamon%20cottage%20oats%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "banana": 100
+      },
+      "gymNote": "Include the banana alongside this breakfast."
+    },
+    "b7": {
+      "id": "b7",
+      "cat": "breakfast",
+      "name": "Smoked salmon breakfast bagel",
+      "time": 10,
+      "items": {
+        "bagel": 1,
+        "smokedsalmon": 75,
+        "skyr": 230,
+        "cucumber": 100,
+        "tomato": 120,
+        "eggs": 1,
+        "avocado": 10
+      },
+      "steps": [
+        "Toast the bagel thin and spread with a little Skyr.",
+        "Add smoked salmon and sliced cucumber.",
+        "Serve with a boiled egg, tomato, avocado and remaining Skyr."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 480.4,
+        "protein": 53.1,
+        "carbs": 44.0,
+        "fat": 10.9,
+        "fibre": 5.6
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Smoked%20salmon%20breakfast%20bagel%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "banana": 100
+      },
+      "gymNote": "Include the banana alongside this breakfast."
+    },
+    "b8": {
+      "id": "b8",
+      "cat": "breakfast",
+      "name": "Tofu scramble on wholemeal toast",
+      "time": 15,
+      "items": {
+        "tofu": 255,
+        "bread": 1.5,
+        "spinach": 70,
+        "mushroom": 120,
+        "tomato": 120,
+        "oil": 4
+      },
+      "steps": [
+        "Crumble tofu into a pan with olive oil and sauté with mushrooms.",
+        "Add spinach and cook until wilted; season with pepper and a pinch of paprika.",
+        "Toast bread and serve with tomato."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 547.1,
+        "protein": 45.9,
+        "carbs": 40.0,
+        "fat": 24.7,
+        "fibre": 10.9
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Tofu%20scramble%20on%20wholemeal%20toast%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "banana": 100
+      },
+      "gymNote": "Include the banana alongside this breakfast."
+    },
+    "l1": {
+      "id": "l1",
+      "cat": "lunch",
+      "name": "Chicken quinoa rainbow salad",
+      "time": 25,
+      "items": {
+        "chicken": 180,
+        "quinoa": 58,
+        "cucumber": 120,
+        "tomato": 150,
+        "spinach": 70,
+        "oil": 5,
+        "lemon": 20
+      },
+      "steps": [
+        "Cook quinoa in water according to packet directions.",
+        "Cook chicken thoroughly in a non-stick pan, then slice.",
+        "Mix with chopped vegetables; dress with olive oil and lemon."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": true,
+      "video": null,
+      "nutrition": {
+        "kcal": 522.5,
+        "protein": 53.8,
+        "carbs": 51.4,
+        "fat": 11.9,
+        "fibre": 8.1
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Chicken%20quinoa%20rainbow%20salad%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "quinoa": 25
+      },
+      "gymNote": "Cook the extra carbohydrate with the rest of the main recipe."
+    },
+    "l2": {
+      "id": "l2",
+      "cat": "lunch",
+      "name": "Tuna & bean jacket potato",
+      "time": 15,
+      "items": {
+        "tuna": 120,
+        "potato": 245,
+        "kidney": 100,
+        "skyr": 140,
+        "corn": 50,
+        "pepper": 100
+      },
+      "steps": [
+        "Microwave or bake the potato until fully soft.",
+        "Mix tuna, rinsed beans, sweetcorn, diced pepper and Skyr.",
+        "Split potato and pile filling over the top."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 579.6,
+        "protein": 60.0,
+        "carbs": 76.8,
+        "fat": 3.0,
+        "fibre": 15.4
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Tuna%20%26%20bean%20jacket%20potato%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "potato": 100
+      },
+      "gymNote": "Cook the extra carbohydrate with the rest of the main recipe."
+    },
+    "l3": {
+      "id": "l3",
+      "cat": "lunch",
+      "name": "Turkey & hummus crunch wrap",
+      "time": 18,
+      "items": {
+        "turkey": 200,
+        "wrap": 1,
+        "hummus": 50,
+        "lettuce": 90,
+        "tomato": 120,
+        "carrot": 90
+      },
+      "steps": [
+        "Cook turkey mince thoroughly with paprika and pepper; allow to cool slightly.",
+        "Spread hummus onto the wrap and add lettuce, tomato and grated carrot.",
+        "Add cooked turkey, fold tightly and serve."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 596.9,
+        "protein": 52.0,
+        "carbs": 51.4,
+        "fat": 22.1,
+        "fibre": 12.0
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Turkey%20%26%20hummus%20crunch%20wrap%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "apple": 170
+      },
+      "gymNote": "Have the apple as part of lunch."
+    },
+    "l4": {
+      "id": "l4",
+      "cat": "lunch",
+      "name": "Ginger-soy prawn noodle bowl",
+      "time": 15,
+      "items": {
+        "prawns": 220,
+        "noodles": 63,
+        "mixedveg": 250,
+        "soy": 15,
+        "sesameoil": 4,
+        "garlic": 6
+      },
+      "steps": [
+        "Cook noodles according to packet directions.",
+        "Stir-fry frozen vegetables in sesame oil until piping hot.",
+        "Add garlic and prawns, cook thoroughly, then toss with noodles and soy sauce."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 562.9,
+        "protein": 57.7,
+        "carbs": 63.1,
+        "fat": 8.3,
+        "fibre": 12.8
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Ginger-soy%20prawn%20noodle%20bowl%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "noodles": 25
+      },
+      "gymNote": "Cook the extra carbohydrate with the rest of the main recipe."
+    },
+    "l5": {
+      "id": "l5",
+      "cat": "lunch",
+      "name": "Tofu, edamame & rice bowl",
+      "time": 20,
+      "items": {
+        "tofu": 230,
+        "edamame": 110,
+        "rice": 44,
+        "broccoli": 180,
+        "soy": 15,
+        "sesameoil": 4
+      },
+      "steps": [
+        "Boil rice as directed on packet.",
+        "Cook tofu cubes in a non-stick pan, turning until golden.",
+        "Steam broccoli and edamame until hot; combine with soy sauce and sesame oil."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 672.7,
+        "protein": 52.0,
+        "carbs": 57.7,
+        "fat": 27.6,
+        "fibre": 15.0
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Tofu%2C%20edamame%20%26%20rice%20bowl%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "rice": 25
+      },
+      "gymNote": "Cook the extra carbohydrate with the rest of the main recipe."
+    },
+    "l6": {
+      "id": "l6",
+      "cat": "lunch",
+      "name": "Chicken chickpea pitta",
+      "time": 20,
+      "items": {
+        "chicken": 185,
+        "chickpeas": 115,
+        "pitta": 1,
+        "cucumber": 120,
+        "tomato": 120,
+        "skyr": 70,
+        "lemon": 15
+      },
+      "steps": [
+        "Cook chicken thoroughly, then slice.",
+        "Combine rinsed chickpeas, cucumber and tomato with Skyr and lemon.",
+        "Warm pitta and stuff with chicken and salad."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 591.9,
+        "protein": 66.3,
+        "carbs": 63.4,
+        "fat": 7.0,
+        "fibre": 14.7
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Chicken%20chickpea%20pitta%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "apple": 170
+      },
+      "gymNote": "Have the apple as part of lunch."
+    },
+    "l7": {
+      "id": "l7",
+      "cat": "lunch",
+      "name": "Cottage cheese & lentil power bowl",
+      "time": 10,
+      "items": {
+        "cottage": 320,
+        "lentils": 160,
+        "spinach": 80,
+        "beetroot": 120,
+        "oil": 4,
+        "bread": 1.5
+      },
+      "steps": [
+        "Drain and rinse lentils, and cut beetroot into cubes.",
+        "Arrange over spinach with cottage cheese.",
+        "Drizzle oil; serve with wholemeal toast."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 669.4,
+        "protein": 59.8,
+        "carbs": 69.7,
+        "fat": 13.6,
+        "fibre": 18.9
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Cottage%20cheese%20%26%20lentil%20power%20bowl%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "apple": 170
+      },
+      "gymNote": "Have the apple as part of lunch."
+    },
+    "l8": {
+      "id": "l8",
+      "cat": "lunch",
+      "name": "Salmon & green bean potato salad",
+      "time": 20,
+      "items": {
+        "cannedsalmon": 165,
+        "potato": 250,
+        "greenbeans": 180,
+        "cottage": 100,
+        "mustard": 12
+      },
+      "steps": [
+        "Boil potatoes until tender; cook green beans until hot.",
+        "Mix mustard with cottage cheese as a dressing.",
+        "Flake drained canned salmon and combine everything."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 569.1,
+        "protein": 59.0,
+        "carbs": 58.8,
+        "fat": 11.2,
+        "fibre": 12.0
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Salmon%20%26%20green%20bean%20potato%20salad%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "potato": 110
+      },
+      "gymNote": "Cook the extra carbohydrate with the rest of the main recipe."
+    },
+    "l9": {
+      "id": "l9",
+      "cat": "lunch",
+      "name": "Beef & bean chilli rice bowl",
+      "time": 25,
+      "items": {
+        "beef": 175,
+        "kidney": 100,
+        "passata": 150,
+        "rice": 48,
+        "pepper": 120,
+        "onion": 70,
+        "paprika": 2
+      },
+      "steps": [
+        "Boil rice separately until cooked.",
+        "Brown beef mince thoroughly with onion and pepper.",
+        "Add beans, passata and paprika; simmer for 10 minutes, then serve with rice."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": true,
+      "video": null,
+      "nutrition": {
+        "kcal": 627.2,
+        "protein": 51.6,
+        "carbs": 73.3,
+        "fat": 11.7,
+        "fibre": 15.0
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Beef%20%26%20bean%20chilli%20rice%20bowl%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "rice": 25
+      },
+      "gymNote": "Cook the extra carbohydrate with the rest of the main recipe."
+    },
+    "l10": {
+      "id": "l10",
+      "cat": "lunch",
+      "name": "Mediterranean chicken couscous",
+      "time": 20,
+      "items": {
+        "chicken": 210,
+        "couscous": 56,
+        "courgette": 150,
+        "pepper": 130,
+        "spinach": 50,
+        "oil": 5,
+        "lemon": 15
+      },
+      "steps": [
+        "Cover couscous with boiling water and rest as directed.",
+        "Cook chopped chicken thoroughly with courgette and pepper.",
+        "Stir in spinach, lemon and oil; toss with couscous."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": true,
+      "video": null,
+      "nutrition": {
+        "kcal": 563.0,
+        "protein": 60.2,
+        "carbs": 56.2,
+        "fat": 10.3,
+        "fibre": 9.2
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Mediterranean%20chicken%20couscous%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {
+        "couscous": 25
+      },
+      "gymNote": "Cook the extra carbohydrate with the rest of the main recipe."
+    },
+    "d1": {
+      "id": "d1",
+      "cat": "dinner",
+      "name": "Turkey, kidney bean & tomato chilli",
+      "time": 30,
+      "items": {
+        "turkey": 170,
+        "kidney": 120,
+        "chopped": 200,
+        "onion": 90,
+        "pepper": 160,
+        "rice": 60,
+        "oil": 4,
+        "paprika": 3,
+        "cumin": 2
+      },
+      "steps": [
+        "Start the rice according to packet directions.",
+        "Cook onion and pepper in olive oil, then brown turkey thoroughly.",
+        "Add rinsed beans, tomatoes and spices; simmer 15–20 minutes and serve with rice."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": true,
+      "video": "https://www.youtube.com/watch?v=foYj0mitx4Q",
+      "nutrition": {
+        "kcal": 733.4,
+        "protein": 52.8,
+        "carbs": 92.6,
+        "fat": 16.7,
+        "fibre": 19.2
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Turkey%2C%20kidney%20bean%20%26%20tomato%20chilli%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    },
+    "d2": {
+      "id": "d2",
+      "cat": "dinner",
+      "name": "Salmon, potatoes & broccoli",
+      "time": 30,
+      "items": {
+        "salmon": 140,
+        "potato": 285,
+        "broccoli": 220,
+        "lemon": 20,
+        "skyr": 150,
+        "oil": 4
+      },
+      "steps": [
+        "Roast or air-fry potatoes with oil until golden and tender.",
+        "Bake salmon until cooked through and flaky.",
+        "Steam broccoli and serve with lemon and Skyr."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 716.5,
+        "protein": 56.4,
+        "carbs": 66.8,
+        "fat": 23.4,
+        "fibre": 12.9
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Salmon%2C%20potatoes%20%26%20broccoli%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    },
+    "d3": {
+      "id": "d3",
+      "cat": "dinner",
+      "name": "Chicken fajita rice bowl",
+      "time": 25,
+      "items": {
+        "chicken": 170,
+        "rice": 73,
+        "pepper": 190,
+        "onion": 100,
+        "blackbeans": 70,
+        "skyr": 60,
+        "oil": 4,
+        "paprika": 3
+      },
+      "steps": [
+        "Cook rice according to packet directions.",
+        "Stir-fry chicken strips thoroughly with peppers, onion, paprika and oil.",
+        "Add rinsed beans to warm through; serve over rice with Skyr."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": "https://www.youtube.com/watch?v=eEnRSROOIKU",
+      "nutrition": {
+        "kcal": 704.3,
+        "protein": 59.5,
+        "carbs": 91.1,
+        "fat": 10.3,
+        "fibre": 14.7
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Chicken%20fajita%20rice%20bowl%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    },
+    "d4": {
+      "id": "d4",
+      "cat": "dinner",
+      "name": "Lemony cod & chickpea traybake",
+      "time": 30,
+      "items": {
+        "cod": 225,
+        "chickpeas": 130,
+        "tomato": 190,
+        "courgette": 180,
+        "onion": 80,
+        "oil": 7,
+        "potato": 225,
+        "lemon": 20
+      },
+      "steps": [
+        "Heat oven to 200°C (180°C fan).",
+        "Roast cubed potatoes, vegetables and chickpeas with oil for 15 minutes.",
+        "Add cod and roast until the fish is fully cooked; finish with lemon."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 678.5,
+        "protein": 58.9,
+        "carbs": 80.8,
+        "fat": 13.1,
+        "fibre": 20.2
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Lemony%20cod%20%26%20chickpea%20traybake%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    },
+    "d5": {
+      "id": "d5",
+      "cat": "dinner",
+      "name": "Prawn & spinach coconut curry",
+      "time": 25,
+      "items": {
+        "prawns": 190,
+        "coconut": 100,
+        "rice": 73,
+        "spinach": 120,
+        "peas": 100,
+        "currypaste": 22,
+        "onion": 80,
+        "garlic": 6
+      },
+      "steps": [
+        "Cook rice separately according to packet directions.",
+        "Sauté onion, garlic and curry paste with a splash of water.",
+        "Add coconut milk, peas and spinach; simmer, then add prawns and cook thoroughly."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 683.2,
+        "protein": 54.5,
+        "carbs": 87.3,
+        "fat": 13.2,
+        "fibre": 13.0
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Prawn%20%26%20spinach%20coconut%20curry%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    },
+    "d6": {
+      "id": "d6",
+      "cat": "dinner",
+      "name": "Lean beef wholewheat bolognese",
+      "time": 30,
+      "items": {
+        "beef": 155,
+        "pasta": 74,
+        "passata": 200,
+        "carrot": 100,
+        "mushroom": 150,
+        "onion": 70,
+        "parmesan": 10,
+        "oil": 4,
+        "italian": 2
+      },
+      "steps": [
+        "Cook pasta in boiling water according to packet directions.",
+        "Brown mince thoroughly in a pan with oil and onion.",
+        "Add diced carrot, mushrooms, passata and herbs; simmer 15 minutes, then toss with pasta and Parmesan."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": true,
+      "video": null,
+      "nutrition": {
+        "kcal": 717.8,
+        "protein": 55.3,
+        "carbs": 83.0,
+        "fat": 17.4,
+        "fibre": 15.2
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Lean%20beef%20wholewheat%20bolognese%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    },
+    "d7": {
+      "id": "d7",
+      "cat": "dinner",
+      "name": "Peanut tofu & edamame noodles",
+      "time": 20,
+      "items": {
+        "tofu": 185,
+        "edamame": 90,
+        "noodles": 64,
+        "mixedveg": 220,
+        "pb": 13,
+        "soy": 18,
+        "garlic": 5
+      },
+      "steps": [
+        "Cook noodles according to packet directions.",
+        "Pan-fry tofu with mixed vegetables and edamame until hot.",
+        "Mix peanut butter and soy with warm water, then toss through noodles and vegetables."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 740.5,
+        "protein": 51.4,
+        "carbs": 75.9,
+        "fat": 27.0,
+        "fibre": 19.0
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Peanut%20tofu%20%26%20edamame%20noodles%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    },
+    "d8": {
+      "id": "d8",
+      "cat": "dinner",
+      "name": "Chicken & sweet potato traybake",
+      "time": 35,
+      "items": {
+        "chicken": 175,
+        "sweetpotato": 269,
+        "greenbeans": 220,
+        "carrot": 110,
+        "oil": 7,
+        "greek": 140,
+        "paprika": 2
+      },
+      "steps": [
+        "Heat oven to 200°C (180°C fan).",
+        "Toss diced sweet potato and carrot with oil and paprika; roast 15 minutes.",
+        "Add chicken and roast until fully cooked, steaming green beans separately; serve with yoghurt."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 688.4,
+        "protein": 64.2,
+        "carbs": 86.9,
+        "fat": 10.8,
+        "fibre": 19.3
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Chicken%20%26%20sweet%20potato%20traybake%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    },
+    "d9": {
+      "id": "d9",
+      "cat": "dinner",
+      "name": "Turkey meatballs & spaghetti",
+      "time": 30,
+      "items": {
+        "turkey": 180,
+        "pasta": 76,
+        "passata": 180,
+        "spinach": 110,
+        "onion": 70,
+        "parmesan": 8,
+        "oil": 4,
+        "italian": 2
+      },
+      "steps": [
+        "Form seasoned turkey mince into small meatballs.",
+        "Brown in olive oil, turning often; add onion, passata and herbs and simmer until cooked through.",
+        "Cook pasta and wilt spinach into the sauce, then top with Parmesan."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": true,
+      "video": null,
+      "nutrition": {
+        "kcal": 668.7,
+        "protein": 55.8,
+        "carbs": 72.6,
+        "fat": 17.8,
+        "fibre": 13.2
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Turkey%20meatballs%20%26%20spaghetti%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    },
+    "d10": {
+      "id": "d10",
+      "cat": "dinner",
+      "name": "Lentil, spinach & egg curry",
+      "time": 25,
+      "items": {
+        "lentils": 195,
+        "eggs": 2,
+        "currypaste": 25,
+        "spinach": 160,
+        "chopped": 180,
+        "rice": 54,
+        "greek": 165,
+        "onion": 60
+      },
+      "steps": [
+        "Cook rice according to packet directions and hard-boil eggs.",
+        "Simmer onions, lentils, curry paste and tomatoes for 10 minutes.",
+        "Wilt in spinach; halve eggs on top and serve with rice and yoghurt."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 770.2,
+        "protein": 54.9,
+        "carbs": 99.8,
+        "fat": 14.5,
+        "fibre": 21.6
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Lentil%2C%20spinach%20%26%20egg%20curry%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    },
+    "d11": {
+      "id": "d11",
+      "cat": "dinner",
+      "name": "Chicken peanut & broccoli stir-fry",
+      "time": 20,
+      "items": {
+        "chicken": 175,
+        "rice": 64,
+        "broccoli": 200,
+        "pepper": 160,
+        "pb": 15,
+        "soy": 18,
+        "oil": 4,
+        "garlic": 6
+      },
+      "steps": [
+        "Cook rice according to packet directions.",
+        "Cook chicken strips thoroughly with oil and garlic.",
+        "Steam broccoli, stir-fry pepper, then coat everything in peanut butter and soy mixed with warm water."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 683.4,
+        "protein": 57.0,
+        "carbs": 74.1,
+        "fat": 17.4,
+        "fibre": 12.8
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Chicken%20peanut%20%26%20broccoli%20stir-fry%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    },
+    "d12": {
+      "id": "d12",
+      "cat": "dinner",
+      "name": "Mackerel, bean & potato salad",
+      "time": 20,
+      "items": {
+        "mackerel": 130,
+        "kidney": 130,
+        "potato": 275,
+        "cucumber": 120,
+        "tomato": 160,
+        "spinach": 80,
+        "oil": 5,
+        "lemon": 15
+      },
+      "steps": [
+        "Boil or microwave potatoes until tender.",
+        "Drain canned mackerel and beans, and chop salad vegetables.",
+        "Toss together with oil and lemon; serve warm or cold."
+      ],
+      "desc": " Measured single-serving portions for a slightly larger energy deficit; higher-carbohydrate portions on gym days.",
+      "batch": false,
+      "video": null,
+      "nutrition": {
+        "kcal": 689.7,
+        "protein": 47.9,
+        "carbs": 79.6,
+        "fat": 19.7,
+        "fibre": 18.8
+      },
+      "videoSearch": "https://www.youtube.com/results?search_query=Mackerel%2C%20bean%20%26%20potato%20salad%20healthy%20recipe%20how%20to%20cook",
+      "gymExtras": {},
+      "gymNote": ""
+    }
+  },
+  "plan": [
+    {
+      "day": 1,
+      "week": 1,
+      "weekday": "Monday",
+      "gym": true,
+      "breakfast": "b7",
+      "lunch": "l3",
+      "dinner": "d3",
+      "nutrition": {
+        "kcal": 1555.6,
+        "protein": 138.3,
+        "carbs": 159.6,
+        "fat": 42.1,
+        "fibre": 32.2
+      }
+    },
+    {
+      "day": 2,
+      "week": 1,
+      "weekday": "Tuesday",
+      "gym": false,
+      "breakfast": "b2",
+      "lunch": "l1",
+      "dinner": "d1",
+      "nutrition": {
+        "kcal": 1575.5,
+        "protein": 137.5,
+        "carbs": 161.1,
+        "fat": 42.4,
+        "fibre": 33.7
+      }
+    },
+    {
+      "day": 3,
+      "week": 1,
+      "weekday": "Wednesday",
+      "gym": true,
+      "breakfast": "b8",
+      "lunch": "l8",
+      "dinner": "d2",
+      "nutrition": {
+        "kcal": 1589.4,
+        "protein": 133.0,
+        "carbs": 147.7,
+        "fat": 52.6,
+        "fibre": 33.8
+      }
+    },
+    {
+      "day": 4,
+      "week": 1,
+      "weekday": "Thursday",
+      "gym": false,
+      "breakfast": "b5",
+      "lunch": "l10",
+      "dinner": "d6",
+      "nutrition": {
+        "kcal": 1543.0,
+        "protein": 137.1,
+        "carbs": 159.89999999999998,
+        "fat": 39.2,
+        "fibre": 29.299999999999997
+      }
+    },
+    {
+      "day": 5,
+      "week": 1,
+      "weekday": "Friday",
+      "gym": true,
+      "breakfast": "b2",
+      "lunch": "l3",
+      "dinner": "d5",
+      "nutrition": {
+        "kcal": 1594.1,
+        "protein": 135.6,
+        "carbs": 160.4,
+        "fat": 46.9,
+        "fibre": 31.9
+      }
+    },
+    {
+      "day": 6,
+      "week": 1,
+      "weekday": "Saturday",
+      "gym": false,
+      "breakfast": "b8",
+      "lunch": "l1",
+      "dinner": "d8",
+      "nutrition": {
+        "kcal": 1537.8,
+        "protein": 139.4,
+        "carbs": 160.8,
+        "fat": 41.6,
+        "fibre": 36.099999999999994
+      }
+    },
+    {
+      "day": 7,
+      "week": 1,
+      "weekday": "Sunday",
+      "gym": false,
+      "breakfast": "b7",
+      "lunch": "l8",
+      "dinner": "d10",
+      "nutrition": {
+        "kcal": 1559.7,
+        "protein": 133.4,
+        "carbs": 172.3,
+        "fat": 37.0,
+        "fibre": 38.6
+      }
+    },
+    {
+      "day": 8,
+      "week": 2,
+      "weekday": "Monday",
+      "gym": true,
+      "breakfast": "b5",
+      "lunch": "l7",
+      "dinner": "d9",
+      "nutrition": {
+        "kcal": 1562.7,
+        "protein": 137.7,
+        "carbs": 156.8,
+        "fat": 41.4,
+        "fibre": 36.0
+      }
+    },
+    {
+      "day": 9,
+      "week": 2,
+      "weekday": "Tuesday",
+      "gym": false,
+      "breakfast": "b4",
+      "lunch": "l3",
+      "dinner": "d4",
+      "nutrition": {
+        "kcal": 1562.7,
+        "protein": 142.6,
+        "carbs": 159.5,
+        "fat": 40.6,
+        "fibre": 39.099999999999994
+      }
+    },
+    {
+      "day": 10,
+      "week": 2,
+      "weekday": "Wednesday",
+      "gym": true,
+      "breakfast": "b1",
+      "lunch": "l4",
+      "dinner": "d7",
+      "nutrition": {
+        "kcal": 1594.5,
+        "protein": 140.6,
+        "carbs": 167.8,
+        "fat": 41.4,
+        "fibre": 42.2
+      }
+    },
+    {
+      "day": 11,
+      "week": 2,
+      "weekday": "Thursday",
+      "gym": false,
+      "breakfast": "b8",
+      "lunch": "l1",
+      "dinner": "d11",
+      "nutrition": {
+        "kcal": 1542.8,
+        "protein": 138.5,
+        "carbs": 145.4,
+        "fat": 47.400000000000006,
+        "fibre": 30.5
+      }
+    },
+    {
+      "day": 12,
+      "week": 2,
+      "weekday": "Friday",
+      "gym": true,
+      "breakfast": "b5",
+      "lunch": "l9",
+      "dinner": "d12",
+      "nutrition": {
+        "kcal": 1579.0,
+        "protein": 126.4,
+        "carbs": 169.9,
+        "fat": 41.900000000000006,
+        "fibre": 38.3
+      }
+    },
+    {
+      "day": 13,
+      "week": 2,
+      "weekday": "Saturday",
+      "gym": false,
+      "breakfast": "b7",
+      "lunch": "l3",
+      "dinner": "d3",
+      "nutrition": {
+        "kcal": 1555.6,
+        "protein": 138.3,
+        "carbs": 159.6,
+        "fat": 42.1,
+        "fibre": 32.2
+      }
+    },
+    {
+      "day": 14,
+      "week": 2,
+      "weekday": "Sunday",
+      "gym": false,
+      "breakfast": "b6",
+      "lunch": "l4",
+      "dinner": "d2",
+      "nutrition": {
+        "kcal": 1548.3,
+        "protein": 126.0,
+        "carbs": 165.8,
+        "fat": 41.0,
+        "fibre": 34.3
+      }
+    },
+    {
+      "day": 15,
+      "week": 3,
+      "weekday": "Monday",
+      "gym": true,
+      "breakfast": "b8",
+      "lunch": "l10",
+      "dinner": "d8",
+      "nutrition": {
+        "kcal": 1569.0,
+        "protein": 140.8,
+        "carbs": 168.1,
+        "fat": 40.2,
+        "fibre": 37.599999999999994
+      }
+    },
+    {
+      "day": 16,
+      "week": 3,
+      "weekday": "Tuesday",
+      "gym": false,
+      "breakfast": "b5",
+      "lunch": "l5",
+      "dinner": "d5",
+      "nutrition": {
+        "kcal": 1588.8,
+        "protein": 135.3,
+        "carbs": 156.6,
+        "fat": 49.3,
+        "fibre": 33.0
+      }
+    },
+    {
+      "day": 17,
+      "week": 3,
+      "weekday": "Wednesday",
+      "gym": true,
+      "breakfast": "b2",
+      "lunch": "l1",
+      "dinner": "d6",
+      "nutrition": {
+        "kcal": 1583.3,
+        "protein": 139.4,
+        "carbs": 157.8,
+        "fat": 43.4,
+        "fibre": 29.2
+      }
+    },
+    {
+      "day": 18,
+      "week": 3,
+      "weekday": "Thursday",
+      "gym": false,
+      "breakfast": "b7",
+      "lunch": "l8",
+      "dinner": "d1",
+      "nutrition": {
+        "kcal": 1548.6,
+        "protein": 138.9,
+        "carbs": 163.7,
+        "fat": 39.1,
+        "fibre": 36.0
+      }
+    },
+    {
+      "day": 19,
+      "week": 3,
+      "weekday": "Friday",
+      "gym": true,
+      "breakfast": "b3",
+      "lunch": "l6",
+      "dinner": "d2",
+      "nutrition": {
+        "kcal": 1593.5,
+        "protein": 136.4,
+        "carbs": 174.7,
+        "fat": 38.3,
+        "fibre": 32.3
+      }
+    },
+    {
+      "day": 20,
+      "week": 3,
+      "weekday": "Saturday",
+      "gym": false,
+      "breakfast": "b1",
+      "lunch": "l10",
+      "dinner": "d7",
+      "nutrition": {
+        "kcal": 1593.0,
+        "protein": 141.0,
+        "carbs": 163.9,
+        "fat": 43.1,
+        "fibre": 38.9
+      }
+    },
+    {
+      "day": 21,
+      "week": 3,
+      "weekday": "Sunday",
+      "gym": false,
+      "breakfast": "b4",
+      "lunch": "l3",
+      "dinner": "d4",
+      "nutrition": {
+        "kcal": 1562.7,
+        "protein": 142.6,
+        "carbs": 159.5,
+        "fat": 40.6,
+        "fibre": 39.099999999999994
+      }
+    },
+    {
+      "day": 22,
+      "week": 4,
+      "weekday": "Monday",
+      "gym": true,
+      "breakfast": "b8",
+      "lunch": "l8",
+      "dinner": "d3",
+      "nutrition": {
+        "kcal": 1571.2,
+        "protein": 144.2,
+        "carbs": 164.3,
+        "fat": 38.7,
+        "fibre": 35.9
+      }
+    },
+    {
+      "day": 23,
+      "week": 4,
+      "weekday": "Tuesday",
+      "gym": false,
+      "breakfast": "b5",
+      "lunch": "l7",
+      "dinner": "d9",
+      "nutrition": {
+        "kcal": 1562.7,
+        "protein": 137.7,
+        "carbs": 156.8,
+        "fat": 41.4,
+        "fibre": 36.0
+      }
+    },
+    {
+      "day": 24,
+      "week": 4,
+      "weekday": "Wednesday",
+      "gym": true,
+      "breakfast": "b7",
+      "lunch": "l9",
+      "dinner": "d12",
+      "nutrition": {
+        "kcal": 1594.5,
+        "protein": 127.9,
+        "carbs": 171.2,
+        "fat": 42.900000000000006,
+        "fibre": 38.3
+      }
+    },
+    {
+      "day": 25,
+      "week": 4,
+      "weekday": "Thursday",
+      "gym": false,
+      "breakfast": "b2",
+      "lunch": "l4",
+      "dinner": "d11",
+      "nutrition": {
+        "kcal": 1561.8,
+        "protein": 142.8,
+        "carbs": 154.6,
+        "fat": 39.9,
+        "fibre": 32.1
+      }
+    },
+    {
+      "day": 26,
+      "week": 4,
+      "weekday": "Friday",
+      "gym": true,
+      "breakfast": "b6",
+      "lunch": "l6",
+      "dinner": "d2",
+      "nutrition": {
+        "kcal": 1591.8,
+        "protein": 135.2,
+        "carbs": 171.0,
+        "fat": 39.2,
+        "fibre": 35.2
+      }
+    },
+    {
+      "day": 27,
+      "week": 4,
+      "weekday": "Saturday",
+      "gym": false,
+      "breakfast": "b7",
+      "lunch": "l1",
+      "dinner": "d10",
+      "nutrition": {
+        "kcal": 1530.6,
+        "protein": 129.8,
+        "carbs": 165.8,
+        "fat": 38.5,
+        "fibre": 34.9
+      }
+    },
+    {
+      "day": 28,
+      "week": 4,
+      "weekday": "Sunday",
+      "gym": false,
+      "breakfast": "b3",
+      "lunch": "l3",
+      "dinner": "d5",
+      "nutrition": {
+        "kcal": 1564.8,
+        "protein": 129.1,
+        "carbs": 179.5,
+        "fat": 40.4,
+        "fibre": 31.6
+      }
+    }
+  ],
+  "profile": {
+    "age": 35,
+    "sex": "male",
+    "height_cm": 177.8,
+    "weight_kg": 104,
+    "daily_activity": "mostly seated; building a regular dog-walking routine",
+    "goal": "Fat loss first; preserve/build muscle second",
+    "targets": {
+      "rest": 1800,
+      "gym": 2000,
+      "protein": 160
+    },
+    "disclaimer": "Starting estimate for healthy adults; adapt based on real weight trend, hunger, energy and training recovery. Calorie values from ingredient estimates."
+  },
+  "buildVersion": "2026-10-22-higher-deficit-walks"
+};
+let s={tab:'overview',week:1,recipeFilter:'all',query:'',scope:'initial',settings:{restCal:1800,gymCal:2000,prot:160,extraGym:false},swaps:{},checked:{},gym:{},walks:{},favorites:{},libraryCat:"all",libraryQuery:"",libraryFav:false,recipeFav:false,shopDirty:false,undo:null};
+try{const st=JSON.parse(localStorage.getItem('nourishHigherDeficitV1')||'{}');s={...s,...st,settings:{...s.settings,...(st.settings||{})}};}catch(e){}
+const food=DATA.foods,rs=DATA.recipes,raw=DATA.plan;
+// In-session selection. The browser stores the actual swapped recipe IDs, never just a visual order.
+s.favorites=(s.favorites&&typeof s.favorites==='object')?s.favorites:{};
+let moveFrom=null, dragSource=null;
+const CATS=['breakfast','lunch','dinner'];
+const getSlot=(day,cat)=>{const d=days().find(x=>x.day===Number(day));return d&&CATS.includes(cat)?d.ids[CATS.indexOf(cat)]:null;};
+function notify(message){const el=document.getElementById('toast');el.textContent=message;el.classList.add('show');clearTimeout(notify.t);notify.t=setTimeout(()=>el.classList.remove('show'),3500);}
+function toggleFavorite(id){if(!rs[id])return;s.favorites[id]=!s.favorites[id];save();renderCurrent();if(window.currentModal&&document.getElementById('modalback').classList.contains('open'))drawModal();}
+function isFav(id){return !!s.favorites[id];}
+function moveStart(day,cat){if(!moveFrom){moveFrom={day:Number(day),cat};s.tab='planner';navigate('planner');notify('Meal selected. Choose another '+cat+' using Swap here, even in another week.');return;}
+ if(moveFrom.day===day&&moveFrom.cat===cat){moveFrom=null;renderCurrent();notify('Swap cancelled');return;}
+ swapSlots(moveFrom.day,moveFrom.cat,Number(day),cat);
+}
+function moveCancel(){moveFrom=null;renderCurrent();}
+function dragStart(event,day,cat){dragSource={day:Number(day),cat};event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('text/plain',day+':'+cat);}
+function dragOver(event,day,cat){if(dragSource&&dragSource.cat===cat){event.preventDefault();event.dataTransfer.dropEffect='move';event.currentTarget.classList.add('dragover');}}
+function dragLeave(event){event.currentTarget.classList.remove('dragover');}
+function dropSlot(event,day,cat){event.preventDefault();event.currentTarget.classList.remove('dragover');if(dragSource){let from=dragSource;dragSource=null;swapSlots(from.day,from.cat,Number(day),cat);}}
+function swapSlots(dayA,catA,dayB,catB){if(catA!==catB){notify('Please swap the same meal type, such as dinner with dinner.');return false;}
+ if(dayA===dayB){moveFrom=null;renderCurrent();return false;}
+ const a=getSlot(dayA,catA),b=getSlot(dayB,catB);if(!a||!b)return false;
+ s.undo={a:{day:dayA,cat:catA,id:a},b:{day:dayB,cat:catB,id:b}};
+ assignSlot(dayA,catA,b);assignSlot(dayB,catB,a);s.shopDirty=true;
+ moveFrom=null;save();renderCurrent();notify('Swapped! Calories, protein and shopping quantities updated.');return true;
+}
+function assignSlot(day,cat,id){const base=raw.find(x=>x.day===Number(day));if(!base||!rs[id]||rs[id].cat!==cat)return false;const key=day+':'+cat;if(base[cat]===id)delete s.swaps[key];else s.swaps[key]=id;return true;}
+function addRecipeForDay(day,id){const r=rs[id];if(!r||!assignSlot(day,r.cat,id))return;closeModal();s.shopDirty=true;save();s.tab='planner';s.week=Math.ceil(day/7);navigate('planner');notify(r.name+' added to day '+day+'. Shopping updated.');}
+function undoSlotSwap(){if(!s.undo)return;const u=s.undo;assignSlot(u.a.day,u.a.cat,u.a.id);assignSlot(u.b.day,u.b.cat,u.b.id);s.undo=null;s.shopDirty=true;save();renderCurrent();notify('Previous swap undone.');}
+function moveBanner(){if(moveFrom)return `<div class="card swapbanner" role="status"><b>↔ Select a destination for Day ${moveFrom.day} ${moveFrom.cat}</b><span>Use the ↔ Swap here button on another ${moveFrom.cat}, even after switching weeks.</span><button class="btn sm" onclick="moveCancel()">Cancel swap</button></div>`;
+ return `<div class="subtle-hint"><span>↔ <b>Chromebook:</b> drag meals between days. &nbsp; <b>Phone:</b> tap Swap, then Swap here on another day. Both meals trade places.</span>${s.undo?`<button class="btn sm" onclick="undoSlotSwap()">↶ Undo swap</button>`:''}</div>`;
+}
+function quickValues(){const q=(s.libraryQuery||'').toLowerCase();return Object.values(rs).filter(r=>(s.libraryCat==='all'||r.cat===s.libraryCat)&&(!s.libraryFav||isFav(r.id))&&r.name.toLowerCase().includes(q));}
+function quickCard(r){return `<div class="quick-card"><div class="foodicon">${foodemoji[r.cat]}</div><div class="quick-details"><b>${esc(r.name)}</b><small>${r.cat} · ${money(portion(r.id,false).n.kcal)} kcal · ${money(portion(r.id,false).n.protein)}g protein</small></div><button class="heart ${isFav(r.id)?'faved':''}" aria-label="${isFav(r.id)?'Remove':'Add'} ${esc(r.name)} ${isFav(r.id)?'from':'to'} favourites" aria-pressed="${isFav(r.id)}" onclick="toggleFavorite('${r.id}')">${isFav(r.id)?'♥':'♡'}</button><button class="btn sm dark" onclick="openAssign('${r.id}')">Add to day</button></div>`;}
+function quickLibraryRows(){let vals=quickValues();return vals.length?vals.map(quickCard).join(''):'<div class="short">No recipes match these filters. Clear the search or favourites filter.</div>';}
+function setQuickCat(cat){s.libraryCat=cat;save();renderCurrent();}
+function toggleQuickFav(){s.libraryFav=!s.libraryFav;save();renderCurrent();}
+function quickSearch(txt){s.libraryQuery=txt;save();const el=document.getElementById('quickgrid');if(el)el.innerHTML=quickLibraryRows();}
+function quickLibrary(){return `<div class="sectionhead" id="library"><div><div class="eyebrow">BROWSE · SAVE · ASSIGN</div><h2>Your weekly meal library</h2></div><span class="pill">${Object.keys(s.favorites).filter(x=>s.favorites[x]).length} favourites</span></div><div class="card"><p class="short">Browse the full recipe library, tap ♡ to save a favourite, and use <b>Add to day</b> to replace a recipe on any day in any week. Choose the destination before shopping.</p><div class="library-tools"><div class="tabs">${['all','breakfast','lunch','dinner'].map(cat=>`<button class="tab ${s.libraryCat===cat?'on':''}" onclick="setQuickCat('${cat}')">${cat==='all'?'All':cat[0].toUpperCase()+cat.slice(1)}</button>`).join('')}</div><button class="tab ${s.libraryFav?'on':''}" onclick="toggleQuickFav()">♥ Favourites only</button><input class="search" aria-label="Search weekly meal library" value="${esc(s.libraryQuery)}" placeholder="Search meals…" oninput="quickSearch(this.value)"></div><div id="quickgrid" class="quick-grid">${quickLibraryRows()}</div></div>`;}
+function openAssign(id){if(!rs[id])return;window.assignId=id;window.assignWeek=s.week;drawAssign();document.getElementById('modalback').classList.add('open');}
+function drawAssign(){const r=rs[window.assignId],w=window.assignWeek;document.getElementById('modalinner').innerHTML=`<div class="eyebrow">REPLACE A ${esc(r.cat).toUpperCase()} IN YOUR PLAN</div><h2>${esc(r.name)}</h2><p class="short">Choose a week and day. The existing ${esc(r.cat)} will be replaced and your grocery totals will recalculate. This is different from swapping two existing slots.</p><div class="weeks" style="margin:15px 0">${[1,2,3,4].map(x=>`<button class="weekbtn ${w===x?'on':''}" onclick="window.assignWeek=${x};drawAssign()">Week ${x}</button>`).join('')}</div><div class="assign-grid">${days().filter(x=>x.week===w).map(d=>{const now=rs[getSlot(d.day,r.cat)];return `<button class="assign-day" onclick="addRecipeForDay(${d.day},'${r.id}')"><b>${d.weekday} · Day ${d.day}</b><small>Currently: ${esc(now.name)}</small><span>Use here →</span></button>`}).join('')}</div>`;}
+function exportBackup(){const backup={app:'nourish',version:2,exportedAt:new Date().toISOString(),state:s};download('nourish-plan-backup.json',JSON.stringify(backup,null,2),'application/json;charset=utf-8');notify('Backup downloaded. Transfer the file to your other device, then Import backup there.');}
+async function importBackup(file){if(!file)return;try{if(file.size>250000){throw new Error('This backup is unusually large.');}
+ const blob=JSON.parse(await file.text());if(blob.app!=='nourish'||!blob.state||typeof blob.state!=='object')throw new Error('Not a Nourish backup file.');const x=blob.state;
+ const clean={...s,swaps:{},favorites:{},gym:{},walks:{},checked:{},undo:null,shopDirty:true};
+ for(const [key,id] of Object.entries(x.swaps||{})){const match=/^(\d+):(breakfast|lunch|dinner)$/.exec(key);if(match&&Number(match[1])>=1&&Number(match[1])<=28&&rs[id]?.cat===match[2])clean.swaps[key]=id;}
+ for(const [id,v] of Object.entries(x.favorites||{}))if(rs[id]&&typeof v==='boolean')clean.favorites[id]=v;
+ for(const [d,v] of Object.entries(x.gym||{}))if(Number(d)>=1&&Number(d)<=28&&typeof v==='boolean')clean.gym[d]=v;
+ for(const [d,v] of Object.entries(x.walks||{}))if(Number(d)>=1&&Number(d)<=28&&typeof v==='boolean')clean.walks[d]=v;
+ for(const [key,v] of Object.entries(x.checked||{}))if(typeof v==='boolean'&&/^(initial|monthly|week[1-4]|all):[a-z0-9]+$/.test(key))clean.checked[key]=v;
+ if(Number.isInteger(x.week)&&x.week>=1&&x.week<=4)clean.week=x.week;
+ if(['initial','monthly','week1','week2','week3','week4','all'].includes(x.scope))clean.scope=x.scope;
+ if(x.settings){for(const [key,min,max] of [['restCal',1200,3500],['gymCal',1200,3500],['prot',30,250]])if(Number.isFinite(x.settings[key]))clean.settings[key]=Math.max(min,Math.min(max,x.settings[key]));clean.settings.extraGym=!!x.settings.extraGym;}
+ clean.tab='settings';s=clean;moveFrom=null;save();navigate('settings');notify('Backup imported. Your saved meals, favourites and activity are restored.');
+ }catch(e){alert('Could not import this file: '+e.message);}finally{document.getElementById('backup-input').value='';}}
+
+const money=x=>Math.round(x).toLocaleString('en-GB');const one=x=>Math.round(x*10)/10;const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const save=()=>{try{localStorage.setItem('nourishHigherDeficitV1',JSON.stringify(s));}catch(e){} window.dispatchEvent(new CustomEvent('nourish:changed'));};
+const portion=(id,gym)=>{const rr=rs[id],items={...rr.items};if(gym)for(const [k,v] of Object.entries(rr.gymExtras||{}))items[k]=(items[k]||0)+v;const n={};for(const k of ['kcal','protein','carbs','fat','fibre'])n[k]=Object.entries(items).reduce((total,[id,amount])=>{const ff=food[id],unit=(ff.unit==='each'||ff.unit==='slice')?amount:amount/100;return total+ff[k]*unit},0);return {items,n};};
+const days=()=>raw.map(d=>{const gym=s.gym[d.day]!==undefined?s.gym[d.day]:(d.gym||(s.settings.extraGym&&d.weekday==='Saturday'));const ids=['breakfast','lunch','dinner'].map(cat=>s.swaps[`${d.day}:${cat}`]||d[cat]);const meals=ids.map(id=>portion(id,gym));const n={};for(const k of ['kcal','protein','carbs','fat','fibre'])n[k]=meals.reduce((t,m)=>t+m.n[k],0);return {...d,ids,meals,n,gym};});
+const goal=d=>d.gym?s.settings.gymCal:s.settings.restCal;
+const dnut=(d,k)=>one(d.n[k]);const avg=k=>one(days().reduce((a,d)=>a+d.n[k],0)/28);const nfmt=(n,unit='g')=>{const q=one(n);return (Number.isInteger(q)?q:q.toFixed(1))+' '+unit};
+const qty=(id,n)=>{const ff=food[id],u=ff.unit;if(u==='each'||u==='slice')return u==='each'?String(one(n)):one(n)+' slices';if(u==='ml')return nfmt(n,'ml');return n>=1000?nfmt(n/1000,'kg'):nfmt(n,'g')};
+const foodemoji={breakfast:'🥣',lunch:'🥗',dinner:'🍲'};
+function navigate(t){s.tab=t;save();document.querySelectorAll('.tabpage').forEach(e=>e.classList.toggle('hidden',e.id!==t));document.querySelectorAll('#nav button').forEach(e=>e.classList.toggle('on',e.dataset.tab===t));renderCurrent();window.scrollTo({top:0,behavior:'smooth'});}
+function setWeek(w){s.week=w;save();renderCurrent();}
+function weekBtns(){return `<div class="weeks">${[1,2,3,4].map(w=>`<button class="weekbtn ${s.week===w?'on':''}" onclick="setWeek(${w})">Week ${w}</button>`).join('')}</div>`;}
+function hero(){return `<div class="hero"><div><div class="eyebrow">HIGH-PROTEIN MEAL PLAN • 28 DAYS</div><h1>Build consistency.<br>Lose fat. Stay strong.</h1><p>A 28-day meal and activity routine with three high-protein meals daily, measured portions, manageable dog walks and more carbohydrates on gym days. Change workout days or meals and your shopping updates instantly.</p><div class="actions"><button class="btn primary" onclick="navigate('planner')">Organise your meal plan →</button><button class="btn" onclick="navigate('shopping')">Plan the monthly order ↗</button></div></div><div class="hero-art">🥗<br>🏋️</div></div>`;}
+function statcards(){return `<div class="grid4"><div class="stat"><div class="mini">AVERAGE DAILY ENERGY</div><strong>${money(avg('kcal'))}<span style="font-size:13px"> kcal</span></strong><small>Rest ${money(s.settings.restCal)} / gym ${money(s.settings.gymCal)} kcal targets</small></div><div class="stat"><div class="mini">AVERAGE DAILY PROTEIN</div><strong>${money(avg('protein'))}<span style="font-size:13px"> g</span></strong><small>Reference target ${money(s.settings.prot)} g</small></div><div class="stat"><div class="mini">RECIPES IN ROTATION</div><strong>${Object.keys(rs).length}</strong><small>All portions for one person</small></div><div class="stat"><div class="mini">GYM DAYS IN 28 DAYS</div><strong>${days().filter(x=>x.gym).length}</strong><small>Tap any day to switch</small></div></div>`;}
+function barChart(w){let ds=days().filter(d=>d.week===w);return `<div class="mini-chart">${ds.map(d=>`<div class="bar-wrap" title="${d.weekday}: ${money(d.n.kcal)} kcal; ${money(d.n.protein)}g protein"><div class="bar ${d.gym?'gymbar':''}" style="height:${Math.min(100,Math.round(d.n.kcal/Math.max(2250,s.settings.gymCal)*100))}%"></div></div>`).join('')}</div><div class="daynames">${ds.map(d=>`<span>${d.weekday.substring(0,3)}</span>`).join('')}</div>`;}
+
+const walkingMinutes=week=>[15,20,25,30][week-1];
+function toggleWalk(day){s.walks=s.walks||{};s.walks[day]=!s.walks[day];save();renderCurrent();}
+function walkingCard(week){let ds=days().filter(d=>d.week===week);let count=ds.filter(d=>(s.walks||{})[d.day]).length;let mins=walkingMinutes(week);return `<div class="card" style="margin-top:20px"><div class="row" style="gap:12px;flex-wrap:wrap"><div><div class="eyebrow">WALK WITH YOUR DOG</div><h2 style="margin:8px 0;font-size:19px">Week ${week}: ${mins} minutes a day</h2><p class="short">Gentle walking counts; build up gradually. Shorter walks are fine while you establish the habit. Mark a day after your walk.</p></div><span class="pill">${count}/7 walks logged</span></div><div class="walkgrid">${ds.map(d=>`<button aria-label="Mark dog walk on day ${d.day}" aria-pressed="${!!(s.walks||{})[d.day]}" class="walktick ${(s.walks||{})[d.day]?'walkdone':''}" onclick="toggleWalk(${d.day})"><b>${d.weekday.slice(0,3)}</b><span>${(s.walks||{})[d.day]?'✓ Done':'○ Walk'}</span><small>${mins} min</small></button>`).join('')}</div><p class="short" style="margin-bottom:0">A gradual activity goal, not an extra calorie allowance. Adjust to your dog’s needs and your own fitness, especially in hot weather.</p></div>`;}
+function overview(){let ds=days().filter(d=>d.week===s.week);let wg=ds.filter(d=>d.gym).length;return hero()+statcards()+`<div class="twocol"><div class="card"><div class="row"><h2 style="margin:0;font-size:19px">Your weekly rhythm</h2><span class="pill">Week ${s.week} / 4</span></div>${barChart(s.week)}<div class="chips" style="margin-top:19px"><span class="chip">${wg} gym days</span><span class="chip">${one(ds.reduce((a,d)=>a+d.n.protein,0)/7)}g avg protein</span><span class="chip">${one(ds.reduce((a,d)=>a+d.n.fibre,0)/7)}g estimated fibre</span></div></div><div class="card"><div class="eyebrow">SIMPLE ROUTINE</div><h2 style="margin:8px 0 12px;font-size:20px">One delivery. Fresh top-ups.</h2><p class="muted" style="line-height:1.8">Order shelf-stable ingredients and freezer staples for all 28 days. Add week-one fresh food to the delivery, then use the auto-calculated top-up list for weeks two, three and four.</p><div class="actions"><button class="btn dark" onclick="navigate('shopping')">Open shopping →</button><button class="btn" onclick="navigate('prep')">Prep routine</button></div></div></div>${walkingCard(s.week)}<div class="sectionhead"><h2>This week's meals</h2><button class="btn" onclick="navigate('planner')">Full calendar →</button></div>${moveBanner()}${weekBtns()}${renderDays(s.week)}<div class="notice" style="margin-top:22px"><b>Planning targets, not medical advice:</b> Rest days ${money(s.settings.restCal)} kcal; gym days ${money(s.settings.gymCal)} kcal. Your individual energy needs depend on your activity, health and weight trends. Packet labels and individual needs vary; evaluate hunger, recovery, gym performance and weight trends before adjusting.</div>`;}
+function dayCard(d){let excess=d.n.kcal>goal(d)+75,protpct=Math.min(100,d.n.protein/s.settings.prot*100);return `<div class="day"><div class="day-head"><div><div class="weekday">${d.weekday}</div><div class="daynum">Day ${d.day}</div></div><button class="gym ${d.gym?'':'off'}" aria-label="Toggle gym day ${d.day}" onclick="toggleGym(${d.day})">${d.gym?'🏋 Gym':'○ Rest'}</button></div><div><div class="daytotal" style="color:${excess?'#ad6241':'var(--ink)'}">${money(d.n.kcal)}<small> kcal</small></div><div class="muted" style="font-size:11px">${money(d.n.protein)}g protein · ${money(d.n.carbs)}g carbs</div><div class="prog" title="Protein vs target"><i style="width:${protpct}%"></i></div></div>${CATS.map((cat,i)=>{let rr=rs[d.ids[i]],meal=d.meals[i],selected=moveFrom?.day===d.day&&moveFrom?.cat===cat;return `<div class="meal-block ${selected?'selected':''}" draggable="true" data-day="${d.day}" data-cat="${cat}" ondragstart="dragStart(event,${d.day},'${cat}')" ondragover="dragOver(event,${d.day},'${cat}')" ondragleave="dragLeave(event)" ondrop="dropSlot(event,${d.day},'${cat}')"><button class="meal" onclick="openRecipe('${rr.id}',${d.day},'${cat}')"><small>${foodemoji[cat]} ${cat}</small><b>${esc(rr.name)}</b><span>${money(meal.n.kcal)} kcal · ${money(meal.n.protein)}g protein ↗</span></button><div class="meal-actions"><button class="swap-btn ${selected?'active':''}" onclick="moveStart(${d.day},'${cat}')" aria-label="${moveFrom?'Swap here':'Select to swap'} day ${d.day} ${cat}">${selected?'✓ Selected':moveFrom?.cat===cat?'↔ Swap here':'↔ Swap'}</button><button class="fav-mini ${isFav(rr.id)?'faved':''}" aria-label="${isFav(rr.id)?'Remove from':'Add to'} favourites" aria-pressed="${isFav(rr.id)}" onclick="toggleFavorite('${rr.id}')">${isFav(rr.id)?'♥':'♡'}</button></div></div>`;}).join('')}</div>`;}
+function renderDays(week){return `<div class="days">${days().filter(d=>d.week===week).map(dayCard).join('')}</div>`;}
+function planner(){let dt=days(),over=dt.filter(d=>d.n.kcal>goal(d)+75).length;return `<div class="sectionhead"><div><div class="eyebrow">28 DAYS / 84 MEALS</div><h2>Meal calendar & swapping</h2></div><div class="actions"><button class="btn" onclick="exportPlan()">↓ Export 28-day CSV</button><button class="btn" onclick="navigate('settings')">Adjust goals</button></div></div><div class="notice" style="margin:0 0 16px">Drag meals on Chromebook, or tap <b>Swap</b> then <b>Swap here</b> on your phone. You can switch weeks between the two taps. For recipe replacements, use the library below. <b>${over} of 28 days</b> currently exceed the rest/gym calorie references by more than 75 kcal.</div>${moveBanner()}${weekBtns()}<div style="margin-top:18px">${renderDays(s.week)}</div>${quickLibrary()}<div class="sectionhead"><h2>Weekly macro overview</h2></div><div class="grid4">${[1,2,3,4].map(w=>{let ds=dt.filter(d=>d.week===w);let k=ds.reduce((a,d)=>a+d.n.kcal,0)/7,p=ds.reduce((a,d)=>a+d.n.protein,0)/7;return `<div class="stat"><div class="mini">WEEK ${w}</div><strong>${money(k)}<span style="font-size:13px"> kcal</span></strong><small>${money(p)}g avg protein / day</small></div>`}).join('')}</div>`;}
+function recipes(){let q=s.query.toLowerCase();let vals=Object.values(rs).filter(x=>(s.recipeFilter==='all'||(s.recipeFilter==='favourites'&&isFav(x.id))||x.cat===s.recipeFilter)&&x.name.toLowerCase().includes(q));return `<div class="sectionhead"><div><div class="eyebrow">THE RECIPE LIBRARY</div><h2>30 easy, protein-first recipes</h2></div><span class="pill">Quantities for one person</span></div><div class="filterbar" style="margin-bottom:20px"><div class="tabs">${['all','favourites','breakfast','lunch','dinner'].map(x=>`<button class="tab ${s.recipeFilter===x?'on':''}" onclick="s.recipeFilter='${x}';save();renderCurrent()">${x==='all'?'All meals':x==='favourites'?'♥ Favourites':x[0].toUpperCase()+x.slice(1)}</button>`).join('')}</div><input class="search" placeholder="Find a dish…" aria-label="Search recipes" value="${esc(s.query)}" oninput="s.query=this.value;save();updateRecipeGrid()"></div><div id="recipe-list">${recipeGrid(vals)}</div>`;}
+function recipeGrid(vals){return `<div class="recipegrid">${vals.length?vals.map(r=>`<article class="card recipe-card"><div class="foodhead"><div class="foodicon">${foodemoji[r.cat]}</div><button class="heart ${isFav(r.id)?'faved':''}" aria-label="${isFav(r.id)?'Remove':'Add'} ${esc(r.name)} ${isFav(r.id)?'from':'to'} favourites" aria-pressed="${isFav(r.id)}" onclick="toggleFavorite('${r.id}')">${isFav(r.id)?'♥':'♡'}</button></div><div class="eyebrow">${r.cat} · ${r.time} MIN</div><h3>${esc(r.name)}</h3><div class="recstats"><span><b>${money(r.nutrition.kcal)}</b> kcal</span><span><b>${money(r.nutrition.protein)}g</b> protein</span><span>${money(r.nutrition.fibre)}g fibre</span></div><button class="btn dark" onclick="openRecipe('${r.id}')">Ingredients & method →</button><button class="btn" onclick="openAssign('${r.id}')">＋ Add to meal plan</button></article>`).join(''):'<p class="short">No matching recipes. Try a different filter or search.</p>'}</div>`;}
+function updateRecipeGrid(){let q=s.query.toLowerCase();document.getElementById('recipe-list').innerHTML=recipeGrid(Object.values(rs).filter(x=>(s.recipeFilter==='all'||(s.recipeFilter==='favourites'&&isFav(x.id))||x.cat===s.recipeFilter)&&x.name.toLowerCase().includes(q)));}
+function aggregate(scope){let selected=days().filter(d=>scope==='all'||scope==='initial'||scope==='monthly'||(scope.startsWith('week')&&d.week===Number(scope.slice(4))));let agg={};for(const d of selected){for(const m of d.meals){for(const [id,amount] of Object.entries(m.items)){let ff=food[id];if(scope==='monthly'&&ff.store==='topup')continue;if(scope==='initial'&&ff.store==='topup'&&d.week!==1)continue;if(scope.startsWith('week')&&ff.store!=='topup')continue;agg[id]=(agg[id]||0)+amount;}}}return agg;}
+function shopping(){const desc={initial:'Month-wide pantry + freezer order, plus week-one fresh and chilled ingredients.',monthly:'All pantry and freezer goods for 28 days, excluding weekly fresh top-ups.',week1:'Fresh and chilled top-up for week one only.',week2:'Fresh and chilled top-up for week two only.',week3:'Fresh and chilled top-up for week three only.',week4:'Fresh and chilled top-up for week four only.',all:'Full 28-day ingredient total across every category. Perishables may not keep for four weeks.'};let items=aggregate(s.scope);let group={};for(const [id,am] of Object.entries(items)){let g=food[id].group;(group[g]??=[]).push([id,am]);}let total=Object.keys(items).length;let done=Object.keys(items).filter(id=>s.checked[`${s.scope}:${id}`]).length;return `<div class="sectionhead"><div><div class="eyebrow">DELIVERY & WEEKLY TOP-UPS</div><h2>Smart shopping list</h2></div><div class="actions"><button class="btn dark" onclick="copyShopping()">⧉ Copy remaining items</button><button class="btn" onclick="exportShopping()">↓ Full list CSV</button></div></div><div class="card"><div class="eyebrow">CHOOSE YOUR SHOPPING RUN</div><div class="tabs" style="margin:12px 0">${[['initial','First delivery'],['monthly','Month staples'],['week1','Week 1 fresh'],['week2','Week 2 top-up'],['week3','Week 3 top-up'],['week4','Week 4 top-up'],['all','28-day total']].map(([id,label])=>`<button class="tab ${s.scope===id?'on':''}" onclick="s.scope='${id}';save();renderCurrent()">${label}</button>`).join('')}</div><div class="short">${desc[s.scope]}</div>${s.shopDirty?`<p class="notice">Your plan has changed since shopping was last reviewed. Recheck any previously ticked ingredients and quantities. <button class="btn sm" onclick="s.shopDirty=false;save();renderCurrent()">Acknowledged</button></p>`:""}</div><div class="shophead" style="margin:17px 0"><div><strong>${total} ingredients</strong><br><small class="muted">${done} checked · tick items already owned / added to basket; round to store pack sizes</small></div><button class="btn sm" onclick="clearChecked()">Clear ticks</button></div><div class="shopping">${Object.entries(group).sort((a,b)=>a[0].localeCompare(b[0])).map(([name,items])=>`<div class="card shopgroup"><h3>${esc(name)} <span class="muted">(${items.length})</span></h3>${items.sort((a,b)=>food[a[0]].name.localeCompare(food[b[0]].name)).map(([id,am])=>{let key=`${s.scope}:${id}`,yes=!!s.checked[key];return `<label class="shopitem ${yes?'done':''}"><input type="checkbox" ${yes?'checked':''} onchange="checkItem('${id}',this.checked)"><span><div class="label">${esc(food[id].name)}</div><div class="qty">Need ${qty(id,am)} ${food[id].unit==='each'?'items':''} · ${food[id].store==='topup'?'fresh / chilled top-up':food[id].store==='freezer'?'freezer stock':'shelf-stable'}</div></span></label>`}).join('')}</div>`).join('')}</div><div class="card" style="margin-top:17px"><h3 style="margin:0 0 10px">Order from a UK supermarket</h3><p class="short">The exported list is ready to refer to as you fill your retailer’s basket. Automatic basket import and pricing are <b>not</b> connected in this prototype.</p><div class="actions"><a href="https://www.tesco.com/groceries/" target="_blank" rel="noopener" class="btn">Tesco ↗</a><a href="https://www.sainsburys.co.uk/gol-ui/groceries" target="_blank" rel="noopener" class="btn">Sainsbury's ↗</a><a href="https://groceries.morrisons.com/" target="_blank" rel="noopener" class="btn">Morrisons ↗</a><a href="https://www.ocado.com/" target="_blank" rel="noopener" class="btn">Ocado ↗</a></div></div>`;}
+function prep(){return `<div class="sectionhead"><div><div class="eyebrow">A SUSTAINABLE ROUTINE</div><h2>Meal preparation & safe storage</h2></div></div><div class="prepgrid"><div class="card"><h2 style="font-size:19px">🛒 Monthly delivery</h2><div class="prepstep"><div class="stepnumber">1</div><div><b>Order your 28-day base</b><div class="stepnote">Get rice, oats, pasta, canned fish, beans, oils, spices, frozen meat, fish, berries and vegetables together. Add week-one fresh groceries.</div></div></div><div class="prepstep"><div class="stepnumber">2</div><div><b>Freeze proteins by meal</b><div class="stepnote">Split raw chicken, fish and mince into individually labelled bags. Note weight and date; freeze promptly and follow use-by instructions.</div></div></div><div class="prepstep"><div class="stepnumber">3</div><div><b>Make three smaller top-ups</b><div class="stepnote">Each week's fresh produce, milk, Skyr, cottage cheese and other chilled items has its own ready-to-copy shopping list.</div></div></div></div><div class="card"><h2 style="font-size:19px">🥄 Sunday, 45–75 minutes</h2><div class="prepstep"><div class="stepnumber">1</div><div><b>Check the week ahead</b><div class="stepnote">Review gym days and recipes. Defrost frozen meat and fish in the fridge, not on a worktop.</div></div></div><div class="prepstep"><div class="stepnumber">2</div><div><b>Prepare vegetables</b><div class="stepnote">Wash and chop ingredients needed shortly; store chilled. Keep delicate greens whole until required where practical.</div></div></div><div class="prepstep"><div class="stepnumber">3</div><div><b>Cook freezable portions</b><div class="stepnote">Chilli, meatballs and bolognese are batch-friendly. If you double them, freeze the extra portion and schedule it later—don't accidentally double-count shopping.</div></div></div></div><div class="card"><h2 style="font-size:19px">🏋 On gym days</h2><p class="stepnote">Keep a decent meal with carbohydrate and protein near your session, according to digestion and preferences. Gym-day portions include extra carbohydrate within breakfast and lunch, and your monthly order recalculates. Build dog walks from 15 to 30 minutes over four weeks without treating their estimated calorie burn as food credit. If performance, hunger or recovery suffers, reassess overall energy intake rather than only adding protein.</p><button class="btn dark" onclick="navigate('planner')">Adjust gym days →</button></div><div class="card"><h2 style="font-size:19px">❄ Food safety</h2><p class="stepnote">Follow Food Standards Agency guidance: fridge 0–5°C, freezer around −18°C, refrigerate cooked leftovers promptly and use within 48 hours or freeze. Once thawed in the fridge, use food within 24 hours; fully reheat leftovers only once. Handle cooked rice especially carefully: cool it promptly, refrigerate and use within 24 hours, and only reheat once.</p><a href="https://www.gov.uk/government/publications/how-to-chill-freeze-and-defrost-food-safely/how-to-chill-freeze-and-defrost-food-safely" target="_blank" rel="noopener" class="btn">Read official storage advice ↗</a></div></div>`;}
+function settings(){return `<div class="sectionhead"><div><div class="eyebrow">PERSONALISED STARTING POINT</div><h2>Your targets and profile</h2></div></div><div class="twocol"><div class="card"><h2 style="font-size:19px;margin-top:0">Adjustable goals</h2><p class="stepnote">Personal reference targets for fat loss and strength · adjust for your own activity, weight trend and training schedule. All targets are a starting hypothesis, not a definitive calorie prescription.</p><div class="settingrow"><div><b>Rest day reference (kcal)</b><div class="short">Changing the reference does not alter portion sizes; the current recipes are set near 1,800 kcal on rest days.</div></div><input aria-label="Rest day calorie target" type="number" min="1200" max="3500" step="25" value="${s.settings.restCal}" onchange="changeSetting('restCal',this.value)"></div><div class="settingrow"><div><b>Gym day reference (kcal)</b><div class="short">These gym-day recipes include extra carbohydrate; the current portions aim near 2,000 kcal.</div></div><input aria-label="Gym day calorie target" type="number" min="1200" max="3500" step="25" value="${s.settings.gymCal}" onchange="changeSetting('gymCal',this.value)"></div><div class="settingrow"><div><b>Daily protein reference (g)</b><div class="short">Aim approximately 150–170g; actual recipes may vary.</div></div><input aria-label="Daily protein target" type="number" min="30" max="250" step="5" value="${s.settings.prot}" onchange="changeSetting('prot',this.value)"></div><div class="settingrow"><div><b>Saturday as fourth gym day</b><div class="short">Defaults to Mon/Wed/Fri. You can toggle any individual day in the calendar.</div></div><label><input type="checkbox" ${s.settings.extraGym?'checked':''} onchange="s.settings.extraGym=this.checked;save();renderCurrent()"> Saturday</label></div><div class="actions" style="margin-top:20px"><button class="btn" onclick="resetSwaps()">Restore original meals</button><button class="btn" onclick="resetChecks()">Reset shopping ticks</button></div></div><div class="card"><h2 style="font-size:19px;margin-top:0">Important practical notes</h2><p class="stepnote"><b>Exact portions:</b> each day-card recipe gives its exact rest or gym day ingredient quantities and method for one person. Gym portions include additional banana, apple, grains or potatoes <b>within a meal</b>, not an extra snack.</p><p class="stepnote"><b>Shopping:</b> automatically adjusts to meal swaps and gym-day flags. Groceries are exact consumption quantities, not rounded supermarket pack numbers. Allow for packaging and food waste.</p><p class="stepnote"><b>Calories:</b> nutritional values are estimates; check the products actually purchased and weigh raw/dry foods as labelled.</p><p class="stepnote"><b>Adjustment:</b> assess 2–3 weeks of average weight, strength, hunger and recovery before adjusting targets. Depending on sex, everyday movement and health circumstances, appropriate energy intake may be different.</p><p class="stepnote"><b>Using Chromebook + phone:</b> Once cloud sync is activated and you sign in with the same Google account, changes sync across Chromebook and phone. Before cloud setup, use Export/Import backup. If you are migrating different existing plans, choose which one to use when prompted. Avoid editing simultaneously on both devices.</p><div class="backup-box"><h3>Transfer your saved plan</h3><p class="short">Back up all meal swaps, favourites, walks, gym days, shopping ticks and targets. Export before transferring to the other device.</p><button class="btn dark" onclick="exportBackup()">↓ Export backup JSON</button><label class="btn" for="backup-input">↑ Import backup JSON</label><input type="file" id="backup-input" accept=".json,application/json" onchange="importBackup(this.files[0])" style="display:none"><p class="short">Your plan is still saved locally. The cloud edition synchronises live with Firebase after setup and sign-in. Until then, exports remain available.</p></div></div></div>`;}
+function renderCurrent(){document.getElementById(s.tab).innerHTML={overview,planner,recipes,shopping,prep,settings}[s.tab]();document.getElementById('topstatus').textContent=`● ${money(avg('kcal'))} kcal avg · ${money(avg('protein'))}g protein`;}
+function toggleGym(day){s.gym[day]=!days().find(d=>d.day===day).gym;save();renderCurrent();}
+function openRecipe(id,day=null,cat=null){const r=rs[id];window.currentModal={id,day,cat,servings:1};drawModal();document.getElementById('modalback').classList.add('open');}
+function drawModal(){let {id,day,cat,servings}=window.currentModal,r=rs[id],isGym=day!==null&&days().find(d=>d.day===day)?.gym,portionData=portion(id,isGym),n=portionData.n,items=portionData.items;document.getElementById('modalinner').innerHTML=`<div class="eyebrow">${esc(r.cat)} / ${r.time} MINUTES / ${isGym?'🏋 GYM PORTION':'REST-DAY PORTION'}</div><h2>${esc(r.name)}</h2><div class="actions" style="margin-bottom:15px"><button class="btn sm" onclick="toggleFavorite('${r.id}')">${isFav(r.id)?'♥ Remove favourite':'♡ Save favourite'}</button><button class="btn sm dark" onclick="openAssign('${r.id}')">＋ Add to day</button></div><div class="chips"><span class="chip">${money(n.kcal*servings)} kcal</span><span class="chip">${money(n.protein*servings)}g protein</span><span class="chip">${money(n.carbs*servings)}g carbs</span><span class="chip">${money(n.fibre*servings)}g fibre</span></div><div class="modalcols"><div><div class="row"><h3>Exact ingredients</h3><div><label class="short" for="servings">Serves</label> <select id="servings" class="select" onchange="window.currentModal.servings=Number(this.value);drawModal()">${[1,2,3,4].map(n=>`<option ${servings===n?'selected':''}>${n}</option>`).join('')}</select></div></div>${Object.entries(items).map(([key,amount])=>`<div class="ing"><span>${esc(food[key].name)}</span><b>${qty(key,amount*servings)}</b></div>`).join('')}<div class="short" style="padding-top:11px">Weights are raw or dry unless ingredient labels say otherwise. Added gym-day food is already included in the quantities above. The monthly shopping list counts one portion per scheduled meal.</div>${day!==null?`<h3 style="margin-top:22px">Swap this meal</h3><div class="swaprow"><select class="select" id="swapchoice">${Object.values(rs).filter(x=>x.cat===cat).map(x=>`<option value="${x.id}" ${x.id===id?'selected':''}>${esc(x.name)} (${money(portion(x.id,isGym).n.kcal)} kcal)</option>`).join('')}</select><button class="btn dark" onclick="swapMeal(${day},'${cat}')">Replace</button></div>`:''}</div><div><h3>Cooking method</h3><ol class="method">${r.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>${isGym&&r.gymNote?`<p class="notice"><b>Gym-day adjustment:</b> ${esc(r.gymNote)}</p>`:''}<div class="videobox"><b>▶ Cooking video</b>${r.video?`<p class="short">Demonstration only. Follow the precise portions above rather than the video creator's quantities.</p><iframe loading="lazy" title="Cooking demonstration" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen src="https://www.youtube-nocookie.com/embed/${r.video.split('v=')[1]}"></iframe><a href="${r.video}" target="_blank" rel="noopener">Open on YouTube ↗</a>`:`<p class="short">Find a step-by-step demonstration for this style of dish. Ingredients and portions may differ.</p><a class="btn" href="${r.videoSearch}" target="_blank" rel="noopener">Find cooking videos ↗</a>`}</div></div></div>`;}
+function closeModal(){document.getElementById('modalback').classList.remove('open');document.getElementById('modalinner').innerHTML='';}
+function swapMeal(day,cat){assignSlot(day,cat,document.getElementById('swapchoice').value);s.shopDirty=true;s.undo=null;save();closeModal();renderCurrent();notify('Meal replaced. Shopping list updated.');}
+function changeSetting(which,value){let val=Number(value);if(!Number.isFinite(val))return;s.settings[which]=Math.max(which==='prot'?30:1200,Math.min(which==='prot'?250:3500,val));save();renderCurrent();}
+function resetSwaps(){if(confirm('Restore all original meals?')){s.swaps={};s.undo=null;moveFrom=null;s.shopDirty=true;save();renderCurrent();}}
+function resetChecks(){if(confirm('Reset all grocery shopping ticks?')){s.checked={};save();renderCurrent();}}
+function clearChecked(){for(const k of Object.keys(s.checked))if(k.startsWith(s.scope+':'))delete s.checked[k];save();renderCurrent();}
+function checkItem(id,v){s.checked[`${s.scope}:${id}`]=v;save();renderCurrent();}
+function shoppingRows(){let agg=aggregate(s.scope);return Object.entries(agg).map(([id,am])=>({name:food[id].name,quantity:one(am),unit:food[id].unit,display:qty(id,am),type:food[id].store,group:food[id].group})).sort((a,b)=>a.group.localeCompare(b.group)||a.name.localeCompare(b.name));}
+function csvCell(x){return '"'+String(x).replace(/"/g,'""')+'"';}
+function download(name,data,type='text/csv;charset=utf-8'){let url=URL.createObjectURL(new Blob([data],{type}));let a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);}
+function exportShopping(){let rows=shoppingRows();download(`nourish-${s.scope}-shopping.csv`,[['Category','Ingredient','Exact quantity','Unit','Amount to buy','Storage'].map(csvCell).join(','),...rows.map(x=>[x.group,x.name,x.quantity,x.unit,x.display,x.type].map(csvCell).join(','))].join('\r\n'));}
+function copyShopping(){let rows=shoppingRows().filter(x=>!s.checked[`${s.scope}:${Object.keys(food).find(id=>food[id].name===x.name)}`]);let txt=`NOURISH: ${s.scope.toUpperCase()} REMAINING SHOPPING LIST\n(Check store pack sizes, labels and use-by dates)\n\n`+rows.map(x=>`[ ] ${x.name} — ${x.display} (${x.group})`).join('\n');if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>alert('Shopping list copied.')).catch(()=>fallbackCopy(txt));}else fallbackCopy(txt);}
+function fallbackCopy(txt){const a=document.createElement('textarea');a.value=txt;a.style.position='fixed';a.style.top='0';document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy');}catch(e){}a.remove();if(ok)alert('Shopping list copied.');else prompt('Select and copy the list:',txt);}
+function exportPlan(){let rows=days().flatMap(d=>d.ids.map((id,i)=>[d.week,d.day,d.weekday,d.gym?'gym':'rest',['Breakfast','Lunch','Dinner'][i],rs[id].name,one(d.meals[i].n.kcal),one(d.meals[i].n.protein),Object.entries(d.meals[i].items).map(([fid,amount])=>food[fid].name+' '+qty(fid,amount)).join('; ')]));download('nourish-higher-deficit-28-day-meal-plan.csv',[['Week','Day','Weekday','Training','Meal','Recipe','kcal','Protein g','Ingredients (1 person)'].map(csvCell).join(','),...rows.map(row=>row.map(csvCell).join(','))].join('\r\n'));}
+document.getElementById('modalback').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});document.querySelectorAll('#nav button').forEach(x=>x.addEventListener('click',()=>navigate(x.dataset.tab)));navigate(s.tab);
+
+window.nourishCloudBridge={
+ getData(){return JSON.parse(JSON.stringify({settings:s.settings,swaps:s.swaps,checked:s.checked,gym:s.gym,walks:s.walks,favorites:s.favorites}));},
+ isLocalCustom(){
+  return !!(Object.keys(s.swaps||{}).length||Object.keys(s.checked||{}).length||Object.keys(s.gym||{}).length||Object.keys(s.walks||{}).length||Object.keys(s.favorites||{}).length||s.settings.restCal!==1800||s.settings.gymCal!==2000||s.settings.prot!==160||!!s.settings.extraGym);
+ },
+ applyData(x){
+  if(!x||typeof x!=='object')return false;
+  const valid={swaps:{},checked:{},gym:{},walks:{},favorites:{},settings:{...s.settings}};
+  for(const [key,id] of Object.entries(x.swaps||{})){
+   let m=/^(\d+):(breakfast|lunch|dinner)$/.exec(key);
+   if(m&&Number(m[1])>=1&&Number(m[1])<=28&&rs[id]&&rs[id].cat===m[2])valid.swaps[key]=id;
+  }
+  for(const [key,v] of Object.entries(x.checked||{}))if(typeof v==='boolean'&&/^(initial|monthly|week[1-4]|all):[a-z0-9]+$/.test(key))valid.checked[key]=v;
+  for(const [key,v] of Object.entries(x.gym||{}))if(/^\d+$/.test(key)&&Number(key)>=1&&Number(key)<=28&&typeof v==='boolean')valid.gym[key]=v;
+  for(const [key,v] of Object.entries(x.walks||{}))if(/^\d+$/.test(key)&&Number(key)>=1&&Number(key)<=28&&typeof v==='boolean')valid.walks[key]=v;
+  for(const [key,v] of Object.entries(x.favorites||{}))if(rs[key]&&typeof v==='boolean')valid.favorites[key]=v;
+  if(x.settings&&typeof x.settings==='object'){
+   for(const [key,min,max] of [['restCal',1200,3500],['gymCal',1200,3500],['prot',30,250]])if(Number.isFinite(x.settings[key]))valid.settings[key]=Math.max(min,Math.min(max,x.settings[key]));
+   if(typeof x.settings.extraGym==='boolean')valid.settings.extraGym=x.settings.extraGym;
+  }
+  s={...s,...valid,shopDirty:true,undo:null};
+  moveFrom=null;
+  try{localStorage.setItem('nourishHigherDeficitV1',JSON.stringify(s));}catch(e){}
+  renderCurrent();
+  return true;
+ }
+};
+if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+</script><script src="./firebase-config.js"></script><script type="module" src="./cloud-sync.js"></script></body></html>
