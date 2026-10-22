@@ -74,7 +74,7 @@ const RETAIL_CHOICES=[
  {name:'Tesco Tuna Chunks in Brine 160g',drained:112,n:{kcal:109,protein:24.9,carbs:0,fat:1,fibre:0},url:'https://www.tesco.com/shop/en-GB/products/283715919'},
  {name:'Tesco Tuna Chunks in Spring Water 400g',drained:280,n:{kcal:109,protein:24.9,carbs:0,fat:1,fibre:0},url:'https://www.tesco.com/shop/en-GB/products/310092502'}
 ];
-let foodSearchQuery='',searchProducts=[],foodSearchMessage='',foodSearchBusy=false,foodSearchController=null;
+let foodSearchQuery='',searchProducts=[],foodSearchMessage='',foodSearchBusy=false,foodSearchController=null,foodSearchToken=0;
 function suggestionsHTML(){
  const query=foodSearchQuery.toLowerCase().trim();
  if(query.length<2)return '<p class="short">Enter at least two letters (for example “Tesco tuna”) to find foods by name, even when a barcode is missing.</p>';
@@ -93,6 +93,7 @@ function suggestionsHTML(){
    '<p class="short" role="status">'+escape(foodSearchMessage)+'</p>';
 }
 function searchTyping(q){
+ foodSearchToken++;foodSearchController?.abort();
  foodSearchQuery=String(q||'').slice(0,80);
  searchProducts=[];foodSearchMessage='';
  const target=document.getElementById('fd-search-results');if(target)target.innerHTML=suggestionsHTML();
@@ -100,7 +101,7 @@ function searchTyping(q){
 async function searchFoodNames(){
  const query=foodSearchQuery.trim();if(query.length<2){foodSearchMessage='Enter at least two letters.';renderSearchResults();return}
  if(searchFoodNames.pending)return;
- searchFoodNames.pending=true;foodSearchMessage='Searching the wider Open Food Facts catalogue…';renderSearchResults();
+ searchFoodNames.pending=true;const token=++foodSearchToken;foodSearchMessage='Searching the wider Open Food Facts catalogue…';renderSearchResults();
  const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),10000);foodSearchController=abort;
  try{
   // Open Food Facts v1 supports full-text queries; its v2 search endpoint does not.
@@ -108,13 +109,14 @@ async function searchFoodNames(){
   const res=await fetch(url,{signal:abort.signal,headers:{Accept:'application/json'}});
   if(!res.ok)throw Error('HTTP '+res.status);
   const data=await res.json();
-  if(query!==foodSearchQuery.trim())return;
+  if(token!==foodSearchToken||query!==foodSearchQuery.trim())return;
   searchProducts=Array.isArray(data.products)?data.products.filter(p=>p&&typeof p==='object'&&String(p.product_name||p.product_name_en||'').trim()).slice(0,12):[];
   foodSearchMessage=searchProducts.length?searchProducts.length+' additional community products found.':'No additional community products found for these words.';
  }catch(e){
-  foodSearchMessage='Wider search unavailable ('+(e.name==='AbortError'?'timed out':e.message)+'). Verified Tesco choices above still work.';
+  if(token===foodSearchToken)foodSearchMessage='Wider search unavailable ('+(e.name==='AbortError'?'timed out':e.message)+'). Verified Tesco choices above still work.';
  }finally{
-  clearTimeout(timer);searchFoodNames.pending=false;foodSearchController=null;renderSearchResults();
+  clearTimeout(timer);searchFoodNames.pending=false;foodSearchController=null;
+  if(token===foodSearchToken)renderSearchResults();
  }
 }
 function renderSearchResults(){
@@ -138,7 +140,7 @@ function chooseSearch(i){
  document.getElementById('fd-entry')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function foodSearchUI(){
- return '<div class="fd-search-panel"><h4 style="margin:0 0 6px">Find food by name</h4><p class="short">Missing barcode? Search names instead. Our starter Tesco choices use published retailer nutrition; broader results come from Open Food Facts. Confirm the exact type and drained weight.</p>'+
+ return '<div class="fd-search-panel" id="fd-search-panel"><h4 style="margin:0 0 6px">Find food by name</h4><p class="short">Missing barcode? Search names instead. Our starter Tesco choices use published retailer nutrition; broader results come from Open Food Facts. Confirm the exact type and drained weight.</p>'+
   '<div class="fd-lookup"><input id="fd-food-query" aria-label="Food name search" placeholder="e.g. Tesco tuna" maxlength="80" value="'+escape(foodSearchQuery)+'" oninput="fdSearchTyping(this.value)"><button class="btn" type="button" onclick="fdSearchNames()">Search more foods</button></div>'+
   '<div id="fd-search-results">'+suggestionsHTML()+'</div></div>';
 }
@@ -258,9 +260,10 @@ async function lookup(code){
    if(normalized==='966340011833'){
     foodSearchQuery='tesco tuna';foodSearchMessage='You identified this barcode as Tesco tuna. Choose the exact tin variety and size below — the barcode itself has not been verified.';
     renderCurrent();
+    document.getElementById('fd-search-panel')?.scrollIntoView({behavior:'smooth',block:'center'});
    }
    const detail=abort.signal.aborted?'The lookup timed out.':notFound?'No matching product was found in the database.':(failure?.message==='Failed to fetch'?'The food database could not be reached from this browser.':failure?.message||'The product database could not be reached.');
-   showMessage('Barcode '+normalized+' saved. '+detail+' Fill in the product name and label values in the form below.');
+   showMessage('Barcode '+normalized+' saved. '+detail+' Try Find food by name below and choose an exact matching product, or enter label values.');
    return;
   }
   draft=parseProduct(product,normalized);editing='';
@@ -342,6 +345,8 @@ async function stopScanner(){
 }
 function resetDiaryUI(){
  lookupToken++;lookupController?.abort();lookupController=null;lookupBusy=false;
+ foodSearchToken++;foodSearchController?.abort();foodSearchController=null;searchFoodNames.pending=false;
+ foodSearchQuery='';searchProducts=[];foodSearchMessage='';
  draft=null;editing='';lastBarcode='';lookupMessage='';scannerBusy=false;
  void stopScanner().catch(()=>{});
 }
