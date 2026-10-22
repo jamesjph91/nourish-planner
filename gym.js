@@ -176,7 +176,7 @@ function gymLibrary(iso,oldId=''){
  if(!PLANS[planFor(iso)])return;
  window.gymPicker={iso,oldId};window.gymQuery='';
  document.getElementById('modalinner').innerHTML=
- '<div class="eyebrow">NOURISH GYM LAB</div><h2>'+(oldId?'Replace exercise':'Add an exercise')+'</h2><p class="short">Search the library, or create your own exercise. Any already logged sets remain in your history.</p>'+
+ '<div class="eyebrow">FORGE · EXERCISE LIBRARY</div><h2>'+(oldId?'Replace exercise':'Add an exercise')+'</h2><p class="short">Search the library, or create your own exercise. Any already logged sets remain in your history.</p>'+
  '<input id="gym-library-search" aria-label="Search exercises" class="search" placeholder="Search muscle, equipment, exercise…" oninput="gymFilter(this.value)" style="width:100%;max-width:100%">'+
  '<div id="gym-library-list" class="gym-library-list">'+gymLibraryRows('')+'</div>'+
  '<div class="gym-own-box"><h3>Create a custom exercise</h3><div class="gym-own-grid">'+
@@ -284,7 +284,7 @@ function logsCsv(){
  for(const [date,v] of Object.entries(work().sessions).sort())if(PLANS[v.id]){
   for(const [id,sets] of Object.entries(v.sets||{}))if(definition(id))sets.forEach((z,i)=>rows.push([date,v.id,v.completed?'yes':'no',definition(id).name,i+1,z.reps,definition(id).unit||'reps',z.kg,z.done?'yes':'no']));
  }
- download('nourish-workout-log.csv',rows.map(row=>row.map(csvCell).join(',')).join('\r\n'));
+ download('forge-workout-log.csv',rows.map(row=>row.map(csvCell).join(',')).join('\r\n'));
 }
 function calendar(){
  const w=work(),from=plus(w.startDate,(w.week-1)*7);
@@ -311,7 +311,7 @@ function progress(){
 }
 function gymPlanner(){
  const w=work();
- return '<div class="sectionhead"><div><div class="eyebrow">NOURISH • GYM LAB</div><h2>Workout planner & strength tracker</h2></div><span class="pill">Your existing cloud account</span></div>'+
+ return '<div class="sectionhead"><div><div class="eyebrow">FORGE · TRAIN</div><h2>Workout planner & strength tracker</h2></div><span class="pill">Your existing cloud account</span></div>'+
  '<div class="notice">Starter routine: <b>Monday A · Wednesday B · Friday C</b>; Saturday is an optional lighter session. If you are new to lifting, start conservatively and learn each movement’s technique. Modify around your fitness, injuries and equipment availability.</div>'+
  '<div class="card" style="margin:16px 0"><div class="row" style="flex-wrap:wrap"><label class="short">Plan starts on Monday<br><input type="date" id="gym-start" value="'+esc(w.startDate)+'" class="select"></label><button class="btn" onclick="gymResetAnchor()">Change calendar start</button><span class="short">Keep the same 28-day period as your meal plan.</span></div></div>'+
  calendar()+'<div style="height:16px"></div>'+selectedSession()+'<div class="sectionhead"><h2>Progress</h2></div>'+progress();
