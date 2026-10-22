@@ -193,12 +193,35 @@ function planned(){
 }
 function logRows(){
  const all=diaryFor(selected);
- return '<div class="card"><div class="row" style="justify-content:space-between;flex-wrap:wrap"><h3 style="margin:0">Your food log</h3><span class="pill">'+all.length+' items</span></div>'+
+ return '<div class="card"><div class="row" style="justify-content:space-between;flex-wrap:wrap"><h3 style="margin:0">Your food log</h3><div class="actions"><span class="pill">'+all.length+' items</span><button class="btn sm" onclick="fdExport()">↓ Export CSV</button></div></div>'+
  (all.length?CATS.map(cat=>{
   const items=all.filter(x=>x.category===cat);if(!items.length)return '';
   return '<div class="fd-log-group"><h4>'+cat[0].toUpperCase()+cat.slice(1)+'</h4>'+items.map(item=>
    '<div class="fd-log"><div><b>'+escape(item.name)+'</b><small>'+f(item.quantity)+' '+escape(item.unit==='portion'?'portion(s)':item.unit)+' · '+escape(item.source==='plan'?'Nourish meal':item.source==='barcode'?'Scanned product':'Manual / saved food')+'</small><small>'+f(item.totals.protein)+'g protein · '+f(item.totals.carbs)+'g carbs · '+f(item.totals.fat)+'g fat</small></div><div class="fd-log-actions"><strong>'+Math.round(item.totals.kcal)+' kcal</strong><button class="btn sm" onclick="fdEditEntry(\''+item.id+'\')">Edit</button><button class="btn sm" onclick="fdDeleteEntry(\''+item.id+'\')">Delete</button></div></div>').join('')+'</div>';
  }).join(''):'<p class="short">Nothing logged yet. Tap “I ate this” on a planned meal or add any other food below.</p>')+'</div>';
+}
+function exportDiary(){
+ const entries=cleanDiary().entries;
+ if(!entries.length){alert('There are no foods to export yet.');return;}
+ const quote=x=>{
+  let v=String(x??'');
+  if(/^[=+@-]/.test(v))v="'"+v;
+  return '"'+v.replaceAll('"','""')+'"';
+ };
+ const keys=['date','category','name','source','barcode','quantity','unit','kcal','protein','carbs','fat','fibre'];
+ const rows=[keys.join(',')].concat(entries.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(x=>
+  [x.date,x.category,x.name,x.source,x.barcode,x.quantity,x.unit,...NUT.map(k=>x.totals[k])].map(quote).join(',')
+ ));
+ download('nourish-food-diary.csv','\uFEFF'+rows.join('\r\n'),'text/csv;charset=utf-8');
+ notify('Your food diary CSV was downloaded.');
+}
+function weekIntake(){
+ const rows=[];
+ for(let i=6;i>=0;i--){
+  const date=plusDays(selected,-i),items=diaryFor(date),nut=grand(items),goal=targetFor(date);
+  rows.push('<div class="fd-log"><span><b>'+date+'</b><small>'+items.length+' foods logged</small></span><span class="fd-week-numbers">'+(items.length?'<b>'+Math.round(nut.kcal)+' kcal</b><small>'+Math.round(nut.protein)+'g protein · '+goal+' kcal reference</small>':'<small>Not logged</small>')+'</span></div>');
+ }
+ return '<div class="card"><h3>Last seven days</h3><p class="short">Unlogged days are marked “Not logged”, never assumed to mean you ate zero calories.</p>'+rows.join('')+'</div>';
 }
 function saved(){
  const foods=cleanDiary().savedFoods;
@@ -216,7 +239,7 @@ function unitChanged(unit){
 }
 function diaryPage(){
  return '<div class="sectionhead"><div><div class="eyebrow">NOURISH • FOOD DIARY 2.0</div><h2>What you actually ate</h2></div><span class="pill">Private to your account</span></div>'+
- '<p class="notice">Track real consumption alongside your planned meals. Nutrition and barcode information are estimates; verify the product label, especially allergies and serving sizes. Your daily reference target is not adjusted automatically for exercise calories.</p>'+dateUI()+dashboard()+planned()+'<div class="fd-columns"><div>'+logRows()+'</div><div>'+inputPanel()+saved()+'</div></div>';
+ '<p class="notice">Track real consumption alongside your planned meals. Nutrition and barcode information are estimates; verify the product label, especially allergies and serving sizes. Your daily reference target is not adjusted automatically for exercise calories.</p>'+dateUI()+dashboard()+planned()+'<div class="fd-columns"><div>'+logRows()+'</div><div>'+inputPanel()+saved()+'</div></div>'+weekIntake();
 }
 function dashboardCard(){
  const date=localDate(new Date()),entries=diaryFor(date),totals=grand(entries),target=targetFor(date);
@@ -224,14 +247,14 @@ function dashboardCard(){
 }
 const css=document.createElement('style');
 css.textContent='.fd-date{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:14px 0}.fd-date input,.fd-inputs input,.fd-inputs select,.fd-lookup input{border:1px solid var(--line);background:#fff;color:var(--ink);padding:11px;border-radius:9px;font:inherit;min-width:0;max-width:100%;font-size:16px}.fd-date label{font-weight:700}.fd-summary{margin-bottom:16px}.fd-remaining{text-align:right}.fd-remaining strong{display:block;font-size:19px}.fd-remaining small{color:var(--muted)}.fd-meter{height:7px;overflow:hidden;background:#e3eae4;border-radius:99px;margin:7px 0}.fd-meter.big{height:12px;margin:16px 0}.fd-meter>div{height:100%;background:#34795c;border-radius:99px}.fd-nutrients{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.fd-stat{font-size:12px}.fd-stat .row{gap:4px;flex-wrap:wrap}.fd-columns{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;align-items:start}.fd-columns .card{margin-bottom:16px}.fd-planned{border-top:1px solid var(--line);padding:14px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}.fd-planned small,.fd-log small{display:block;font-size:12px;color:var(--muted);margin-top:4px}.fd-planned-actions{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.fd-planned-actions select{display:block;margin-top:3px}.fd-log-group{border-top:1px solid var(--line);margin-top:16px}.fd-log-group h4{margin:13px 0 6px}.fd-log{padding:10px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:start}.fd-log-actions{display:flex;flex-direction:column;align-items:flex-end;gap:6px}.fd-log-actions strong{white-space:nowrap}.fd-lookup{display:flex;flex-wrap:wrap;gap:9px;align-items:end;margin:15px 0}.fd-lookup label{width:100%}.fd-lookup input{flex:1;min-width:120px}.fd-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}.fd-inputs label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:700;min-width:0}.fd-inputs .fd-wide{grid-column:1/-1}.fd-check{display:flex;gap:9px;align-items:center;margin:15px 0}.fd-check input{width:20px;height:20px;accent-color:var(--green)}.fd-saved{display:flex;flex-wrap:wrap;gap:8px}.fd-saved .btn{text-align:left;white-space:normal}#fd-scan-holder{margin:12px 0;max-width:100%;overflow:hidden}#fd-scan-holder video{max-width:100%}@media(max-width:850px){.fd-columns{grid-template-columns:1fr}}@media(max-width:540px){.fd-nutrients{grid-template-columns:1fr}.fd-inputs{grid-template-columns:1fr}.fd-remaining{text-align:left}.fd-planned-actions{width:100%}}';
-document.head.append(css);
+css.textContent+='.fd-week-numbers{text-align:right}.fd-week-numbers small{display:block;color:var(--muted)}';document.head.append(css);
 window.nourishFoodDiaryPage=diaryPage;
 window.nourishFoodDashboard=dashboardCard;
 window.nourishFoodTodaySummary=()=>({date:localDate(new Date()),totals:grand(diaryFor(localDate(new Date()))),target:targetFor(localDate(new Date()))});
 window.fdChangeDate=changeDate;window.fdAdjustDate=adjustDate;window.fdAddPlanned=addPlanned;
 window.fdDeleteEntry=deleteEntry;window.fdEditEntry=editEntry;window.fdUseSaved=useSaved;
 window.fdBeginManual=beginManual;window.fdCancelDraft=cancelDraft;window.fdSaveManual=saveManual;
-window.fdLookup=lookup;window.fdOpenScanner=openScanner;window.fdStopScanner=stopScanner;window.fdUnitChanged=unitChanged;
+window.fdLookup=lookup;window.fdExport=exportDiary;window.fdOpenScanner=openScanner;window.fdStopScanner=stopScanner;window.fdUnitChanged=unitChanged;
 window.nourishFoodCleanup=stopScanner;
 if(s.tab==='diary'||s.tab==='overview')renderCurrent();
 })();
