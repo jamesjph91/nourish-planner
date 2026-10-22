@@ -7,7 +7,7 @@ const Z=()=>({kcal:0,protein:0,carbs:0,fat:0,fibre:0});
 const f=n=>Number.isFinite(+n)?Math.round(+n*10)/10:0;
 const amountLabel={g:'g',ml:'ml',portion:'portion'};
 const localDate=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
-let selected=localDate(new Date()),draft=null,editing='',scanner=null,scannerBusy=false,scannerLoading=null,lookupBusy=false,lookupMessage='',lastBarcode='';
+let selected=localDate(new Date()),draft=null,editing='',scanner=null,scannerBusy=false,scannerLoading=null,lookupBusy=false,lookupMessage='',lastBarcode='',lookupToken=0,lookupController=null;
 const dayUTC=iso=>{const a=iso.split('-').map(Number);return Date.UTC(a[0],a[1]-1,a[2]);};
 const plusDays=(date,n)=>new Date(dayUTC(date)+n*86400000).toISOString().slice(0,10);
 const cleanDiary=()=>{s.foodDiary=validateFoodDiary(s.foodDiary);return s.foodDiary;};
@@ -131,12 +131,13 @@ async function lookup(code){
  const normalized=String(code||'').replace(/\s/g,'');
  if(!/^\d{8,14}$/.test(normalized)){showMessage('Enter a valid 8–14 digit barcode or use manual food entry.');return;}
  if(lookupBusy){showMessage('The previous lookup is still running. Please try again once it finishes.');return;}
- lookupBusy=true;lastBarcode=normalized;
+ lookupBusy=true;lastBarcode=normalized;const token=++lookupToken;
  // Retain the scanned code in a usable food form even if the external API is offline.
  draft={...blankDraft(),barcode:normalized};editing='';
  renderCurrent();showMessage('Barcode '+normalized+' captured. Looking for the product and nutritional values…');
  let failure=null,notFound=false;
- const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),14000);
+ const abort=new AbortController();lookupController=abort;
+ const timer=setTimeout(()=>abort.abort(),14000);
  try{
   const fields='code,product_name,product_name_en,generic_name,quantity,nutriments';
   const urls=[
@@ -158,6 +159,7 @@ async function lookup(code){
     if(abort.signal.aborted)break;
    }
   }
+  if(token!==lookupToken)return;
   if(!product){
    const detail=abort.signal.aborted?'The lookup timed out.':notFound?'No matching product was found in the database.':(failure?.message==='Failed to fetch'?'The food database could not be reached from this browser.':failure?.message||'The product database could not be reached.');
    showMessage('Barcode '+normalized+' saved. '+detail+' Fill in the product name and label values in the form below.');
@@ -171,8 +173,8 @@ async function lookup(code){
    'Found '+draft.name+', but the database has no value for: '+missing.join(', ')+'. Enter any missing values from the product label before saving.');
   document.getElementById('fd-entry')?.scrollIntoView({behavior:'smooth',block:'start'});
  }catch(e){
-  showMessage('Barcode '+normalized+' captured but the lookup failed ('+(e?.message||'connection error')+'). You can enter the nutrition label below.');
- }finally{clearTimeout(timer);lookupBusy=false;}
+  if(token===lookupToken)showMessage('Barcode '+normalized+' captured but the lookup failed ('+(e?.message||'connection error')+'). You can enter the nutrition label below.');
+ }finally{clearTimeout(timer);if(token===lookupToken){lookupBusy=false;lookupController=null;}}
 }
 function showMessage(msg){
  lookupMessage=String(msg||'').slice(0,600);
@@ -221,6 +223,11 @@ async function stopScanner(){
  if(ref)try{await ref.clear();}catch(e){}
  const el=document.getElementById('fd-scan-holder');
  if(el){el.hidden=true;el.innerHTML='';}
+}
+function resetDiaryUI(){
+ lookupToken++;lookupController?.abort();lookupController=null;lookupBusy=false;
+ draft=null;editing='';lastBarcode='';lookupMessage='';scannerBusy=false;
+ void stopScanner().catch(()=>{});
 }
 function dateUI(){
  return '<div class="fd-date"><button class="btn" aria-label="Previous day" onclick="fdAdjustDate(-1)">←</button><label for="fd-date">Diary date</label><input type="date" id="fd-date" value="'+selected+'" onchange="fdChangeDate(this.value)"><button class="btn" aria-label="Next day" onclick="fdAdjustDate(1)">→</button><button class="btn" onclick="fdChangeDate(\''+localDate(new Date())+'\')">Today</button></div>';
@@ -308,6 +315,6 @@ window.fdChangeDate=changeDate;window.fdAdjustDate=adjustDate;window.fdAddPlanne
 window.fdDeleteEntry=deleteEntry;window.fdEditEntry=editEntry;window.fdUseSaved=useSaved;
 window.fdBeginManual=beginManual;window.fdCancelDraft=cancelDraft;window.fdSaveManual=saveManual;
 window.fdLookup=lookup;window.fdExport=exportDiary;window.fdOpenScanner=openScanner;window.fdStopScanner=stopScanner;window.fdUnitChanged=unitChanged;
-window.nourishFoodCleanup=stopScanner;
+window.nourishFoodCleanup=stopScanner;window.nourishFoodReset=resetDiaryUI;
 if(s.tab==='diary'||s.tab==='overview')renderCurrent();
 })();
