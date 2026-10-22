@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07100c">
+<title>FORGE — Gym & Lifestyle</title>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07100c}#forge-app{display:block;width:100%;height:100%;border:0;background:#07100c}</style>
+</head>
+<body>
+<iframe id="forge-app" src="./index.html" title="FORGE Gym & Lifestyle"></iframe>
+<script>
+(()=>{
+ const frame=document.getElementById('forge-app');
+ frame.addEventListener('load',()=>{
+  const d=frame.contentDocument;
+  if(!d)return;
+  d.title='FORGE — Gym & Lifestyle';
+  const theme=d.createElement('link');theme.rel='stylesheet';theme.href='./forge-theme.css?v=1';d.head.appendChild(theme);
+  const meta=d.querySelector('meta[name="theme-color"]');if(meta)meta.content='#07100c';
+  const brand=d.querySelector('.brand');
+  if(brand)brand.innerHTML='<div class="brand-icon" aria-hidden="true"></div><div><b>FORGE</b><small>Gym · Fuel · Health · Lifestyle</small></div>';
+  const labels={overview:'⌂  Home',workouts:'◆  Train',diary:'●  Fuel',health:'♥  Activity',progress:'↗  Progress',planner:'▦  Meal plan',recipes:'♡  Recipes',shopping:'▤  Shopping',prep:'◷  Prep',settings:'⚙  Settings'};
+  d.querySelectorAll('#nav button[data-tab]').forEach(btn=>{const key=btn.dataset.tab;if(labels[key])btn.textContent=labels[key]});
+  const eyebrow=d.querySelector('.topline .eyebrow');if(eyebrow)eyebrow.textContent='FORGE / TRAIN · FUEL · RECOVER · PROGRESS';
+  const side=d.querySelector('.sidenote');if(side)side.innerHTML='<strong>FORGE system</strong><br>Your training, nutrition, wearable activity and progress stay connected in one private platform.<br><br>Existing plans and saved data remain intact.';
+  const footer=d.querySelector('.footer');if(footer)footer.insertAdjacentHTML('afterbegin','<b style="color:#b9f227">FORGE</b> · Gym & Lifestyle<br>');
+ });
+})();
+</script>
+</body>
+</html>
