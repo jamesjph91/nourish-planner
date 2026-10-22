@@ -171,6 +171,97 @@ function removeSet(iso,exid,idx){
  if(!validExercise(exid)||!session.exerciseIds.includes(exid)||session.sets[exid].length<=1)return;
  session.sets[exid].splice(idx,1);save();renderCurrent();
 }
+
+function gymLibrary(iso,oldId=''){
+ if(!PLANS[planFor(iso)])return;
+ window.gymPicker={iso,oldId};window.gymQuery='';
+ document.getElementById('modalinner').innerHTML=
+ '<div class="eyebrow">NOURISH GYM LAB</div><h2>'+(oldId?'Replace exercise':'Add an exercise')+'</h2><p class="short">Search the library, or create your own exercise. Any already logged sets remain in your history.</p>'+
+ '<input id="gym-library-search" aria-label="Search exercises" class="search" placeholder="Search muscle, equipment, exercise…" oninput="gymFilter(this.value)" style="width:100%;max-width:100%">'+
+ '<div id="gym-library-list" class="gym-library-list">'+gymLibraryRows('')+'</div>'+
+ '<div class="gym-own-box"><h3>Create a custom exercise</h3><div class="gym-own-grid">'+
+ '<label class="short">Name<input id="gym-own-name" maxlength="48" placeholder="Exercise name"></label>'+
+ '<label class="short">Muscle group<select id="gym-own-focus">'+['Legs','Chest','Back','Shoulders','Arms','Glutes','Core','Cardio','Other'].map(v=>'<option>'+v+'</option>').join('')+'</select></label>'+
+ '<label class="short">Equipment<input id="gym-own-equip" maxlength="40" placeholder="Equipment"></label>'+
+ '<label class="short">Count<select id="gym-own-unit"><option value="reps">Repetitions</option><option value="sec">Seconds</option><option value="min">Minutes</option></select></label></div>'+
+ '<label class="short"><input type="checkbox" id="gym-own-load" checked> Also record weight (kg)</label><div><button class="btn dark" onclick="gymCreateOwn()">＋ Create & add exercise</button></div></div>';
+ document.getElementById('modalback').classList.add('open');
+}
+function gymLibraryRows(query){
+ const pick=window.gymPicker;if(!pick)return '';
+ const q=String(query||'').toLowerCase().trim(),current=getSession(pick.iso,planFor(pick.iso)).exerciseIds;
+ const all={...EX,...work().customExercises};
+ const rows=Object.entries(all).filter(([id,x])=>(x.name+' '+x.focus+' '+x.equip).toLowerCase().includes(q)).sort((a,b)=>a[1].name.localeCompare(b[1].name));
+ return rows.length?rows.map(([id,x])=>{
+ const present=current.includes(id)&&id!==pick.oldId;
+ return '<div class="gym-library-row"><span><b>'+esc(x.name)+'</b><small>'+esc(x.focus)+' · '+esc(x.equip)+'</small></span><button class="btn sm '+(present?'':'dark')+'" '+(present?'disabled':'')+' onclick="gymChoose(\''+id+'\')">'+(present?'Already in session':pick.oldId?'↔ Replace':'＋ Add')+'</button></div>';
+ }).join(''):'<p class="short">No matches. Try another search or create an exercise below.</p>';
+}
+function gymFilter(v){
+ window.gymQuery=String(v).slice(0,80);
+ document.getElementById('gym-library-list').innerHTML=gymLibraryRows(window.gymQuery);
+}
+function gymChoose(id){
+ const p=window.gymPicker;
+ if(!p||!validExercise(id))return;
+ const session=getSession(p.iso,planFor(p.iso)),arr=session.exerciseIds,index=arr.indexOf(p.oldId);
+ if(arr.includes(id)&&id!==p.oldId){alert('Already in this session.');return;}
+ if(index===-1&&arr.length>=20){alert('Limit: 20 exercises per session.');return;}
+ if(index>=0&&p.oldId!==id&&gymHasSets(session,p.oldId)&&!confirm('Replace this exercise? Existing set records are kept in your history.'))return;
+ if(index>=0)arr[index]=id;
+ else if(!arr.includes(id))arr.push(id);
+ fillSets(session,[id]);
+ session.customized=true;session.completed=false;session.updatedAt=new Date().toISOString();
+ save();closeModal();renderCurrent();notify('Exercise updated. Use Save as my routine to reuse this lineup.');
+}
+function gymHasSets(session,id){return (session.sets[id]||[]).some(x=>x.done||x.kg!==''||x.reps!=='');}
+function gymCreateOwn(){
+ const name=(document.getElementById('gym-own-name').value||'').trim();
+ const focus=document.getElementById('gym-own-focus').value,equip=(document.getElementById('gym-own-equip').value||'').trim()||'Other';
+ const unit=document.getElementById('gym-own-unit').value,load=document.getElementById('gym-own-load').checked;
+ if(name.length<3||name.length>48){alert('Use an exercise name between 3 and 48 characters.');return;}
+ if(!['Legs','Chest','Back','Shoulders','Arms','Glutes','Core','Cardio','Other'].includes(focus)||!['reps','sec','min'].includes(unit))return;
+ const w=work();
+ if(Object.keys(w.customExercises).length>=40){alert('Maximum 40 personal exercises.');return;}
+ const duplicate=Object.entries({...EX,...w.customExercises}).find(([,v])=>v.name.toLowerCase()===name.toLowerCase());
+ if(duplicate){gymChoose(duplicate[0]);return;}
+ const id='own_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+ w.customExercises[id]={name,focus,equip:equip.slice(0,40),unit,load,sets:unit==='min'?1:3,min:unit==='reps'?8:unit==='sec'?20:10,max:unit==='reps'?12:unit==='sec'?40:30,cue:'Use manageable resistance and controlled technique.',alt:'Choose an easier variation'};
+ gymChoose(id);
+}
+function gymRemoveExercise(iso,id){
+ const session=getSession(iso,planFor(iso));
+ if(!session.exerciseIds.includes(id))return;
+ if(gymHasSets(session,id)&&!confirm('Remove this exercise from today? Its logged sets will remain in history.'))return;
+ session.exerciseIds=session.exerciseIds.filter(x=>x!==id);
+ session.customized=true;session.completed=false;save();renderCurrent();
+}
+function gymMoveExercise(iso,id,n){
+ const session=getSession(iso,planFor(iso)),a=session.exerciseIds,i=a.indexOf(id),j=i+n;
+ if(i<0||j<0||j>=a.length)return;
+ [a[i],a[j]]=[a[j],a[i]];session.customized=true;save();renderCurrent();
+}
+function gymSaveRoutine(iso){
+ const id=planFor(iso);if(!PLANS[id])return;
+ const ids=[...sessionIds(iso,id)];
+ if(!ids.length){alert('Add at least one exercise first.');return;}
+ if(!confirm('Save these exercises as your personal '+PLANS[id].name+' routine for future days?'))return;
+ work().templates[id]=ids;save();renderCurrent();notify('Saved your '+PLANS[id].name+' routine.');
+}
+function gymRestoreDay(iso){
+ const id=planFor(iso);if(!PLANS[id])return;
+ const session=getSession(iso,id);
+ if(gymHasAnyLoggedSets(session)&&!confirm('Restore the selected session from your saved routine? Previous set records stay in history.'))return;
+ session.exerciseIds=[...routineIds(id)];session.customized=false;session.completed=false;fillSets(session,session.exerciseIds);
+ save();renderCurrent();
+}
+function gymHasAnyLoggedSets(session){return Object.keys(session.sets||{}).some(id=>gymHasSets(session,id));}
+function gymResetTemplate(iso){
+ const id=planFor(iso);if(!PLANS[id])return;
+ if(!confirm('Reset '+PLANS[id].name+' to its original exercise lineup for future sessions?'))return;
+ delete work().templates[id];save();renderCurrent();notify('Original routine restored.');
+}
+
 function openGuide(exid){
  const x=definition(exid);if(!x)return;
  document.getElementById('modalinner').innerHTML='<div class="eyebrow">EXERCISE LIBRARY • '+esc(x.focus)+'</div><h2>'+esc(x.name)+'</h2><p class="short"><b>Equipment:</b> '+esc(x.equip)+'<br><b>Suggested sets:</b> '+x.sets+' × '+x.min+'–'+x.max+' '+(x.unit||'reps')+'</p><h3>Technique</h3><p class="short">'+esc(x.cue)+'</p><h3>Easier alternative</h3><p class="short">'+esc(x.alt)+'</p><a class="btn dark" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query='+encodeURIComponent(x.name+' exercise form beginner tutorial')+'">▶ Find technique videos ↗</a><p class="short">Videos are external demonstrations, not individual coaching. Stop if pain or dizziness occurs; seek qualified guidance for unfamiliar movements.</p>';
@@ -202,7 +293,7 @@ function calendar(){
 function exerciseRows(iso,exid){
  const x=definition(exid),ses=getSession(iso,planFor(iso)),list=ses.sets[exid]||[];
  const unit=x.unit||'reps';
- return '<div class="gym-exercise"><div class="row" style="flex-wrap:wrap"><div><strong>'+esc(x.name)+'</strong><div class="short">'+x.sets+' sets · '+x.min+'–'+x.max+' '+unit+' · '+esc(x.focus)+'</div></div><button class="btn sm" onclick="gymOpenGuide(\''+exid+'\')">How to do it ↗</button></div><div class="gym-sethead"><span>Set</span><span>'+(x.load?'Weight (kg)':'Bodyweight')+'</span><span>'+ (unit==='reps'?'Reps':unit==='sec'?'Seconds':'Minutes')+'</span><span>Done</span><span></span></div>'+list.map((set,i)=>'<div class="gym-setrow"><b>'+ (i+1)+'</b>'+(x.load?'<input inputmode="decimal" aria-label="'+esc(x.name)+' set '+(i+1)+' weight in kilograms" type="number" min="0" step="0.5" max="600" value="'+esc(set.kg??'')+'" placeholder="kg" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'kg\',this.value)">':'<span class="gym-bodyweight">—</span>')+'<input inputmode="numeric" aria-label="'+esc(x.name)+' set '+(i+1)+' reps or time" type="number" min="0" max="1000" step="1" value="'+esc(set.reps??'')+'" placeholder="'+x.min+'–'+x.max+'" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'reps\',this.value)"><input type="checkbox" aria-label="Completed '+esc(x.name)+' set '+(i+1)+'" '+(set.done?'checked':'')+' onchange="gymTick(\''+iso+'\',\''+exid+'\','+i+',this.checked)"><button class="btn sm" aria-label="Remove set" onclick="gymRemoveSet(\''+iso+'\',\''+exid+'\','+i+')">−</button></div>').join('')+'<div style="margin-top:9px"><button class="btn sm" onclick="gymAddSet(\''+iso+'\',\''+exid+'\')">＋ Add set</button></div></div>';
+ return '<div class="gym-exercise"><div class="row" style="flex-wrap:wrap"><div><strong>'+esc(x.name)+'</strong><div class="short">'+x.sets+' sets · '+x.min+'–'+x.max+' '+unit+' · '+esc(x.focus)+'</div></div><button class="btn sm" onclick="gymOpenGuide(\''+exid+'\')">How to do it ↗</button></div><div class="gym-sethead"><span>Set</span><span>'+(x.load?'Weight (kg)':'Bodyweight')+'</span><span>'+ (unit==='reps'?'Reps':unit==='sec'?'Seconds':'Minutes')+'</span><span>Done</span><span></span></div>'+list.map((set,i)=>'<div class="gym-setrow"><b>'+ (i+1)+'</b>'+(x.load?'<input inputmode="decimal" aria-label="'+esc(x.name)+' set '+(i+1)+' weight in kilograms" type="number" min="0" step="0.5" max="600" value="'+esc(set.kg??'')+'" placeholder="kg" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'kg\',this.value)">':'<span class="gym-bodyweight">—</span>')+'<input inputmode="numeric" aria-label="'+esc(x.name)+' set '+(i+1)+' reps or time" type="number" min="0" max="1000" step="1" value="'+esc(set.reps??'')+'" placeholder="'+x.min+'–'+x.max+'" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'reps\',this.value)"><input type="checkbox" aria-label="Completed '+esc(x.name)+' set '+(i+1)+'" '+(set.done?'checked':'')+' onchange="gymTick(\''+iso+'\',\''+exid+'\','+i+',this.checked)"><button class="btn sm" aria-label="Remove set" onclick="gymRemoveSet(\''+iso+'\',\''+exid+'\','+i+')">−</button></div>').join('')+'<div class="gym-ex-actions"><button class="btn sm" onclick="gymMoveExercise(\''+iso+'\',\''+exid+'\',-1)">↑ Up</button><button class="btn sm" onclick="gymMoveExercise(\''+iso+'\',\''+exid+'\',1)">↓ Down</button><button class="btn sm" onclick="gymLibrary(\''+iso+'\',\''+exid+'\')">↔ Replace</button><button class="btn sm" onclick="gymRemoveExercise(\''+iso+'\',\''+exid+'\')">Remove</button></div>'+'<div style="margin-top:9px"><button class="btn sm" onclick="gymAddSet(\''+iso+'\',\''+exid+'\')">＋ Add set</button></div></div>';
 }
 function selectedSession(){
  const w=work(),iso=w.selected,id=planFor(iso),label=safeDate(iso);
@@ -210,6 +301,7 @@ function selectedSession(){
  (id==='rest'?'<div class="notice">Rest is part of training. A dog walk or gentle mobility is enough today.</div>':
  '<div class="notice">Choose a weight that leaves about 2–3 good repetitions in reserve. Rest 1–3 minutes between harder sets. When all sets reach the top of the range with controlled technique, add a small amount of weight next time. No need to train to failure.</div>'+
  sessionIds(iso,id).map(exid=>exerciseRows(iso,exid)).join('')+
+ '<div class="gym-edit-actions"><button class="btn dark" onclick="gymLibrary(\''+iso+'\')">＋ Add exercise</button><button class="btn" onclick="gymSaveRoutine(\''+iso+'\')">♡ Save as my routine</button><button class="btn" onclick="gymRestoreDay(\''+iso+'\')">↶ Restore session</button><button class="btn" onclick="gymResetTemplate(\''+iso+'\')">Reset original routine</button></div><p class="short">Changes affect only today unless you save this lineup as your routine. Your friend has their own independent workout plan.</p>'+
  '<label class="short" for="gym-note">Workout notes</label><textarea id="gym-note" rows="2" maxlength="750" class="gym-notes" placeholder="Energy, exercise substitutions, anything to remember…" onchange="gymSetNote(\''+iso+'\',this.value)">'+esc(getSession(iso,id).notes||'')+'</textarea><div class="actions" style="margin-top:14px"><button class="btn '+(getSession(iso,id).completed?'':'dark')+'" onclick="gymComplete(\''+iso+'\','+(!getSession(iso,id).completed)+')">'+(getSession(iso,id).completed?'↶ Mark in progress':'✓ Finish workout')+'</button></div>')+'</div>';
 }
 function progress(){
@@ -225,6 +317,7 @@ function gymPlanner(){
  calendar()+'<div style="height:16px"></div>'+selectedSession()+'<div class="sectionhead"><h2>Progress</h2></div>'+progress();
 }
 const style=document.createElement('style');style.textContent='.gym-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px;margin:16px 0}.gym-day{display:flex;flex-direction:column;text-align:left;gap:7px;min-width:0;background:#f7faf7;border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--ink);cursor:pointer}.gym-day.sel{border:2px solid var(--green);background:var(--mint)}.gym-day span{font-size:12px;font-weight:700}.gym-day small{color:var(--muted)}.gym-exercise{margin:15px 0;border:1px solid var(--line);border-radius:14px;padding:15px;background:#fcfdfa}.gym-sethead,.gym-setrow{display:grid;grid-template-columns:40px minmax(72px,1fr) minmax(72px,1fr) 54px 42px;gap:8px;align-items:center;margin-top:10px}.gym-sethead{font-size:11px;color:var(--muted);font-weight:700}.gym-setrow input[type=number]{width:100%;padding:9px 7px;background:white;border:1px solid var(--line);border-radius:8px}.gym-setrow input[type=checkbox]{width:20px;height:20px;justify-self:center;accent-color:var(--green)}.gym-setrow .btn{justify-content:center}.gym-bodyweight{text-align:center;color:var(--muted)}.gym-notes{display:block;max-width:100%;width:100%;margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:10px;font:inherit}.gym-history-row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:10px 0}.gym-history-row small{color:var(--muted)}@media(max-width:900px){.gym-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.gym-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}.gym-sethead,.gym-setrow{grid-template-columns:25px minmax(55px,1fr) minmax(55px,1fr) 42px 32px;gap:5px}.gym-exercise{padding:10px}.gym-setrow input[type=number]{font-size:14px}.gym-setrow .btn{padding:7px 5px}.gym-day{padding:9px}}';
+style.textContent+='.gym-edit-actions,.gym-ex-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.gym-library-list{max-height:45vh;overflow:auto;border:1px solid var(--line);border-radius:11px;margin:13px 0;padding:0 12px}.gym-library-row{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:10px 0}.gym-library-row span{min-width:0}.gym-library-row small{display:block;color:var(--muted);font-size:12px}.gym-own-box{margin-top:18px;padding-top:15px;border-top:1px solid var(--line)}.gym-own-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}.gym-own-grid label{display:flex;flex-direction:column;gap:5px}.gym-own-grid input,.gym-own-grid select{width:100%;min-width:0;border:1px solid var(--line);border-radius:8px;padding:9px;background:white;color:var(--ink)}@media(max-width:540px){.gym-own-grid{grid-template-columns:1fr}.gym-library-list{max-height:34vh}}';
 document.head.append(style);
 work();
 window.nourishWorkoutsPage=gymPlanner;
@@ -232,5 +325,6 @@ window.gymSelectDay=selectDay;window.gymSelectWeek=selectWeek;window.gymSetDayPl
 window.gymResetAnchor=resetAnchor;window.gymSetValue=setValue;window.gymTick=tick;
 window.gymSetNote=setNote;window.gymComplete=complete;window.gymAddSet=addSet;window.gymRemoveSet=removeSet;
 window.gymOpenGuide=openGuide;window.gymExport=logsCsv;
+window.gymLibrary=gymLibrary;window.gymFilter=gymFilter;window.gymChoose=gymChoose;window.gymCreateOwn=gymCreateOwn;window.gymRemoveExercise=gymRemoveExercise;window.gymMoveExercise=gymMoveExercise;window.gymSaveRoutine=gymSaveRoutine;window.gymRestoreDay=gymRestoreDay;window.gymResetTemplate=gymResetTemplate;
 if(s.tab==='workouts')renderCurrent();
 })();
