@@ -1,0 +1,31 @@
+/* FORGE live bridge: reads the existing private Nourish/FORGE local state without duplicating it. */
+(()=>{'use strict';
+const KEY='nourishHigherDeficitV1';
+const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+const n=v=>Number.isFinite(Number(v))?Number(v):0;
+const fmt=v=>Math.round(n(v)).toLocaleString('en-GB');
+const state=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}};
+const sum=(rows,key)=>rows.reduce((a,x)=>a+n(x?.totals?.[key]),0);
+function openTool(tab){const s=state();s.tab=tab;try{localStorage.setItem(KEY,JSON.stringify(s))}catch{}location.href='./index.html'}
+function setText(el,text){if(el)el.textContent=text}
+function render(){
+ const s=state(),date=today(),entries=(s.foodDiary?.entries||[]).filter(x=>x.date===date),tot={};['kcal','protein','carbs','fat','fibre'].forEach(k=>tot[k]=sum(entries,k));
+ const target=n(s.settings?.restCal)||1800,prot=n(s.settings?.prot)||160,carbTarget=240,fatTarget=70,fibreTarget=30;
+ const fuel=document.querySelector('#fuel .card');if(fuel){
+  const h=fuel.querySelector('h3');setText(h,`${fmt(tot.kcal)} / ${fmt(target)} kcal`);
+  const tag=fuel.querySelector('.tag');setText(tag,tot.kcal>=target?'TARGET HIT':`${fmt(Math.max(0,target-tot.kcal))} LEFT`);
+  const metrics=fuel.querySelectorAll('.metric');const vals=[[tot.protein,prot,'Protein'],[tot.carbs,carbTarget,'Carbs'],[tot.fat,fatTarget,'Fat'],[tot.fibre,fibreTarget,'Fibre']];
+  metrics.forEach((m,i)=>{const [v,t,label]=vals[i];setText(m.querySelector('b'),`${Math.round(v)}g`);setText(m.querySelector('small'),`${label} / ${t}g`);const bar=m.querySelector('.bar i');if(bar)bar.style.width=Math.min(100,t?v/t*100:0)+'%'});
+  const cats=new Set(entries.map(x=>x.category));setText(fuel.querySelector('.row span'),entries.length?`${entries.length} item${entries.length===1?'':'s'} logged · ${cats.size} meal period${cats.size===1?'':'s'}`:'Nothing logged yet · tap Log food to begin');
+  const expanded=fuel.querySelector('.expanded');if(expanded){expanded.innerHTML=entries.length?entries.slice().reverse().map(x=>`<div class="meal"><div class="meal-icon">${x.source==='barcode'?'▣':x.source==='plan'?'✓':'＋'}</div><div><b>${escapeHtml(x.name)} · ${fmt(x.totals?.kcal)} kcal</b><small>${escapeHtml(x.category||'snack')} · ${Math.round(n(x.totals?.protein))}g protein · ${escapeHtml(x.source||'manual')}</small></div></div>`).join('')+'<button class="action" data-open="diary" style="width:100%;margin-top:12px">Open full food diary</button>':'<p>No food has been logged today yet.</p><button class="action primary" data-open="diary" style="width:100%">Log your first item</button>'}
+ }
+ const activity=(s.healthActivity?.daily||[]).find(x=>x.date===date)||{},goal=n(s.healthActivity?.goals?.steps)||8000;
+ const ac=document.querySelector('#activity .card');if(ac){setText(ac.querySelector('h3'),activity.steps!=null?`${fmt(activity.steps)} steps`:'No activity imported yet');setText(ac.querySelector('.tag'),activity.steps!=null?'LIVE DATA':'IMPORT');const boxes=ac.querySelectorAll('.activity-strip div');if(boxes[0]){setText(boxes[0].querySelector('b'),activity.activeKcal!=null?fmt(activity.activeKcal):'—');setText(boxes[0].querySelector('small'),'ACTIVE KCAL')}if(boxes[1]){setText(boxes[1].querySelector('b'),activity.steps!=null?`${Math.round(n(activity.steps)/goal*100)}%`:'—');setText(boxes[1].querySelector('small'),'STEP GOAL')}if(boxes[2]){setText(boxes[2].querySelector('b'),activity.restingBpm!=null?fmt(activity.restingBpm):'—');setText(boxes[2].querySelector('small'),'RESTING BPM')}setText(ac.querySelector('.row span'),activity.updatedAt?`Updated ${new Date(activity.updatedAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`:'Use Health Hub to import watch data')}
+ const proteinPct=Math.min(1,tot.protein/prot),calPct=tot.kcal?Math.min(1,tot.kcal/target):0,stepPct=activity.steps!=null?Math.min(1,n(activity.steps)/goal):0;const score=Math.round((proteinPct*.4+calPct*.3+stepPct*.3)*100);const ring=document.querySelector('.ring');if(ring){ring.style.background=`conic-gradient(#b9f227 0 ${score}%,#1e2922 ${score}%)`;setText(ring.querySelector('strong'),score)}
+ const scoreBox=document.querySelector('.score');if(scoreBox){const title=scoreBox.querySelector('h2'),p=scoreBox.querySelector('p');if(!entries.length&&!activity.steps){setText(title,'Ready when you are.');setText(p,'Log food, train or import activity and your FORGE day will build itself here.')}else if(proteinPct<.75){setText(title,'Protein is the next move.');setText(p,`${fmt(Math.max(0,prot-tot.protein))}g protein remains against today's ${prot}g target.`)}else if(stepPct<.75){setText(title,'Keep moving.');setText(p,`${fmt(Math.max(0,goal-n(activity.steps)))} steps remain against today's ${fmt(goal)} step goal.`)}else{setText(title,'Strong day in progress.');setText(p,'Your nutrition and movement are tracking well. Keep logging as the day develops.')}}
+ bindOpen();
+}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function bindOpen(){document.querySelectorAll('[data-open]').forEach(b=>{if(!b.dataset.bound){b.dataset.bound='1';b.addEventListener('click',()=>openTool(b.dataset.open))}})}
+window.forgeOpenTool=openTool;window.addEventListener('storage',render);window.addEventListener('focus',render);document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.quick .action').forEach((b,i)=>{if(i===0)b.onclick=()=>openTool('workouts');if(i===1)b.onclick=()=>openTool('diary');if(i===2)b.onclick=()=>openTool('health');if(i===3)b.onclick=()=>openTool('progress')});const q=document.querySelectorAll('#sheet .sheet-grid button');if(q[0])q[0].onclick=()=>openTool('diary');if(q[1])q[1].onclick=()=>openTool('diary');if(q[2])q[2].onclick=()=>openTool('workouts');if(q[3])q[3].onclick=()=>openTool('progress');if(q[4])q[4].onclick=()=>openTool('health');render()});
+})();
