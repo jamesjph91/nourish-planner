@@ -100,6 +100,12 @@ function enhance(){
  const r=root();
  if(!r||!document.querySelector('#nav [data-tab="workouts"].on'))return;
  const s=snapshot(),parts=findParts(r);
+ // A newly opened routine can exist in gym.js memory before its first save.
+ // Prefer the actual rendered set rows in that case rather than showing false 0/0.
+ if(parts.session&&s.scheduled!=='rest'&&s.total===0){
+  const checks=[...parts.session.querySelectorAll('.gym-exercise .gym-setrow input[type="checkbox"]')];
+  if(checks.length){s.total=checks.length;s.completed=checks.filter(x=>x.checked).length;s.percent=Math.round(s.completed/s.total*100)}
+ }
  if(!r.querySelector('.fgt-command')){const holder=document.createElement('div');holder.className='fgt-command-mount';r.prepend(holder)}
  r.querySelector('.fgt-command-mount').innerHTML=panel(s);
  r.classList.add('forge-train-v27');
