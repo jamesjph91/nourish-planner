@@ -42,7 +42,7 @@ async function enableCloud() {
   const encode=value=>JSON.stringify(normalize(value));
   const local=()=>bridge.getData();
   const changed=()=>encode(local())!==lastHash;
-  const actions=()=>[{label:'Sign out',callback:()=>signOut(auth)}];
+  const actions=()=>[{label:'Sign out',callback:async()=>{if((dirty||sending||changed())&&!confirm('Your latest edits may not be saved in the cloud yet. Sign out anyway?'))return;await signOut(auth)}}];
   const status=txt=>show(txt,actions());
   function cleanup() {
     if (unsubscribe) unsubscribe();
@@ -94,7 +94,13 @@ async function enableCloud() {
     if(!sending)status('Unsaved edits — syncing shortly…');
   }
   window.addEventListener('nourish:changed',queueSave);
+  let lastAuthUid=null,seenAuth=false;
   onAuthStateChanged(auth,nextUser=>{
+    const nextUid=nextUser?.uid||null;
+    const storedUid=localStorage.getItem('nourish-last-account-v1');
+    if((seenAuth&&nextUid!==lastAuthUid)||(!nextUid)|| (nextUid&&storedUid&&storedUid!==nextUid))bridge.resetPrivatePlan();
+    seenAuth=true;lastAuthUid=nextUid;
+    if(nextUid)localStorage.setItem('nourish-last-account-v1',nextUid);
     cleanup();user=nextUser;
     if(!user){
       show('Cloud sync is available. Sign in with the same Google account on Chromebook and phone.',[
