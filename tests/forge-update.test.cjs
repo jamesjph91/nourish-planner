@@ -16,7 +16,7 @@ test('FORGE v39 is wired into the installed app and remains on a stable start UR
 test('FORGE update worker revalidates navigations and carries recovery files',()=>{
  const sw=read('service-worker.js');
  new vm.Script(sw);
- assert.match(sw,/forge-v39-ios-navigation/);
+ assert.match(sw,/forge-v39-ios-bottom-tabs/);
  assert.match(sw,/cache:'no-store'/);
  assert.match(sw,/forge-build\.json/);
  assert.match(sw,/refresh-forge\.html/);
