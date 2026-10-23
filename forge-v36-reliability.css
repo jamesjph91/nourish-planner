@@ -1,0 +1,38 @@
+/* FORGE v36 — quiet mobile fit and honest storage status */
+.fs36-strip{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 13px;color:#9ead9e;max-width:100%;font-size:10px;line-height:1.3}
+.fs36-strip>span{display:inline-flex;align-items:center;gap:6px;border:1px solid #26382a;background:#0b150f;border-radius:999px;padding:6px 9px;font-weight:800}
+.fs36-saved:before{content:'';width:7px;height:7px;flex:none;border-radius:50%;background:#b9ff16}
+.fs36-saved.error{color:#ffce89;border-color:#6c4420;background:#26190e}
+.fs36-saved.error:before{background:#ffad53}
+.fs36-network:before{content:'';width:7px;height:7px;flex:none;border-radius:50%;background:#5ed4a4}
+.fs36-network.offline{color:#ffc584;border-color:#5d4823}
+.fs36-network.offline:before{background:#ffad53}
+.fs36-warning[hidden]{display:none!important}
+.fs36-warning{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);z-index:2000;background:#251709;border:1px solid #b77a32;box-shadow:0 15px 35px #000a;color:#ffe4b9;border-radius:15px;max-width:580px;width:calc(100% - 24px);padding:14px}
+.fs36-warning p{font-size:12px;line-height:1.55;margin:0 0 10px}
+.fs36-warning>div{display:flex;gap:6px;flex-wrap:wrap}
+.fs36-warning button{flex:1 1 auto;border-radius:10px;border:1px solid #896232;background:#35240d;color:#ffdea6;font-size:11px;font-weight:900;padding:11px}
+.fs36-warning button:first-child{background:#b9ff16;color:#091307;border-color:#b9ff16}
+.fs36-warning button[hidden]{display:none!important}
+.fs36-card{border:1px solid #304d2c;background:radial-gradient(circle at 100% 0,#2e4b2350,transparent 55%),#0b160d;padding:17px;border-radius:17px;margin:12px 0;color:#eaf3e7}
+.fs36-card>div:first-child span{display:block;color:#b9ff16;font-size:9px;letter-spacing:1.4px;font-weight:950}
+.fs36-card h3{font-size:21px;letter-spacing:-.4px;margin:7px 0;color:#f5f8f4}
+.fs36-card p{color:#a9b9a5;font-size:11px;line-height:1.65}
+.fs36-buttons{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.fs36-buttons button{min-height:44px;border-radius:11px;background:#b9ff16;color:#061109;border:1px solid #b9ff16;font-size:11px;font-weight:950;padding:11px;flex:1 1 180px}
+.fs36-buttons button+button{background:#142517;border-color:#3e6631;color:#b9ff16}
+.fs36-card small{font-size:10px;color:#8ea490;line-height:1.6;display:block}
+button,a,[role="button"],input,select,textarea{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #b9ff16!important;outline-offset:2px}
+@media(max-width:760px){
+ .fs36-strip{margin:1px 1px 12px;font-size:9px}
+ .fs36-strip>span{padding:7px 9px}
+ #nav button{min-height:48px!important;touch-action:manipulation}
+ .forge-food-nav button{min-height:45px;touch-action:manipulation}
+ .fs36-warning{bottom:calc(83px + env(safe-area-inset-bottom))}
+ input,select,textarea{scroll-margin-top:85px;scroll-margin-bottom:105px}
+ .forge-mobile-header{padding-top:max(9px,env(safe-area-inset-top))!important}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;transition-duration:0.01ms!important;animation-duration:0.01ms!important}
+}
