@@ -1,13 +1,13 @@
 {
-  "version": 33,
+  "version": 34,
   "name": "FORGE",
   "released": "2026-10-23",
   "features": [
-    "210 unique original recipe ideas: 68 breakfasts, 70 lunches, 72 dinners",
-    "Ingredient-level dietary preferences and cuisine-inspired meal filters",
-    "Carefully qualified ingredient exclusion controls; not certified allergen screening",
-    "Household portions from 1 to 8 per meal with recalculated shopping totals",
-    "Keep saved plan intact and flag incompatible meals for review",
-    "Preserve preferences through backups and supported cloud sync"
+    "Real seven-day integrated nutrition, steps, sleep and training review",
+    "Strength best-set highlights from completed workout records",
+    "Quick food serving amount controls",
+    "Local data health and backup/restore guidance",
+    "210-meal planner, dietary filters and existing food logging preserved",
+    "Native Android Health Connect and secure community backend remain future engineering phases"
   ]
 }
