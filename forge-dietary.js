@@ -78,5 +78,5 @@ function panel(){
  '<p class="fdiet-hint">Nutrition is calculated per person. Household portions only multiply shopping quantities; individual meal portion sizes and calorie targets stay unchanged.</p></section>';
 }
 window.forgeDiet={valid,get,portions,cuisine,matches,set,exclude,ingredient,setServings,panel,groups};
-if(s.tab==='planner')renderCurrent();
+if(s.tab==='planner'||s.tab==='recipes')renderCurrent();
 })();
