@@ -1,6 +1,6 @@
 /* FORGE v28 update manager — no data reset, no uninstall. */
 (()=>{'use strict';
-const CURRENT=33;
+const CURRENT=34;
 let latest=CURRENT,checking=false,lastCheck=0;
 const base='./';
 const byId=id=>document.getElementById(id);
