@@ -27,3 +27,7 @@ html.forge-account-locked{overflow:hidden!important}
 .fa37-text{color:#b9ff16;border:none;background:none;padding:12px 0;font-size:11px;font-weight:850;text-decoration:underline}
 .fa37-chip{border:1px solid #355636;border-radius:10px;padding:8px 11px;background:#101c13;color:#b9ff16;font-size:11px;font-weight:850;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:540px){.fa37-dialog{padding:20px 16px}.fa37-brand{margin-bottom:20px}.fa37-brand>small{font-size:8px}.fa37-chip{max-width:175px}}
+
+.fa37-mobile-chip{border:1px solid #345234!important;background:#122418!important;color:#b9ff16!important;border-radius:11px!important;font-size:19px!important;width:37px!important;min-width:37px!important;height:36px!important;margin-left:auto!important;flex:0 0 37px!important}
+.forge-mobile-header .fa37-mobile-chip+.forge-version-btn{margin-left:0!important}
+@media(min-width:761px){.fa37-mobile-chip{display:none!important}}
