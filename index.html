@@ -2548,7 +2548,7 @@ function customIngredientRow(id='chicken',quantity=100){
 function openCreateMeal(id=null,cat=null){
  const old=id&&s.customRecipes?.[id],category=old?.cat||(['breakfast','lunch','dinner'].includes(cat)?cat:'dinner');
  const originalItems=old?Object.entries(old.items):[['chicken',150],['broccoli',120],['rice',60]];
- const picked=window.forgeMealPick;
+ const picked=cat&&window.forgeMealPick;
  window.forgeMealDestination=!old&&picked&&picked.cat===category?{day:picked.day,cat:category}:null;
  window.forgeCustomEditId=old?id:null;
  const inner=document.getElementById('modalinner');
@@ -2570,7 +2570,7 @@ function openCreateMeal(id=null,cat=null){
  '<button type="button" class="btn" onclick="saveCustomIngredient()">＋ Save ingredient</button></details>'+
  '<div class="forge-custom-preview" id="forge-mymeal-preview" role="status"></div>'+
  '<details class="forge-custom-extra"><summary>Use manually entered nutrition instead</summary><p class="short">Optional: these values are for <b>one serving</b>, not the entire batch. Enter all five values to override the automatic estimate.</p>'+
- '<label><input id="forge-mymeal-override" type="checkbox"> Use my nutritional values</label>'+
+ '<label><input id="forge-mymeal-override" type="checkbox" '+(old?.manualNutrition?'checked':'')+'> Use my nutritional values</label>'+
  '<div class="forge-custom-grid">'+['kcal','protein','carbs','fat','fibre'].map(x=>'<label>'+({kcal:'Calories (kcal)',protein:'Protein (g)',carbs:'Carbs (g)',fat:'Fat (g)',fibre:'Fibre (g)'}[x])+'<input id="forge-mymeal-'+x+'" type="number" min="0" max="'+(x==='kcal'?3000:x==='fibre'?150:500)+'" step="0.1" inputmode="decimal" value="'+(old?.manualNutrition?esc(old.manualNutrition[x]):'')+'"></label>').join('')+'</div></details>'+
  '<label class="forge-custom-method">Cooking method (one step per line)<textarea id="forge-mymeal-steps" maxlength="2400" rows="4" placeholder="Chop vegetables and prepare the protein…">'+esc(old?.steps.join('\n')||'Prepare and measure ingredients.\nCook any raw meat or fish thoroughly, and soften the vegetables.\nAssemble, portion and serve.')+'</textarea></label>'+
  '<div class="forge-custom-actions"><button type="button" class="btn dark" onclick="saveCustomMeal()">✓ Save to My Meals</button>'+(old?'<button type="button" class="btn" onclick="deleteCustomMeal(\''+old.id+'\')">Delete meal</button>':'')+'</div>'+
@@ -2642,6 +2642,8 @@ function saveCustomMeal(){
  }
  const steps=document.getElementById('forge-mymeal-steps')?.value?.split('\n').map(v=>v.trim()).filter(Boolean).slice(0,8)||[];
  const id=window.forgeCustomEditId||'ownmeal_'+Math.random().toString(36).slice(2,14);
+ const previous=s.customRecipes[id];
+ if(previous&&previous.cat!==cat){for(const [key,rid] of Object.entries(s.swaps||{}))if(rid===id)delete s.swaps[key];s.shopDirty=true;}
  s.customRecipes[id]={id,name,cat,items,time,steps,manualNutrition};
  const registered=registerMyMeals(s.customFoods,s.customRecipes);
  s.customFoods=registered.foods;s.customRecipes=registered.recipes;
@@ -2649,7 +2651,7 @@ function saveCustomMeal(){
  const destination=window.forgeMealDestination;
  if(destination&&destination.cat===cat&&assignSlot(destination.day,cat,id)){s.week=Math.ceil(destination.day/7);s.shopDirty=true}
  if(window.forgeCustomEditId&&Object.values(s.swaps).includes(id))s.shopDirty=true;
- save();window.forgeCustomEditId=null;window.forgeMealDestination=null;closeModal();
+ save();window.forgeCustomEditId=null;window.forgeMealDestination=null;window.forgeMealPick=null;closeModal();
  navigate(destination&&destination.cat===cat?'planner':'recipes');
  notify(name+' saved to My Meals'+(destination&&destination.cat===cat?' and added to your plan':'')+'.');
  return true;
