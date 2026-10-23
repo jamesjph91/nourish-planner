@@ -1,0 +1,29 @@
+/* FORGE v37: private per-person account welcome and profile setup. */
+html.forge-auth-pending .shell,html.forge-account-locked .shell{visibility:hidden!important;pointer-events:none!important}
+html.forge-account-locked{overflow:hidden!important}
+.fa37-gate[hidden]{display:none!important}
+.fa37-gate{position:fixed;inset:0;z-index:4000;display:grid;place-items:center;overflow:auto;overscroll-behavior:contain;padding:16px;min-height:100dvh;background:radial-gradient(ellipse at 80% 10%,#254d2066,transparent 58%),radial-gradient(ellipse at 15% 90%,#1a2a2344,transparent 58%),#050a06;color:#f4faf2}
+.fa37-dialog{width:min(100%,440px);max-height:calc(100dvh - 32px);overflow:auto;border:1px solid #365630;border-radius:24px;padding:24px;background:#0b160e;box-shadow:0 26px 70px #000a}
+.fa37-brand{display:flex;align-items:center;gap:8px;margin-bottom:25px}
+.fa37-brand>span{display:grid;place-items:center;width:37px;height:37px;background:#b9ff16;color:#05100a;font-style:italic;font-weight:1000;font-size:25px;border-radius:11px}
+.fa37-brand>b{font-size:23px;letter-spacing:-1px;line-height:1;color:#fff}
+.fa37-brand>small{margin-left:auto;font-size:9px;letter-spacing:1px;font-weight:900;color:#b9ff16}
+.fa37-intro>small{font-size:9px;letter-spacing:1.25px;font-weight:950;color:#b9ff16}
+.fa37-intro h2{font-size:clamp(25px,6vw,35px);line-height:1.09;letter-spacing:-1px;margin:10px 0 12px;color:#fbfefa}
+.fa37-intro p,.fa37-note{color:#a4b8a4;line-height:1.65;font-size:12px}
+.fa37-benefits{display:grid;gap:11px;margin:24px 0}
+.fa37-benefits span{color:#dcebd9;background:#101f13;border:1px solid #263b29;padding:11px 13px;border-radius:10px;font-size:12px;font-weight:700}
+.fa37-buttons{display:grid;gap:10px;margin-top:22px}
+.fa37-buttons button,#fa37-form>button{min-height:49px;border:1px solid #b9ff16;border-radius:12px;padding:12px;background:#b9ff16;color:#091206;font-size:13px;font-weight:950;cursor:pointer}
+.fa37-buttons button:nth-child(2){background:#101d12;color:#b9ff16;border-color:#506d43}
+.fa37-buttons button:nth-child(3){background:transparent;border-color:#354a37;color:#a6b8a5}
+.fa37-buttons button:focus-visible,#fa37-form input:focus-visible{outline:2px solid white;outline-offset:3px}
+.fa37-message{color:#ffd19b;border:1px solid #735b30;background:#291d0c;border-radius:10px;padding:11px;font-size:12px;line-height:1.6}
+.fa37-message[hidden]{display:none!important}
+#fa37-form{display:grid;gap:15px;margin:23px 0}
+#fa37-form label{display:grid;gap:7px;color:#e0eddd;font-size:12px;font-weight:800}
+#fa37-form input{background:#0b180d;color:#fafefa;border:1px solid #3b593b;border-radius:10px;font-size:16px;padding:13px;max-width:100%}
+#fa37-form .fa37-note{margin:0}
+.fa37-text{color:#b9ff16;border:none;background:none;padding:12px 0;font-size:11px;font-weight:850;text-decoration:underline}
+.fa37-chip{border:1px solid #355636;border-radius:10px;padding:8px 11px;background:#101c13;color:#b9ff16;font-size:11px;font-weight:850;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:540px){.fa37-dialog{padding:20px 16px}.fa37-brand{margin-bottom:20px}.fa37-brand>small{font-size:8px}.fa37-chip{max-width:175px}}
