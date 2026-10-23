@@ -22,7 +22,7 @@
 <section class="cloud-banner card" id="cloud-banner" aria-live="polite"><div><b>☁ Cloud sync</b><p class="short" id="cloud-status">Loading cloud connection…</p></div><div class="actions" id="cloud-actions"></div></section>
 <section class="tabpage" id="overview"></section><section class="tabpage hidden" id="planner"></section><section class="tabpage hidden" id="diary"></section><section class="tabpage hidden" id="health"></section><section class="tabpage hidden" id="recipes"></section><section class="tabpage hidden" id="shopping"></section><section class="tabpage hidden" id="workouts"></section><section class="tabpage hidden" id="progress"></section><section class="tabpage hidden" id="prep"></section><section class="tabpage hidden" id="settings"></section><div class="footer">Nutrition is estimated from generic ingredient data (not measured laboratory values or your product labels). Foods weighed raw or dry unless specifically labelled otherwise. The meal planner is informational, not an individual medical or dietitian assessment. For allergies or medical dietary needs, review ingredients carefully. Saved locally as a backup. Once cloud is configured and you sign in, changes synchronise across devices when online. Edits made simultaneously can conflict; back up important changes. No supermarket basket is connected.</div></main></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div><div class="modalback" id="modalback"><div class="modal" role="dialog" aria-modal="true" aria-label="Recipe details" id="modal"><button class="close" onclick="closeModal()" aria-label="Close">×</button><div id="modalinner"></div></div></div>
-<script>const DATA={
+<script src="./forge-meal-library-data.js?v=31"></script><script>const DATA={
   "foods": {
     "oats": {
       "name": "Rolled oats (dry)",
@@ -2360,13 +2360,89 @@
   },
   "buildVersion": "2026-10-22-higher-deficit-walks"
 };
-let s={tab:'overview',week:1,recipeFilter:'all',query:'',scope:'initial',settings:{restCal:1800,gymCal:2000,prot:160,extraGym:false},swaps:{},checked:{},gym:{},walks:{},favorites:{},workouts:{},profile:{},measurements:[],foodDiary:{entries:[],savedFoods:[]},healthActivity:{daily:[],goals:{steps:8000,sleepMinutes:480}},libraryCat:"all",libraryQuery:"",libraryFav:false,recipeFav:false,shopDirty:false,undo:null};
+let s={tab:'overview',week:1,recipeFilter:'all',query:'',scope:'initial',settings:{restCal:1800,gymCal:2000,prot:160,extraGym:false},swaps:{},checked:{},gym:{},walks:{},favorites:{},workouts:{},profile:{},measurements:[],foodDiary:{entries:[],savedFoods:[]},customFoods:{},customRecipes:{},healthActivity:{daily:[],goals:{steps:8000,sleepMinutes:480}},libraryCat:"all",libraryQuery:"",libraryFav:false,recipeFav:false,shopDirty:false,undo:null};
 try{const st=JSON.parse(localStorage.getItem('nourishHigherDeficitV1')||'{}');s={...s,...st,settings:{...s.settings,...(st.settings||{})}};}catch(e){}
 const food=DATA.foods,rs=DATA.recipes,raw=DATA.plan;
+Object.assign(rs,window.FORGE_MEAL_RECIPES||{});
 // In-session selection. The browser stores the actual swapped recipe IDs, never just a visual order.
 s.favorites=(s.favorites&&typeof s.favorites==='object')?s.favorites:{};
 let moveFrom=null, dragSource=null;
 const CATS=['breakfast','lunch','dinner'];
+
+/* Private user-created ingredient/recipe definitions. Saved in the same FORGE state
+   and validated before cloud import. Recipe macros derive from declared ingredients
+   unless the author explicitly enters an override. */
+let registeredCustomFoods=[],registeredCustomRecipes=[];
+function validateCustomFoods(input){
+ const out={};
+ if(!input||typeof input!=='object'||Array.isArray(input))return out;
+ for(const [id,f] of Object.entries(input).slice(0,100)){
+  if(!/^ownfood_[a-z0-9]{8,24}$/.test(id)||!f||typeof f!=='object'||typeof f.name!=='string')continue;
+  const name=f.name.trim();if(name.length<2||name.length>65)continue;
+  const unit=['g','ml','each'].includes(f.unit)?f.unit:'g',macros={};
+  let valid=true;
+  for(const k of ['kcal','protein','carbs','fat','fibre']){
+   const v=Number(f[k]);if(!Number.isFinite(v)||v<0||v>(k==='kcal'?1000:100)){valid=false;break}
+   macros[k]=Math.round(v*10)/10;
+  }
+  if(!valid)continue;
+  out[id]={name,...macros,unit,store:['monthly','topup','freezer'].includes(f.store)?f.store:'topup',group:'My ingredients'};
+ }
+ return out;
+}
+function mealNutrition(items){
+ const result={kcal:0,protein:0,carbs:0,fat:0,fibre:0};
+ for(const [id,amount] of Object.entries(items)){
+  const f=food[id];if(!f)continue;
+  const mult=f.unit==='each'||f.unit==='slice'?amount:amount/100;
+  for(const k of Object.keys(result))result[k]+=Number(f[k]||0)*mult;
+ }
+ for(const k of Object.keys(result))result[k]=Math.round(result[k]*10)/10;
+ return result;
+}
+function validateCustomRecipes(input){
+ const out={};if(!input||typeof input!=='object'||Array.isArray(input))return out;
+ for(const [id,r] of Object.entries(input).slice(0,80)){
+  if(!/^ownmeal_[a-z0-9]{8,24}$/.test(id)||!r||typeof r!=='object'||Array.isArray(r))continue;
+  if(!['breakfast','lunch','dinner'].includes(r.cat)||typeof r.name!=='string')continue;
+  const name=r.name.trim();if(name.length<3||name.length>90)continue;
+  const items={};
+  for(const [fid,q] of Object.entries(r.items||{}).slice(0,20)){
+   const amount=Number(q);
+   if(!food[fid]||!Number.isFinite(amount)||amount<=0||amount>3000)continue;
+   items[fid]=Math.round(amount*10)/10;
+  }
+  if(!Object.keys(items).length)continue;
+  const calculated=mealNutrition(items);
+  let manual=null;
+  if(r.manualNutrition&&typeof r.manualNutrition==='object'){
+   const candidate={},limits={kcal:3000,protein:500,carbs:500,fat:500,fibre:150};
+   if(Object.entries(limits).every(([k,max])=>{
+    const v=Number(r.manualNutrition[k]);
+    if(!Number.isFinite(v)||v<0||v>max)return false;
+    candidate[k]=Math.round(v*10)/10;return true;
+   }))manual=candidate;
+  }
+  const steps=(Array.isArray(r.steps)?r.steps:[]).filter(v=>typeof v==='string'&&v.trim()).slice(0,8).map(v=>v.trim().slice(0,300));
+  const time=Number(r.time);
+  out[id]={id,cat:r.cat,name,items,steps:steps.length?steps:['Prepare ingredients safely and cook as needed.','Assemble, portion and serve.'],
+   desc:'Personal recipe · Ingredient values are estimates. Check product labels and quantities.',
+   time:Number.isFinite(time)?Math.max(1,Math.min(240,Math.round(time))):20,
+   batch:false,video:null,videoSearch:'',nutrition:manual||calculated,manualNutrition:manual,custom:true};
+ }
+ return out;
+}
+function registerMyMeals(incomingFoods,incomingRecipes){
+ for(const id of registeredCustomRecipes)delete rs[id];
+ for(const id of registeredCustomFoods)delete food[id];
+ const foods=validateCustomFoods(incomingFoods);
+ Object.assign(food,foods);registeredCustomFoods=Object.keys(foods);
+ const recipes=validateCustomRecipes(incomingRecipes);
+ Object.assign(rs,recipes);registeredCustomRecipes=Object.keys(recipes);
+ return {foods,recipes};
+}
+
+const validatedPersonal=registerMyMeals(s.customFoods,s.customRecipes);s.customFoods=validatedPersonal.foods;s.customRecipes=validatedPersonal.recipes;
 const getSlot=(day,cat)=>{const d=days().find(x=>x.day===Number(day));return d&&CATS.includes(cat)?d.ids[CATS.indexOf(cat)]:null;};
 function notify(message){const el=document.getElementById('toast');el.textContent=message;el.classList.add('show');clearTimeout(notify.t);notify.t=setTimeout(()=>el.classList.remove('show'),3500);}
 function toggleFavorite(id){if(!rs[id])return;s.favorites[id]=!s.favorites[id];save();renderCurrent();if(window.currentModal&&document.getElementById('modalback').classList.contains('open'))drawModal();}
@@ -2614,8 +2690,8 @@ function validateHealthActivity(value){
  return out;
 }
 function resetPrivatePlan(){
- window.nourishFoodReset?.();window.hubCancelPending?.();
- s={tab:'overview',week:1,recipeFilter:'all',query:'',scope:'initial',settings:{restCal:1800,gymCal:2000,prot:160,extraGym:false},swaps:{},checked:{},gym:{},walks:{},favorites:{},workouts:{},profile:{},measurements:[],foodDiary:{entries:[],savedFoods:[]},healthActivity:{daily:[],goals:{steps:8000,sleepMinutes:480}},libraryCat:'all',libraryQuery:'',libraryFav:false,recipeFav:false,shopDirty:false,undo:null};
+ window.nourishFoodReset?.();window.hubCancelPending?.();registerMyMeals({},{});
+ s={tab:'overview',week:1,recipeFilter:'all',query:'',scope:'initial',settings:{restCal:1800,gymCal:2000,prot:160,extraGym:false},swaps:{},checked:{},gym:{},walks:{},favorites:{},workouts:{},profile:{},measurements:[],foodDiary:{entries:[],savedFoods:[]},customFoods:{},customRecipes:{},healthActivity:{daily:[],goals:{steps:8000,sleepMinutes:480}},libraryCat:'all',libraryQuery:'',libraryFav:false,recipeFav:false,shopDirty:false,undo:null};
  moveFrom=null;
  try{localStorage.removeItem('nourishHigherDeficitV1');}catch(e){}
  navigate('overview');
@@ -2623,7 +2699,8 @@ function resetPrivatePlan(){
 function exportBackup(){const backup={app:'nourish',version:2,exportedAt:new Date().toISOString(),state:s};download('nourish-plan-backup.json',JSON.stringify(backup,null,2),'application/json;charset=utf-8');notify('Backup downloaded. Transfer the file to your other device, then Import backup there.');}
 async function importBackup(file){if(!file)return;try{if(file.size>1400000){throw new Error('This backup is unusually large.');}
  const blob=JSON.parse(await file.text());if(blob.app!=='nourish'||!blob.state||typeof blob.state!=='object')throw new Error('Not a Nourish backup file.');const x=blob.state;
- const clean={...s,swaps:{},favorites:{},gym:{},walks:{},checked:{},workouts:validateWorkouts(x.workouts),profile:validateProfile(x.profile),measurements:validateMeasurements(x.measurements),foodDiary:validateFoodDiary(x.foodDiary),healthActivity:validateHealthActivity(x.healthActivity),undo:null,shopDirty:true};
+ const own=registerMyMeals(x.customFoods,x.customRecipes);
+ const clean={...s,customFoods:own.foods,customRecipes:own.recipes,swaps:{},favorites:{},gym:{},walks:{},checked:{},workouts:validateWorkouts(x.workouts),profile:validateProfile(x.profile),measurements:validateMeasurements(x.measurements),foodDiary:validateFoodDiary(x.foodDiary),healthActivity:validateHealthActivity(x.healthActivity),undo:null,shopDirty:true};
  for(const [key,id] of Object.entries(x.swaps||{})){const match=/^(\d+):(breakfast|lunch|dinner)$/.exec(key);if(match&&Number(match[1])>=1&&Number(match[1])<=28&&rs[id]?.cat===match[2])clean.swaps[key]=id;}
  for(const [id,v] of Object.entries(x.favorites||{}))if(rs[id]&&typeof v==='boolean')clean.favorites[id]=v;
  for(const [d,v] of Object.entries(x.gym||{}))if(Number(d)>=1&&Number(d)<=28&&typeof v==='boolean')clean.gym[d]=v;
@@ -2637,7 +2714,7 @@ async function importBackup(file){if(!file)return;try{if(file.size>1400000){thro
 
 const money=x=>Math.round(x).toLocaleString('en-GB');const one=x=>Math.round(x*10)/10;const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const save=()=>{try{localStorage.setItem('nourishHigherDeficitV1',JSON.stringify(s));}catch(e){} window.dispatchEvent(new CustomEvent('nourish:changed'));};
-const portion=(id,gym)=>{const rr=rs[id],items={...rr.items};if(gym)for(const [k,v] of Object.entries(rr.gymExtras||{}))items[k]=(items[k]||0)+v;const n={};for(const k of ['kcal','protein','carbs','fat','fibre'])n[k]=Object.entries(items).reduce((total,[id,amount])=>{const ff=food[id],unit=(ff.unit==='each'||ff.unit==='slice')?amount:amount/100;return total+ff[k]*unit},0);return {items,n};};
+const portion=(id,gym)=>{const rr=rs[id],items={...rr.items};if(gym)for(const [k,v] of Object.entries(rr.gymExtras||{}))items[k]=(items[k]||0)+v;const n={};for(const k of ['kcal','protein','carbs','fat','fibre'])n[k]=Object.entries(items).reduce((total,[id,amount])=>{const ff=food[id],unit=(ff.unit==='each'||ff.unit==='slice')?amount:amount/100;return total+ff[k]*unit},0);if(rr.custom&&rr.manualNutrition)return {items,n:{...rr.manualNutrition}};return {items,n};};
 const days=()=>raw.map(d=>{const gym=s.gym[d.day]!==undefined?s.gym[d.day]:(d.gym||(s.settings.extraGym&&d.weekday==='Saturday'));const ids=['breakfast','lunch','dinner'].map(cat=>s.swaps[`${d.day}:${cat}`]||d[cat]);const meals=ids.map(id=>portion(id,gym));const n={};for(const k of ['kcal','protein','carbs','fat','fibre'])n[k]=meals.reduce((t,m)=>t+m.n[k],0);return {...d,ids,meals,n,gym};});
 const goal=d=>d.gym?s.settings.gymCal:s.settings.restCal;
 const dnut=(d,k)=>one(d.n[k]);const avg=k=>one(days().reduce((a,d)=>a+d.n[k],0)/28);const nfmt=(n,unit='g')=>{const q=one(n);return (Number.isInteger(q)?q:q.toFixed(1))+' '+unit};
@@ -2686,13 +2763,14 @@ document.getElementById('modalback').addEventListener('click',e=>{if(e.target===
 
 window.nourishCloudBridge={
  resetPrivatePlan,
- getData(){return JSON.parse(JSON.stringify({settings:s.settings,swaps:s.swaps,checked:s.checked,gym:s.gym,walks:s.walks,favorites:s.favorites,workouts:validateWorkouts(s.workouts),profile:validateProfile(s.profile),measurements:validateMeasurements(s.measurements),foodDiary:validateFoodDiary(s.foodDiary),healthActivity:validateHealthActivity(s.healthActivity)}));},
+ getData(){return JSON.parse(JSON.stringify({customFoods:validateCustomFoods(s.customFoods),customRecipes:validateCustomRecipes(s.customRecipes),settings:s.settings,swaps:s.swaps,checked:s.checked,gym:s.gym,walks:s.walks,favorites:s.favorites,workouts:validateWorkouts(s.workouts),profile:validateProfile(s.profile),measurements:validateMeasurements(s.measurements),foodDiary:validateFoodDiary(s.foodDiary),healthActivity:validateHealthActivity(s.healthActivity)}));},
  isLocalCustom(){
-  return !!(Object.keys(s.swaps||{}).length||Object.keys(s.checked||{}).length||Object.keys(s.gym||{}).length||Object.keys(s.walks||{}).length||Object.keys(s.favorites||{}).length||Object.keys(s.workouts?.sessions||{}).length||Object.keys(s.workouts?.schedule||{}).length||validateMeasurements(s.measurements).length||validateFoodDiary(s.foodDiary).entries.length||validateFoodDiary(s.foodDiary).savedFoods.length||(validateHealthActivity(s.healthActivity).daily.length||validateHealthActivity(s.healthActivity).goals.steps!==8000||validateHealthActivity(s.healthActivity).goals.sleepMinutes!==480)||validateProfile(s.profile).nickname||validateProfile(s.profile).circleCode||s.settings.restCal!==1800||s.settings.gymCal!==2000||s.settings.prot!==160||!!s.settings.extraGym);
+  return !!(Object.keys(s.swaps||{}).length||Object.keys(s.checked||{}).length||Object.keys(s.gym||{}).length||Object.keys(s.walks||{}).length||Object.keys(s.favorites||{}).length||Object.keys(s.customRecipes||{}).length||Object.keys(s.customFoods||{}).length||Object.keys(s.workouts?.sessions||{}).length||Object.keys(s.workouts?.schedule||{}).length||validateMeasurements(s.measurements).length||validateFoodDiary(s.foodDiary).entries.length||validateFoodDiary(s.foodDiary).savedFoods.length||(validateHealthActivity(s.healthActivity).daily.length||validateHealthActivity(s.healthActivity).goals.steps!==8000||validateHealthActivity(s.healthActivity).goals.sleepMinutes!==480)||validateProfile(s.profile).nickname||validateProfile(s.profile).circleCode||s.settings.restCal!==1800||s.settings.gymCal!==2000||s.settings.prot!==160||!!s.settings.extraGym);
  },
  applyData(x){
   if(!x||typeof x!=='object')return false;
-  const valid={swaps:{},checked:{},gym:{},walks:{},favorites:{},workouts:validateWorkouts(x.workouts),profile:validateProfile(x.profile),measurements:validateMeasurements(x.measurements),foodDiary:validateFoodDiary(x.foodDiary),healthActivity:validateHealthActivity(x.healthActivity),settings:{...s.settings}};
+  const own=registerMyMeals(x.customFoods,x.customRecipes);
+  const valid={customFoods:own.foods,customRecipes:own.recipes,swaps:{},checked:{},gym:{},walks:{},favorites:{},workouts:validateWorkouts(x.workouts),profile:validateProfile(x.profile),measurements:validateMeasurements(x.measurements),foodDiary:validateFoodDiary(x.foodDiary),healthActivity:validateHealthActivity(x.healthActivity),settings:{...s.settings}};
   for(const [key,id] of Object.entries(x.swaps||{})){
    let m=/^(\d+):(breakfast|lunch|dinner)$/.exec(key);
    if(m&&Number(m[1])>=1&&Number(m[1])<=28&&rs[id]&&rs[id].cat===m[2])valid.swaps[key]=id;
