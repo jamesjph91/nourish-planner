@@ -25,6 +25,8 @@ on:
       - 'forge-coach.js'
       - 'forge-v34-coach.css'
       - 'forge-v35-week.css'
+      - 'forge-reliability.js'
+      - 'forge-v36-reliability.css'
       - 'forge-meal-library.css'
       - 'forge-food-navigation.css'
       - 'forge-updater.css'
@@ -63,6 +65,8 @@ on:
       - 'forge-coach.js'
       - 'forge-v34-coach.css'
       - 'forge-v35-week.css'
+      - 'forge-reliability.js'
+      - 'forge-v36-reliability.css'
       - 'forge-meal-library.css'
       - 'forge-food-navigation.css'
       - 'forge-updater.css'
@@ -107,6 +111,7 @@ jobs:
           node --check forge-meal-cuisines.js
           node --check forge-dietary.js
           node --check forge-coach.js
+          node --check forge-reliability.js
           node --check forge-fuel.js
           node --check forge-activity.js
           node --check forge-progress.js
