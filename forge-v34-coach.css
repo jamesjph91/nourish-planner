@@ -1,0 +1,31 @@
+/* FORGE v34 • connected coaching insights and safe backups */
+.fc34-panel{color:#ebf4e9;background:radial-gradient(circle at 96% 0,#29462355,transparent 44%),linear-gradient(140deg,#101c12,#08110b);border:1px solid #30432e;border-radius:17px;padding:17px;margin:14px 0}
+.fc34-heading{display:flex;align-items:start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:15px}
+.fc34-heading small{color:#b9ff16;font-size:9px;letter-spacing:1.45px;font-weight:950}
+.fc34-heading h3{font-size:21px;font-weight:950;letter-spacing:-.4px;margin:7px 0 0;color:#eaf5e7}
+.fc34-heading>span{font-size:10px;color:#98ac97;white-space:nowrap}
+.fc34-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.fc34-stat{min-width:0;background:#0b160e;border:1px solid #283a2b;border-radius:12px;padding:13px 10px;display:flex;flex-direction:column;gap:6px}
+.fc34-stat small{font-weight:950;letter-spacing:1px;font-size:8px;color:#a4b6a5}
+.fc34-stat strong{font-size:clamp(17px,3vw,22px);color:#f1f8ef;font-weight:950;line-height:1.14}
+.fc34-stat>span{font-size:9px;line-height:1.45;color:#8ea18f}
+.fc34-fineprint{font-size:10px;line-height:1.6;color:#90a490;margin:15px 0 0}
+.fc34-bests-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.fc34-best{background:#0b180e;border:1px solid #2b422c;border-radius:12px;padding:12px;min-width:0}
+.fc34-best b{display:block;font-size:12px;line-height:1.35;color:#dbe8db;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc34-best strong{display:block;color:#b9ff16;font-size:22px;margin:8px 0 6px}
+.fc34-best strong span{font-size:12px;color:#bdcdb9}
+.fc34-best small,.fc34-empty{font-size:10px;color:#9ba99b;line-height:1.5}
+.fc34-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+.fc34-actions button{background:#b9ff16;border:1px solid #b9ff16;border-radius:10px;padding:11px 12px;color:#09130b;font-size:11px;font-weight:950;min-height:43px;cursor:pointer}
+.fc34-actions button+button{background:#142319;color:#b9ff16;border-color:#466439}
+.fc34-guide{background:#102015;border:1px solid #2d462f;border-radius:12px;margin:13px 0;padding:13px;color:#c4d1c3}
+.fc34-guide[hidden]{display:none}
+.fc34-guide p{font-size:11px;line-height:1.65}
+.fc34-portion{grid-column:1/-1;padding:9px 10px;border:1px solid #314c2f;background:#142416;border-radius:11px;margin:0 0 11px}
+.fc34-portion>span{display:block;color:#b9ff16;font-size:9px;letter-spacing:1.1px;font-weight:950;margin-bottom:7px}
+.fc34-portion>div{display:flex;flex-wrap:wrap;gap:5px}
+.fc34-portion button{flex:1;min-width:45px;background:#223822;color:#d6ead3;border:1px solid #47663b;border-radius:8px;padding:9px 5px;font-size:11px;font-weight:950;cursor:pointer}
+.fc34-portion button:focus-visible,.fc34-actions button:focus-visible{outline:2px solid #b9ff16;outline-offset:2px}
+.fc34-portion small{color:#9db09b;font-size:9px;line-height:1.5;display:block;margin-top:9px}
+@media(max-width:560px){.fc34-panel{padding:12px}.fc34-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.fc34-bests-grid{grid-template-columns:1fr 1fr}.fc34-best strong{font-size:19px}.fc34-heading h3{font-size:19px}}
