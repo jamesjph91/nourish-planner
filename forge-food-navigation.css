@@ -37,3 +37,35 @@
  #recipes .recipegrid{grid-template-columns:1fr!important}
  .forge-food-nav button{padding:10px 14px;flex:0 0 auto;min-height:45px}
 }
+
+/* FORGE v30 — choose recipes right from a specific meal slot */
+.forge-plan-intro{margin:10px 0 13px;background:radial-gradient(circle at 95% 0,#304c2455,transparent 54%),#0e1a11;border:1px solid #2a412c;border-radius:15px;padding:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.forge-plan-intro>span{font-size:9px;font-weight:950;letter-spacing:1.4px;color:#b9ff16;flex:1 0 100%}
+.forge-plan-intro p{color:#a0b3a2;font-size:11px;line-height:1.6;margin:0;flex:1 1 225px}
+.forge-plan-intro button{flex:0 1 auto}
+#planner .meal-actions{display:flex!important;flex-wrap:wrap;align-items:center;gap:6px}
+#planner .meal-change-btn{background:#b9ff16!important;color:#081009!important;border:1px solid #b9ff16!important;border-radius:9px;padding:10px 8px;font-weight:950;font-size:10px;flex:1 0 100%;cursor:pointer;min-height:40px}
+#planner .meal-actions>.swap-btn{flex:1 1 auto;min-height:37px}
+#planner .quick-card{border-color:#273a2b;background:#0b150f}
+#planner .quick-details small{color:#a3b4a3!important}
+#planner #library{scroll-margin-top:85px}
+.forge-meal-picker>.eyebrow{color:#b9ff16;font-size:9px;font-weight:950;letter-spacing:1.3px}
+.forge-meal-picker h2{font-size:28px;letter-spacing:-.8px;margin:9px 0}
+.forge-meal-picker>p.short{font-size:11px;line-height:1.6;color:#9bac9b}
+.forge-meal-search{display:flex;flex-direction:column;font-size:10px;color:#abbbab;font-weight:850;gap:6px;margin:16px 0 11px}
+.forge-meal-search input{width:100%;background:#09140d!important;color:#f3f9f3!important;border:1px solid #304b32!important;border-radius:11px;padding:13px 12px;min-height:48px;font-size:16px}
+.forge-meal-search input:focus-visible{outline:2px solid #b9ff16}
+.forge-meal-filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:7px;margin-bottom:9px}
+.forge-meal-filters button{flex:0 0 auto;background:#132116;color:#a4b3a4;border:1px solid #304332;border-radius:9px;font-size:10px;font-weight:850;padding:9px 11px;min-height:38px}
+.forge-meal-filters button.on{background:#b9ff16;color:#061007;border-color:#b9ff16}
+.forge-meal-options{display:grid;gap:8px;max-height:43dvh;overflow:auto;overscroll-behavior:contain}
+.forge-meal-option{background:#0b170f;border:1px solid #273b2b;border-radius:13px;padding:13px;display:grid;gap:12px}
+.forge-meal-option.current{border-color:#608c30;background:#142319}
+.forge-meal-option-main{display:flex;align-items:center;gap:12px;min-width:0}
+.forge-meal-option-icon{background:#1b2c1a;border:1px solid #324c2c;border-radius:12px;min-width:46px;height:46px;display:grid;place-items:center;font-size:25px}
+.forge-meal-option-main>div:last-child{min-width:0}
+.forge-meal-option-main b{color:#f0f8f0;display:block;font-size:13px;line-height:1.35}
+.forge-meal-option-main small{display:block;color:#a0b3a1;font-size:10px;margin-top:5px}
+.forge-meal-option>button{justify-self:end;border:1px solid #b9ff16;background:#b9ff16;color:#081009;padding:10px 12px;border-radius:10px;min-height:40px;font-size:11px;font-weight:950}
+.forge-meal-option>button:disabled{background:#233624;color:#a4bca1;border-color:#304a2e}
+@media(max-width:520px){.forge-plan-intro button{width:100%}.forge-meal-options{max-height:40dvh}.forge-meal-option{padding:11px}}
