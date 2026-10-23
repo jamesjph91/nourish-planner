@@ -1,0 +1,24 @@
+/* FORGE v32 — nutrition-aware meal planning and expanded library */
+#planner .forge-week-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:16px 0}
+#planner .forge-week-summary>div{border:1px solid #293f2c;background:radial-gradient(circle at top right,#22451c55,transparent 60%),#0b170e;border-radius:15px;padding:14px;min-width:0}
+#planner .forge-week-summary small{color:#b9ff16;font-size:8px;font-weight:950;letter-spacing:1.2px;display:block;margin-bottom:11px}
+#planner .forge-week-summary strong{display:block;font-size:clamp(22px,3.5vw,30px);letter-spacing:-1px;font-weight:950;line-height:1.1;color:#f3faf2;white-space:nowrap}
+#planner .forge-week-summary em{font-style:normal;font-size:11px;letter-spacing:0;color:#96a89a}
+#planner .forge-week-summary span{display:block;color:#a0b2a2;font-size:10px;line-height:1.5;margin-top:8px}
+#planner .forge-day-guidance{margin:10px 0 2px;display:flex;gap:7px;flex-wrap:wrap}
+#planner .forge-day-guidance span{color:#9eb2a2;border:1px solid #2b3f2e;border-radius:8px;background:#132016;padding:5px 7px;font-size:9px;font-weight:800}
+#planner .meal-actions .forge-smart-picks{flex:1 0 100%;border:1px solid #425e37;background:linear-gradient(120deg,#152a18,#223b20);color:#b9ff16;min-height:43px;border-radius:9px;font-size:11px;font-weight:950;cursor:pointer}
+#planner .meal-actions .forge-smart-picks:hover{background:#2a4824}
+.forge-meal-picker .forge-match-today{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:13px 0;background:#101e14;border:1px solid #2b422e;border-radius:13px;padding:11px}
+.forge-match-today>div{display:grid;gap:8px;min-width:0}
+.forge-match-today small{font-size:9px;font-weight:950;letter-spacing:1px;color:#a4b4a6}
+.forge-match-today b{font-size:12px;color:#e9f6e8;line-height:1.4}
+.forge-sort-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:9px 0 12px}
+.forge-sort-row label{font-weight:850;color:#a6b8a7;font-size:11px}
+.forge-sort-row select{min-height:40px;max-width:220px;background:#0f1b11;color:#e7f0e5;border:1px solid #334c35;border-radius:9px;padding:9px;font-size:12px}
+.forge-meal-option.forge-smarter-option{border-color:#3a5e35}
+.forge-closer{display:inline-block;color:#b9ff16;border:1px solid #38582f;border-radius:7px;padding:4px 6px;margin-top:7px;font-size:9px;font-weight:950}
+.forge-after-swap{margin-top:7px;color:#a5baa6;font-size:10px;line-height:1.5}
+.forge-after-swap b{color:#d8ead7}
+.forge-meal-option{align-items:center}
+@media(max-width:560px){#planner .forge-week-summary{grid-template-columns:1fr 1fr}#planner .forge-week-summary>div:last-child{grid-column:1/-1}#planner .forge-week-summary>div{padding:12px}#planner .forge-week-summary strong{font-size:23px}.forge-meal-picker .forge-match-today{grid-template-columns:1fr 1fr;padding:9px}.forge-match-today b{font-size:11px}}
