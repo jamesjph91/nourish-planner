@@ -1,13 +1,13 @@
 {
-  "version": 35,
+  "version": 36,
   "name": "FORGE",
   "released": "2026-10-23",
   "features": [
-    "All v34 weekly coaching insights, food diary quick portions and data safety panel",
-    "Preview and apply AI-free deterministic 7-day meal proposals",
-    "21 meals tailored to existing nutrition references and dietary filters",
-    "Undo last generated week and recalculate household shopping amounts",
-    "Full recipe catalogue and private diary data retained",
-    "Android Health Connect and secure community remain separate future builds"
+    "Display verified local-save and online/offline status without claiming cloud sync",
+    "Warn visibly if local storage fails or another tab changes the same plan",
+    "Support Android/browser Back between existing FORGE screens",
+    "Request optional persistent browser storage and explain photo backup limitations",
+    "Improved mobile keyboard focus, touch targets and reduced motion",
+    "All meal plans and workout trackers retained"
   ]
 }
