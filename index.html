@@ -2472,44 +2472,95 @@ function moveBanner(){if(moveFrom)return `<div class="card swapbanner" role="sta
 
 /* In-plan meal selection: reuse the existing recipe dataset and validated slot assignments.
    No duplicate nutrition database and no changes to saved-data format. */
-function openMealPicker(day,cat){
+function openMealPicker(day,cat,mode='smart'){
  const n=Number(day);
  if(!Number.isInteger(n)||n<1||n>28||!CATS.includes(cat))return;
- window.forgeMealPick={day:n,cat,query:'',filter:'all'};
+ window.forgeMealPick={day:n,cat,query:'',filter:'all',sort:mode==='name'?'name':'smart'};
  renderMealPicker();
  document.getElementById('modalback').classList.add('open');
 }
+/* FORGE Smart Planner v32 — deterministic, transparent meal matching.
+   Scores are planning aids based on estimated nutrition, never medical advice. */
+const FORGE_MEAT_FISH=new Set(['salmon','smokedsalmon','cannedsalmon','mackerel','cod','prawns','chicken','turkey','beef','tuna']);
+function forgeNoMeatFish(recipe){return Object.keys(recipe.items||{}).every(id=>!FORGE_MEAT_FISH.has(id))}
+function forgeMealFilter(recipe,filter,gym=false){
+ if(filter==='protein')return portion(recipe.id,gym).n.protein>=35;
+ if(filter==='lighter')return portion(recipe.id,gym).n.kcal<600;
+ if(filter==='quick')return Number(recipe.time)<=20;
+ if(filter==='meatfree')return forgeNoMeatFish(recipe);
+ if(filter==='favorites')return isFav(recipe.id);
+ return true;
+}
+function forgeSwapOutcome(day,cat,id){
+ if(!day||!CATS.includes(cat)||!rs[id]||rs[id].cat!==cat)return null;
+ const index=CATS.indexOf(cat),before=day.meals[index]?.n,after=portion(id,day.gym).n;
+ if(!before)return null;
+ const newKcal=day.n.kcal-before.kcal+after.kcal,newProtein=day.n.protein-before.protein+after.protein;
+ const kcalTarget=goal(day),proteinTarget=Number(s.settings.prot)||160;
+ const score=(k,p)=>Math.abs(k-kcalTarget)/Math.max(1,kcalTarget)*100+
+ Math.max(0,proteinTarget-p)/Math.max(1,proteinTarget)*95+
+ Math.max(0,k-kcalTarget)/Math.max(1,kcalTarget)*18;
+ return {kcal:newKcal,protein:newProtein,kcalTarget,proteinTarget,calorieDifference:newKcal-day.n.kcal,
+ proteinDifference:newProtein-day.n.protein,score:score(newKcal,newProtein),previousScore:score(day.n.kcal,day.n.protein)};
+}
+function forgeWeeklySummary(week){
+ const group=days().filter(d=>d.week===week);
+ const mean=(key)=>group.reduce((total,d)=>total+d.n[key],0)/Math.max(1,group.length);
+ return {days:group.length,meanKcal:mean('kcal'),meanProtein:mean('protein'),
+ proteinDays:group.filter(d=>d.n.protein>=(Number(s.settings.prot)||160)).length,
+ energyDays:group.filter(d=>Math.abs(d.n.kcal-goal(d))<=150).length};
+}
+function forgeSmartSummary(week){
+ const stats=forgeWeeklySummary(week);
+ return '<div class="forge-week-summary"><div><small>WEEK '+week+' · PLANNED NUTRITION</small><strong>'+money(stats.meanKcal)+' <em>kcal/day</em></strong><span>Average planned energy</span></div>'+
+ '<div><small>AVERAGE PROTEIN</small><strong>'+money(stats.meanProtein)+' <em>g/day</em></strong><span>'+stats.proteinDays+' of 7 days meet protein reference</span></div>'+
+ '<div><small>ENERGY REFERENCE</small><strong>'+stats.energyDays+' <em>/ 7 days</em></strong><span>Within 150 kcal of planned target</span></div></div>';
+}
+function setRecipeSmartFilter(filter){
+ if(!['all','protein','lighter','quick','meatfree'].includes(filter))return;
+ s.recipeSmartFilter=filter;save();renderCurrent();
+}
+
 function mealPickerValues(){
  const pick=window.forgeMealPick;if(!pick)return [];
- const date=days().find(d=>d.day===pick.day),gym=!!date?.gym;
- const q=(pick.query||'').toLowerCase().trim();
- return Object.values(rs).filter(r=>{
-  if(r.cat!==pick.cat||!r.name.toLowerCase().includes(q))return false;
-  const nutrition=portion(r.id,gym).n;
-  if(pick.filter==='favorites'&&!isFav(r.id))return false;
-  if(pick.filter==='protein'&&nutrition.protein<35)return false;
-  if(pick.filter==='lighter'&&nutrition.kcal>=600)return false;
-  return true;
- }).sort((a,b)=>a.name.localeCompare(b.name));
+ const day=days().find(d=>d.day===pick.day);if(!day)return [];
+ const query=(pick.query||'').toLowerCase().trim(),sort=pick.sort||'smart';
+ const matches=Object.values(rs).filter(r=>r.cat===pick.cat&&r.name.toLowerCase().includes(query)&&forgeMealFilter(r,pick.filter,day.gym));
+ if(sort==='smart')return matches.sort((a,b)=>{
+  const x=forgeSwapOutcome(day,pick.cat,a.id),y=forgeSwapOutcome(day,pick.cat,b.id);
+  const active=day.ids[CATS.indexOf(pick.cat)];
+  if(a.id===active&&b.id!==active)return 1;
+  if(b.id===active&&a.id!==active)return -1;
+  return (x?.score??Infinity)-(y?.score??Infinity)||a.name.localeCompare(b.name);
+ });
+ if(sort==='protein')return matches.sort((a,b)=>portion(b.id,day.gym).n.protein-portion(a.id,day.gym).n.protein||a.name.localeCompare(b.name));
+ if(sort==='calories')return matches.sort((a,b)=>portion(a.id,day.gym).n.kcal-portion(b.id,day.gym).n.kcal||a.name.localeCompare(b.name));
+ return matches.sort((a,b)=>a.name.localeCompare(b.name));
 }
 function mealPickerRows(){
  const pick=window.forgeMealPick;if(!pick)return '';
- const d=days().find(day=>day.day===pick.day),gym=!!d?.gym,active=getSlot(pick.day,pick.cat);
- const matches=mealPickerValues();
- return matches.length?matches.map(r=>{
-  const n=portion(r.id,gym).n,selected=r.id===active;
-  return '<article class="forge-meal-option'+(selected?' current':'')+'"><div class="forge-meal-option-main"><div class="forge-meal-option-icon">'+foodemoji[r.cat]+'</div><div><b>'+esc(r.name)+'</b><small>'+money(n.kcal)+' kcal · '+money(n.protein)+'g protein · '+r.time+' min</small></div></div><button type="button" '+(selected?'disabled':'')+' onclick="replaceMealFromPicker(\''+r.id+'\')">'+(selected?'✓ In plan':'Use this meal →')+'</button></article>';
+ const day=days().find(d=>d.day===pick.day);if(!day)return '';
+ const active=getSlot(pick.day,pick.cat),matches=mealPickerValues();
+ return matches.length?matches.map((r,i)=>{
+  const n=portion(r.id,day.gym).n,selected=r.id===active,outcome=forgeSwapOutcome(day,pick.cat,r.id);
+  const closer=!selected&&outcome&&outcome.score<outcome.previousScore-0.1;
+  return '<article class="forge-meal-option'+(selected?' current':'')+(closer?' forge-smarter-option':'')+'"><div class="forge-meal-option-main"><div class="forge-meal-option-icon">'+foodemoji[r.cat]+'</div><div><b>'+esc(r.name)+'</b><small>'+money(n.kcal)+' kcal · '+money(n.protein)+'g protein · '+r.time+' min</small>'+
+  (closer?'<span class="forge-closer">Closer to your planned targets</span>':'')+
+  '<div class="forge-after-swap">Day after swap: <b>'+money(outcome.kcal)+' kcal</b> · <b>'+money(outcome.protein)+'g protein</b></div></div></div>'+
+  '<button type="button" '+(selected?'disabled':'')+' onclick="replaceMealFromPicker(\''+r.id+'\')">'+(selected?'✓ In plan':'Use this meal →')+'</button></article>';
  }).join(''):'<p class="short">No meals match. Try another filter or search.</p>';
 }
 function renderMealPicker(){
  const pick=window.forgeMealPick;if(!pick)return;
  const d=days().find(x=>x.day===pick.day);if(!d)return;
  const html='<div class="forge-meal-picker">'+
- '<div class="eyebrow">FORGE · MEAL LIBRARY</div><h2>Choose '+esc(pick.cat)+'</h2><p class="short">Day '+pick.day+' · '+esc(d.weekday)+' · '+(d.gym?'Gym':'Rest')+' day. Choose a replacement; your daily macros and shopping quantities will update automatically.</p>'+
+ '<div class="eyebrow">FORGE · SMART MEAL MATCH</div><h2>Choose '+esc(pick.cat)+'</h2><p class="short">Day '+pick.day+' · '+esc(d.weekday)+' · '+(d.gym?'Gym':'Rest')+' day. These suggestions compare your <b>planned</b> calories and protein, not what you actually ate.</p>'+
+ '<div class="forge-match-today"><div><small>CURRENT DAY</small><b>'+money(d.n.kcal)+' kcal · '+money(d.n.protein)+'g protein</b></div><div><small>DAILY REFERENCES</small><b>'+money(goal(d))+' kcal · '+money(s.settings.prot)+'g protein</b></div></div>'+
  '<label class="forge-meal-search">Search '+esc(pick.cat)+' meals<input id="forge-meal-query" type="search" maxlength="90" value="'+esc(pick.query)+'" placeholder="Search meal names…" oninput="mealPickerQuery(this.value)"></label>'+
- '<div class="forge-meal-filters">'+[['all','All'],['protein','35g+ protein'],['lighter','Under 600 kcal'],['favorites','♥ Favourites']].map(([id,label])=>'<button type="button" class="'+(pick.filter===id?'on':'')+'" onclick="mealPickerFilter(\''+id+'\')">'+label+'</button>').join('')+'</div>'+
+ '<div class="forge-meal-filters" aria-label="Filter meals">'+[['all','All'],['protein','35g+ protein'],['lighter','Under 600 kcal'],['quick','20 min or less'],['meatfree','No meat/fish'],['favorites','♥ Favourites']].map(([id,label])=>'<button type="button" class="'+(pick.filter===id?'on':'')+'" aria-pressed="'+(pick.filter===id)+'" onclick="mealPickerFilter(\''+id+'\')">'+label+'</button>').join('')+'</div>'+
+ '<div class="forge-sort-row"><label for="forge-meal-sort">Sort by</label><select id="forge-meal-sort" onchange="mealPickerSort(this.value)">'+[['smart','Closest to targets'],['protein','Most protein'],['calories','Lowest calories'],['name','Name A–Z']].map(([id,label])=>'<option value="'+id+'"'+((pick.sort||'smart')===id?' selected':'')+'>'+label+'</option>').join('')+'</select></div>'+
  '<div id="forge-meal-options" class="forge-meal-options">'+mealPickerRows()+'</div>'+
- '<div class="forge-custom-picker-action"><button class="btn dark" onclick="openCreateMeal(null,window.forgeMealPick.cat)">＋ Create your own '+esc(pick.cat)+'</button></div><p class="short">Nutrition values follow the selected gym or rest-day portion. These are recipe estimates, not verified package labels.</p></div>';
+ '<div class="forge-custom-picker-action"><button class="btn dark" onclick="openCreateMeal(null,window.forgeMealPick.cat)">＋ Create your own '+esc(pick.cat)+'</button></div><p class="short">“Closest” uses a simple calorie/protein scoring rule. Nutrition is estimated, allergens are not checked, and no changes are made until you choose a meal.</p></div>';
  document.getElementById('modalinner').innerHTML=html;
 }
 function mealPickerQuery(text){
@@ -2519,8 +2570,12 @@ function mealPickerQuery(text){
  if(result)result.innerHTML=mealPickerRows();
 }
 function mealPickerFilter(filter){
- const pick=window.forgeMealPick;if(!pick||!['all','protein','lighter','favorites'].includes(filter))return;
+ const pick=window.forgeMealPick;if(!pick||!['all','protein','lighter','favorites','quick','meatfree'].includes(filter))return;
  pick.filter=filter;renderMealPicker();
+}
+function mealPickerSort(value){
+ const pick=window.forgeMealPick;if(!pick||!['smart','name','calories','protein'].includes(value))return;
+ pick.sort=value;renderMealPicker();
 }
 function replaceMealFromPicker(id){
  const pick=window.forgeMealPick;
