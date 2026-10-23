@@ -1,0 +1,159 @@
+/* FORGE v40 — visual direction based on the approved black / graphite / electric-lime reference.
+   Presentation only: no sample data, engine replacements or changes to stored records. */
+:root{--fv40-lime:#c7ff17;--fv40-ink:#f8fbf4;--fv40-edge:#293a2a;--fv40-panel:#0a110d}
+html{background:#030603!important}
+body{background:radial-gradient(ellipse 80% 470px at 80% -200px,#20341560,transparent),#030603!important;color:var(--fv40-ink)!important}
+body button,body a,body input,body select,body textarea{-webkit-tap-highlight-color:transparent}
+body button:focus-visible,body a:focus-visible,body input:focus-visible,body select:focus-visible,body textarea:focus-visible{outline:2px solid #c7ff17!important;outline-offset:3px}
+.sidebar{background:linear-gradient(175deg,#101b12 0%,#060b08 55%,#030503 100%)!important}
+.brand b,.forge-mobile-header b{font-style:italic!important;transform:skewX(-5deg);font-weight:1000!important;letter-spacing:1.3px!important}
+.brand small,.forge-mobile-header small{letter-spacing:1.75px!important}
+.brand-icon img,.fn-mobile-mark img{filter:drop-shadow(0 0 13px #b9ff1644)}
+.nav button{transition:color .18s ease,background .18s ease,transform .18s ease}
+.nav button.on .fn-icon{filter:drop-shadow(0 0 8px #b9ff1680)}
+.nav button.on{color:#c7ff17!important}
+main{position:relative}
+body .card,body .stat{backdrop-filter:saturate(1.06)}
+body .btn.primary,body .btn.dark,.forge-log-food .forge-scan{box-shadow:0 5px 24px #a8f31324!important}
+body .btn,body .tab,body .weekbtn,body .card,body .stat{transition:border-color .18s ease,filter .18s ease,transform .18s ease}
+@media(hover:hover){
+  body .btn:hover,body .tab:hover,body .weekbtn:hover{filter:brightness(1.13);transform:translateY(-1px)}
+  body .card:hover,body .stat:hover{border-color:#365334!important}
+}
+/* Today: photographic performance hero; the numerical rings still use recorded values. */
+#overview .fg26{max-width:760px!important}
+#overview .fg26-heading{padding:7px 3px 2px}
+#overview .fg26-heading h1{font-size:clamp(43px,7.5vw,58px)!important;text-transform:uppercase;letter-spacing:-2.8px!important;line-height:.91!important}
+#overview .fg26-heading p{letter-spacing:.15px}
+#overview .fg26-status{background:#122114!important;box-shadow:inset 0 0 0 1px #122514,0 0 15px #b9ff1615}
+#overview .fg26-hero{
+ min-height:308px;border:1px solid #3e542a!important;border-radius:24px!important;
+ background-image:
+ linear-gradient(180deg,#0508069c 0%,#050806a8 26%,#060d09f0 67%,#060d09 100%),
+ linear-gradient(90deg,#071007f0 0%,#0710075a 65%,transparent),
+ url("https://images.unsplash.com/photo-1534258936925-c58bed479fcb?auto=format&fit=crop&w=1200&q=85")!important;
+ background-position:center,center,center 35%!important;background-size:cover!important;
+ padding:25px 22px 17px!important;box-shadow:0 20px 44px #000a,0 0 34px #a8ff1010!important
+}
+#overview .fg26-hero h2{text-shadow:0 2px 20px #000d;font-size:clamp(27px,5vw,39px)!important;max-width:580px}
+#overview .fg26-hero .fg26-hero-top{font-size:10px!important}
+#overview .fg26-hero .fg26-rings{padding:12px 4px 2px;gap:9px!important;border-radius:16px;background:linear-gradient(180deg,#07100a55,#030904a8);backdrop-filter:blur(2px)}
+#overview .fg26-ring{box-shadow:0 0 13px #b9ff1615,0 7px 22px #0007}
+#overview .fg26-ring b{font-variant-numeric:tabular-nums}
+#overview .fg26-ringitem>span{color:#bfcbbe!important}
+#overview .fg26-motto{
+ min-height:160px!important;border:1px solid #3a4d31!important;border-radius:21px!important;
+ background-image:linear-gradient(90deg,#030806 0%,#030806f0 46%,#03080652 100%),
+ url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80")!important;
+ background-size:cover!important;background-position:center,center 47%!important;
+ box-shadow:inset 0 0 42px #0008
+}
+#overview .fg26-motto strong{font-size:clamp(20px,4.8vw,31px)!important;text-shadow:0 3px 22px #000}
+#overview .fg26-f-graphic{color:#c7ff171e}
+#overview .fg26-focus{border-radius:21px!important;border-color:#30462b!important;background:
+ linear-gradient(105deg,#0b140efc 0%,#0b140eef 62%,#0b140e88 100%),
+ url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=75") center/cover!important}
+#overview .fg26-focus>button{min-height:47px;transition:background .15s ease,padding-left .15s ease}
+#overview .fg26-focus>button:hover{background:#b9ff160b;padding-left:6px}
+#overview .fg26-actions button{border-radius:14px!important;min-height:54px;letter-spacing:.15px}
+#overview .fg26-bottom button{
+ min-height:87px!important;align-items:flex-end!important;text-align:left!important;border-radius:15px!important;
+ color:#f6fcf1!important;text-shadow:0 2px 7px #000;
+ background-image:linear-gradient(0deg,#050806ef 0%,#05080677 80%),url("https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=520&q=75")!important;
+ background-size:cover!important;background-position:center!important
+}
+#overview .fg26-bottom button:nth-child(2){background-image:linear-gradient(0deg,#050806f7,#05080638),url("https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=520&q=75")!important}
+#overview .fg26-bottom button:nth-child(3){background-image:linear-gradient(0deg,#050806f7,#05080638),url("https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=520&q=75")!important}
+/* Section banners on functional screens: same tabs, forms, food logging and recording logic. */
+#workouts{--fv40-photo:url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=85")}
+#diary{--fv40-photo:url("https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=85")}
+#health{--fv40-photo:url("https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1200&q=85")}
+#progress{--fv40-photo:url("https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=1200&q=85")}
+body .forge-screen>.sectionhead:first-child{
+ min-height:164px!important;display:flex!important;flex-direction:column!important;
+ align-items:flex-start!important;justify-content:flex-end!important;gap:7px!important;
+ margin:3px 0 14px!important;padding:19px 21px!important;position:relative;isolation:isolate;
+ border:1px solid #38502c!important;border-radius:21px!important;
+ background-image:linear-gradient(90deg,#050907f8 0%,#050907bc 43%,#05090744 100%),
+ linear-gradient(0deg,#050907bd,transparent 70%),var(--fv40-photo)!important;
+ background-position:center,center,center 45%!important;background-size:cover!important;
+ box-shadow:0 16px 33px #0007!important;overflow:hidden
+}
+body .forge-screen>.sectionhead:first-child:after{content:"";display:block;position:absolute;bottom:0;left:20px;width:46px;height:3px;border-radius:4px;background:#c7ff17;box-shadow:0 0 13px #c7ff1777}
+body .forge-screen>.sectionhead:first-child .eyebrow{color:#c7ff17!important;font-size:10px!important;letter-spacing:2.1px!important;text-shadow:0 2px 12px #000e}
+body .forge-screen>.sectionhead:first-child h2{color:#fff!important;font-size:clamp(34px,7vw,55px)!important;line-height:.95!important;letter-spacing:-2.1px!important;text-transform:uppercase!important;font-style:italic!important;font-weight:1000!important;text-shadow:0 4px 19px #000d;margin:5px 0 7px!important}
+body .forge-screen>.sectionhead:first-child .actions,body .forge-screen>.sectionhead:first-child .pill{position:relative;z-index:1}
+body .forge-screen .card{border-radius:18px!important;border-color:#253829!important;background:linear-gradient(140deg,#111c14,#080f0b 80%)!important;box-shadow:0 6px 24px #0004!important}
+body .forge-screen .stat{border-radius:16px!important;border-color:#283c2b!important;background:linear-gradient(145deg,#111d14,#080e0a)!important}
+body .forge-screen .sectionhead:not(:first-child) h2{font-weight:920!important}
+/* Train: make workout rows feel like an active training console. */
+#workouts .forge-train-session{border-color:#46612e!important;box-shadow:0 0 0 1px #b9ff1614,0 16px 30px #0007!important}
+#workouts .forge-train-exercise,#workouts .gym-exercise{
+ background:linear-gradient(100deg,#142016,#0b120e)!important;
+ border:1px solid #2a3c2c!important;border-left:3px solid #9bdc19!important;
+ border-radius:14px!important;box-shadow:0 3px 13px #0003!important
+}
+#workouts .forge-ex-number{color:#c7ff17!important}
+#workouts .gym-exercise input[type=checkbox]{accent-color:#c7ff17!important}
+#workouts .forge-train-status{border-radius:12px!important}
+#workouts button:active,#diary button:active,#health button:active,#progress button:active{transform:scale(.985)}
+/* Fuel: glossy nutrition dashboard and bright scanner affordance. */
+#diary .fgi-rings-panel{
+ background-image:linear-gradient(130deg,#0d180ff3,#08110be6),
+ url("https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=75")!important;
+ background-size:cover!important;background-position:center!important;
+ border-color:#374f2b!important;border-radius:20px!important
+}
+#diary .forge-fuel-summary{border:1px solid #3b522d!important;border-radius:19px!important;box-shadow:0 10px 30px #0004!important}
+#diary .forge-meal-row{border-left:3px solid #a7ed19!important;margin:4px 0!important}
+#diary .forge-scan{box-shadow:0 8px 24px #b9ff1625!important}
+#diary .forge-fuel-tabs button.on,#progress .fp-tabs button.on{box-shadow:0 3px 12px #b9ff162e!important}
+/* Activity: strong visual hierarchy around actual recorded steps. */
+#health .forge-step-card{
+ background-image:linear-gradient(115deg,#07110bf7 0%,#07110bdc 65%,#07110b88 100%),
+ url("https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=900&q=80")!important;
+ background-size:cover!important;background-position:center!important;
+ border:1px solid #38532e!important;border-radius:21px!important;box-shadow:0 13px 25px #0006!important
+}
+#health .forge-ring{box-shadow:0 0 22px #c7ff171a}
+#health .forge-week-card,#health .forge-connect-card,#health .forge-recovery>div{border-color:#30442b!important}
+/* Progress: reinforce personal analytics, don't replace real charts or personal photos. */
+#progress .fp-stat{border-color:#31452d!important;box-shadow:0 8px 24px #0005}
+#progress .fp-stat>strong{font-variant-numeric:tabular-nums}
+#progress .fp-trend{border-color:#3a512e!important;background:linear-gradient(135deg,#101b13,#070e09)!important}
+#progress .fp-photo{border-color:#415434!important}
+#progress .fp-header h2{font-style:italic;text-transform:uppercase;letter-spacing:-1.8px!important}
+.fa37-gate{background-image:linear-gradient(110deg,#030806f8,#030806df),url("https://images.unsplash.com/photo-1534258936925-c58bed479fcb?auto=format&fit=crop&w=1500&q=80")!important;background-size:cover!important;background-position:center!important}
+/* Mobile: bold but scannable, with a crisp permanent five-tab dock. */
+@media(max-width:760px){
+ .forge-mobile-header{height:66px!important;padding:9px 15px!important;background:#040806f5!important;border-bottom:1px solid #2b3d2b!important;box-shadow:0 4px 25px #0009}
+ .forge-mobile-header b{font-size:22px!important;letter-spacing:1.7px!important}
+ .forge-mobile-header small{font-size:7.5px!important}
+ .forge-mobile-header button{border-color:#415433!important;border-radius:12px!important}
+ .sidebar{background:#050a07f5!important;border-top:1px solid #34492c!important;box-shadow:0 -8px 30px #0009!important}
+ .nav button.on{background:linear-gradient(180deg,#b9ff161c,#b9ff1608)!important;border-radius:12px!important}
+ .nav button.on:before{content:"";height:3px;width:23px;background:#c7ff17;position:absolute;top:2px;border-radius:9px;box-shadow:0 0 12px #c7ff17}
+ .nav button{position:relative}
+ .nav button .fn-icon svg{width:24px!important;height:24px!important}
+ main{padding:13px 12px 27px!important}
+ #overview .fg26-heading{margin-bottom:11px}
+ #overview .fg26-status{max-width:124px;white-space:normal!important;text-align:center;line-height:1.3;margin-top:12px!important}
+ #overview .fg26-hero{min-height:280px;padding:20px 13px 16px!important}
+ #overview .fg26-hero h2{font-size:29px!important;margin-top:18px!important}
+ #overview .fg26-hero .fg26-rings{gap:4px!important;padding:10px 1px 3px}
+ #overview .fg26-motto{min-height:146px!important}
+ #overview .fg26-bottom{gap:6px}
+ #overview .fg26-bottom button{min-height:83px!important;padding:9px 7px!important;font-size:9px!important}
+ body .forge-screen>.sectionhead:first-child{min-height:148px!important;padding:18px!important;border-radius:18px!important}
+ body .forge-screen>.sectionhead:first-child h2{font-size:38px!important}
+}
+@media(max-width:390px){
+ #overview .fg26-heading h1{font-size:39px!important}
+ #overview .fg26-hero{padding:15px 9px!important}
+ #overview .fg26-hero h2{font-size:27px!important}
+ #overview .fg26-ring small{font-size:6.5px!important}
+ #overview .fg26-bottom button{min-height:77px!important;font-size:8px!important}
+ body .forge-screen>.sectionhead:first-child{min-height:135px!important;padding:14px!important}
+}
+@media(prefers-reduced-motion:reduce){body .btn,body .tab,body .weekbtn,body .card,body .stat,.nav button{transition:none!important}}
+@media print{body .forge-screen>.sectionhead:first-child,#overview .fg26-hero,#overview .fg26-motto{background-image:none!important;box-shadow:none!important}}
