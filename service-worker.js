@@ -1,6 +1,6 @@
 /* FORGE v28. Revalidate online app files, safe offline cache fallback. */
-const CACHE='forge-v28-fresh';
-const CORE=['./','./index.html','./manifest.webmanifest','./forge-icon.svg','./forge-native.css','./gym.js','./food-diary.js','./health-hub.js','./progress.js','./compare.js','./cloud-sync.js','./firebase-config.js','./forge-dashboard.js','./forge-master-ui.js','./forge-train.js','./forge-fuel.js','./forge-activity.js','./forge-progress.js','./forge-progress.css','./forge-v26.css','./forge-fuel-insights.js','./forge-train-coach.js','./forge-v27-train.css','./forge-updater.js','./forge-updater.css','./forge-build.json','./refresh-forge.html'];
+const CACHE='forge-v29-fuel-navigation';
+const CORE=['./','./index.html','./manifest.webmanifest','./forge-icon.svg','./forge-native.css','./gym.js','./food-diary.js','./health-hub.js','./progress.js','./compare.js','./cloud-sync.js','./firebase-config.js','./forge-dashboard.js','./forge-master-ui.js','./forge-train.js','./forge-fuel.js','./forge-activity.js','./forge-progress.js','./forge-progress.css','./forge-v26.css','./forge-fuel-insights.js','./forge-train-coach.js','./forge-v27-train.css','./forge-updater.js','./forge-updater.css','./forge-food-navigation.js','./forge-food-navigation.css','./forge-build.json','./refresh-forge.html'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);
   await Promise.allSettled(CORE.map(url=>cache.add(new Request(url,{cache:'reload'}))));
