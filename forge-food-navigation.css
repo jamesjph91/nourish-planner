@@ -1,0 +1,39 @@
+/* FORGE v29 — every Fuel tool accessible on Android and desktop. */
+#diary .forge-fuel-tabs{display:none!important}
+.forge-food-tools{width:100%;max-width:760px;margin:0 auto 14px}
+.forge-food-nav-caption{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:9px 1px 11px}
+.forge-food-nav-caption span{font-size:9px;font-weight:950;letter-spacing:1.5px;color:#b9ff16}
+.forge-food-nav-caption small{font-size:10px;color:#8c9b90}
+.forge-food-nav{display:flex;gap:6px;padding:6px;overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#2c492c transparent;border-radius:15px;background:#0c170e;border:1px solid #213528;scroll-snap-type:x proximity}
+.forge-food-nav button{scroll-snap-align:start;flex:1 0 auto;min-height:45px;white-space:nowrap;padding:10px 12px;background:transparent;border:1px solid transparent;border-radius:10px;color:#a0b0a2;font-size:11px;font-weight:850;cursor:pointer}
+.forge-food-nav button.on{color:#071009;background:#b9ff16;border-color:#b9ff16;font-weight:950}
+.forge-food-nav button:focus-visible{outline:2px solid #b9ff16;outline-offset:2px}
+#planner,#recipes,#shopping,#prep{max-width:790px;margin:0 auto;min-width:0}
+#planner>.sectionhead:first-child,#recipes>.sectionhead:first-child,#shopping>.sectionhead:first-child,#prep>.sectionhead:first-child{margin-top:8px!important}
+#planner .days{max-width:100%}
+#planner .day{background:#0c1710!important;color:#f5f8f4!important;border-color:#2b3b2c!important}
+#planner .meal{border-color:#27382c!important}
+#planner .daytotal{color:#f5f8f4}
+#planner .daynum{color:#94a997}
+#planner .gym{background:#132918!important;color:#b9ff16!important;border:1px solid #29462b}
+#planner .gym.off{color:#aab6ac!important}
+#planner .prog{background:#263b2b!important}
+#planner .prog i{background:#b9ff16!important}
+#planner .weeks{gap:6px;flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding-bottom:5px}
+#planner .weekbtn{min-width:82px}
+#prep .stepnumber{background:#b9ff16!important;color:#071009!important}
+#recipes .foodicon{background:#1c2f20!important}
+#diary .forge-food-tools{max-width:690px}
+@media(max-width:760px){
+ /* The hidden secondary pages still belong to Fuel in the five-tab mobile nav. */
+ .sidebar .nav button[data-tab="diary"].forge-food-parent-active{color:#b9ff16!important;background:transparent!important}
+ .sidebar .nav button[data-tab="diary"].forge-food-parent-active .fn-icon{filter:drop-shadow(0 0 6px #b9ff1660)}
+ #planner,#recipes,#shopping,#prep{padding-bottom:14px}
+ #planner .days{display:flex!important;gap:10px!important;overflow-x:auto!important;scroll-snap-type:x mandatory;scroll-padding:0 6px;padding-bottom:15px!important}
+ #planner .day{width:min(81vw,310px)!important;min-width:min(81vw,310px)!important;max-width:310px;scroll-snap-align:start}
+ #planner .sectionhead>.actions{display:flex;gap:7px;flex-wrap:wrap}
+ #planner .sectionhead>.actions .btn{flex:1 1 auto;min-height:42px}
+ #prep .prepgrid{grid-template-columns:1fr!important}
+ #recipes .recipegrid{grid-template-columns:1fr!important}
+ .forge-food-nav button{padding:10px 14px;flex:0 0 auto;min-height:45px}
+}
