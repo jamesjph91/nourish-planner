@@ -2554,7 +2554,7 @@ function renderMealPicker(){
  const pick=window.forgeMealPick;if(!pick)return;
  const d=days().find(x=>x.day===pick.day);if(!d)return;
  const html='<div class="forge-meal-picker">'+
- '<div class="eyebrow">FORGE · SMART MEAL MATCH</div><h2>Choose '+esc(pick.cat)+'</h2><p class="short">Day '+pick.day+' · '+esc(d.weekday)+' · '+(d.gym?'Gym':'Rest')+' day. These suggestions compare your <b>planned</b> calories and protein, not what you actually ate.</p>'+
+ '<div class="eyebrow">FORGE · MEAL LIBRARY / SMART MATCH</div><h2>Choose '+esc(pick.cat)+'</h2><p class="short">Day '+pick.day+' · '+esc(d.weekday)+' · '+(d.gym?'Gym':'Rest')+' day. These suggestions compare your <b>planned</b> calories and protein, not what you actually ate.</p>'+
  '<div class="forge-match-today"><div><small>CURRENT DAY</small><b>'+money(d.n.kcal)+' kcal · '+money(d.n.protein)+'g protein</b></div><div><small>DAILY REFERENCES</small><b>'+money(goal(d))+' kcal · '+money(s.settings.prot)+'g protein</b></div></div>'+
  '<label class="forge-meal-search">Search '+esc(pick.cat)+' meals<input id="forge-meal-query" type="search" maxlength="90" value="'+esc(pick.query)+'" placeholder="Search meal names…" oninput="mealPickerQuery(this.value)"></label>'+
  '<div class="forge-meal-filters" aria-label="Filter meals">'+[['all','All'],['protein','35g+ protein'],['lighter','Under 600 kcal'],['quick','20 min or less'],['meatfree','No meat/fish'],['favorites','♥ Favourites']].map(([id,label])=>'<button type="button" class="'+(pick.filter===id?'on':'')+'" aria-pressed="'+(pick.filter===id)+'" onclick="mealPickerFilter(\''+id+'\')">'+label+'</button>').join('')+'</div>'+
