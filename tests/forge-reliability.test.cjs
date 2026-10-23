@@ -25,7 +25,7 @@ test('Core local save confirms success and announces browser storage failures',(
  assert.equal(JSON.parse(stored).tab,'diary','Failed save must not erase the previous stored state');
 });
 test('Android Back uses real history and does not create another history entry when returning',()=>{
- const start=inline.indexOf('let forgeHistoryBack=false;'),end=inline.indexOf('function setWeek(',start);
+ const start=inline.indexOf('const FORGE_NAV_TABS='),end=inline.indexOf('function setWeek(',start);
  assert.ok(start>0&&end>start);
  const code=inline.slice(start,end);const handlers={};const entries=[],calls=[],page={classList:{contains:x=>x==='tabpage'}},location={hash:''};
  const context={s:{tab:'overview'},document:{getElementById:()=>page,querySelectorAll:()=>[{id:'overview',dataset:{tab:'overview'},classList:{toggle(){} }},{id:'diary',dataset:{tab:'diary'},classList:{toggle(){} }}]},
@@ -74,6 +74,6 @@ test('Reliability layer preserves all personal data and avoids mutation observer
  assert.match(rel,/nourishHigherDeficitV1/);
  assert.doesNotMatch(rel,/localStorage\.setItem|localStorage\.clear|localStorage\.removeItem|indexedDB\.deleteDatabase/);
  assert.doesNotMatch(rel,/MutationObserver|document\.write/);
- assert.match(rel,/not included/);
+ assert.match(rel,/not included/i);
  assert.match(fs.readFileSync('forge-v36-reliability.css','utf8'),/prefers-reduced-motion/);
 });
