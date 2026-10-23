@@ -2902,6 +2902,7 @@ const money=x=>Math.round(x).toLocaleString('en-GB');const one=x=>Math.round(x*1
 const save=()=>{let saved=false,reason='';try{localStorage.setItem('nourishHigherDeficitV1',JSON.stringify(s));saved=true;}catch(e){reason=e?.name||'Storage error';}
  if(typeof window.dispatchEvent==='function'&&typeof CustomEvent==='function')window.dispatchEvent(new CustomEvent('forge:save-status',{detail:{ok:saved,at:saved?Date.now():null,error:reason}}));
  window.dispatchEvent(new CustomEvent('nourish:changed'));return saved;};
+window.forgeRetryLocalSave=()=>save();
 const portion=(id,gym)=>{const rr=rs[id],items={...rr.items};if(gym)for(const [k,v] of Object.entries(rr.gymExtras||{}))items[k]=(items[k]||0)+v;const n={};for(const k of ['kcal','protein','carbs','fat','fibre'])n[k]=Object.entries(items).reduce((total,[id,amount])=>{const ff=food[id],unit=(ff.unit==='each'||ff.unit==='slice')?amount:amount/100;return total+ff[k]*unit},0);if(rr.custom&&rr.manualNutrition)return {items,n:{...rr.manualNutrition}};return {items,n};};
 const days=()=>raw.map(d=>{const gym=s.gym[d.day]!==undefined?s.gym[d.day]:(d.gym||(s.settings.extraGym&&d.weekday==='Saturday'));const ids=['breakfast','lunch','dinner'].map(cat=>s.swaps[`${d.day}:${cat}`]||d[cat]);const meals=ids.map(id=>portion(id,gym));const n={};for(const k of ['kcal','protein','carbs','fat','fibre'])n[k]=meals.reduce((t,m)=>t+m.n[k],0);return {...d,ids,meals,n,gym};});
 const goal=d=>d.gym?s.settings.gymCal:s.settings.restCal;
