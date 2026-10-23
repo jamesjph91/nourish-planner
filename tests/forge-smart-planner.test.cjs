@@ -7,22 +7,23 @@ const html=fs.readFileSync('index.html','utf8');
 const main=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 const first=fs.readFileSync('forge-meal-library-data.js','utf8');
 const extra=fs.readFileSync('forge-meal-library-plus.js','utf8');
+const cuisine=fs.readFileSync('forge-meal-cuisines.js','utf8');
 function boot(){
  const map=new Map(),stored=new Map();
  const el=id=>{if(!map.has(id))map.set(id,{id,innerHTML:'',value:'',textContent:'',style:{},classList:{add(){},remove(){},toggle(){},contains(){return false}},addEventListener(){},scrollIntoView(){},setAttribute(){}});return map.get(id)};
  const context={document:{getElementById:el,querySelectorAll:()=>[],querySelector:()=>null,body:{append(){}},head:{append(){}}},localStorage:{getItem:key=>stored.get(key)||null,setItem:(k,v)=>stored.set(k,v)},navigator:{},location:{hostname:'localhost',protocol:'file:'},Date,Intl,JSON,Math,Number,console,alert(){},confirm:()=>true,dispatchEvent(){},addEventListener(){},scrollTo(){},CustomEvent:class{constructor(x){this.type=x}},setTimeout,clearTimeout};
  context.window=context;vm.createContext(context);
- for(const [name,script] of [['base',first],['expanded',extra],['main',main]])vm.runInContext(script,context,{filename:name});
+ for(const [name,script] of [['base',first],['expanded',extra],['cuisine',cuisine],['main',main]])vm.runInContext(script,context,{filename:name});
  return {eval:x=>vm.runInContext(x,context),el,stored,context}
 }
-test('FORGE now supplies 180 meals, with 58 breakfasts, 60 lunches and 62 dinners',()=>{
+test('FORGE now supplies 210 meals, with 68 breakfasts, 70 lunches and 72 dinners',()=>{
  const b=boot();
  const counts=JSON.parse(JSON.stringify(b.eval("Object.values(rs).reduce((n,r)=>(n[r.cat]=(n[r.cat]||0)+1,n),{})")));
- assert.deepEqual(counts,{breakfast:58,lunch:60,dinner:62});
- assert.equal(b.eval("Object.keys(rs).length"),180);
- assert.match(b.eval("recipes()"),/180 balanced meal ideas/);
+ assert.deepEqual(counts,{breakfast:68,lunch:70,dinner:72});
+ assert.equal(b.eval("Object.keys(rs).length"),210);
+ assert.match(b.eval("recipes()"),/210 balanced meal ideas/);
  assert.ok(b.eval("Object.values(rs).every(r=>r.name&&r.steps.length>=2&&r.time>0&&r.nutrition.kcal>0)"));
- assert.equal(b.eval("new Set(Object.values(rs).map(r=>r.name)).size"),180);
+ assert.equal(b.eval("new Set(Object.values(rs).map(r=>r.name)).size"),210);
 });
 test('All new meals reference known measured ingredients and estimated nutrition matches original engine',()=>{
  const b=boot();
