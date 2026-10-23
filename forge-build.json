@@ -1,10 +1,10 @@
 {
-  "version": 39,
+  "version": 40,
   "name": "FORGE",
   "released": "2026-10-23",
   "features": [
-    "Restore iPhone five-tab navigation by hiding desktop update control",
-    "Keep iPhone update control in top header",
-    "Preserve all private workout and nutrition records"
+    "Photographic performance styling on Today, Train, Fuel, Activity and Progress",
+    "Bolder mobile navigation, dark graphite surfaces and electric-lime highlights",
+    "Preserve functional workout, food, activity and progress data"
   ]
 }
