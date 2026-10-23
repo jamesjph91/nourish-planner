@@ -1,13 +1,13 @@
 {
-  "version": 34,
+  "version": 35,
   "name": "FORGE",
   "released": "2026-10-23",
   "features": [
-    "Real seven-day integrated nutrition, steps, sleep and training review",
-    "Strength best-set highlights from completed workout records",
-    "Quick food serving amount controls",
-    "Local data health and backup/restore guidance",
-    "210-meal planner, dietary filters and existing food logging preserved",
-    "Native Android Health Connect and secure community backend remain future engineering phases"
+    "All v34 weekly coaching insights, food diary quick portions and data safety panel",
+    "Preview and apply AI-free deterministic 7-day meal proposals",
+    "21 meals tailored to existing nutrition references and dietary filters",
+    "Undo last generated week and recalculate household shopping amounts",
+    "Full recipe catalogue and private diary data retained",
+    "Android Health Connect and secure community remain separate future builds"
   ]
 }
