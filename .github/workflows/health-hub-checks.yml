@@ -19,6 +19,9 @@ on:
       - 'forge-meal-library-data.js'
       - 'forge-meal-library-plus.js'
       - 'forge-v32-smart.css'
+      - 'forge-meal-cuisines.js'
+      - 'forge-dietary.js'
+      - 'forge-v33-dietary.css'
       - 'forge-meal-library.css'
       - 'forge-food-navigation.css'
       - 'forge-updater.css'
@@ -51,6 +54,9 @@ on:
       - 'forge-meal-library-data.js'
       - 'forge-meal-library-plus.js'
       - 'forge-v32-smart.css'
+      - 'forge-meal-cuisines.js'
+      - 'forge-dietary.js'
+      - 'forge-v33-dietary.css'
       - 'forge-meal-library.css'
       - 'forge-food-navigation.css'
       - 'forge-updater.css'
@@ -92,6 +98,8 @@ jobs:
           node --check forge-food-navigation.js
           node --check forge-meal-library-data.js
           node --check forge-meal-library-plus.js
+          node --check forge-meal-cuisines.js
+          node --check forge-dietary.js
           node --check forge-fuel.js
           node --check forge-activity.js
           node --check forge-progress.js
