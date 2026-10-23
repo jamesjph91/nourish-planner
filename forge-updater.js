@@ -1,6 +1,7 @@
-/* FORGE v28 update manager — no data reset, no uninstall. */
+/* FORGE v41 update manager — derive installed version from HTML, never reset user data. */
 (()=>{'use strict';
-const CURRENT=39;
+const fromPage=Number(document.querySelector('meta[name="forge-release"]')?.content);
+const CURRENT=Number.isSafeInteger(fromPage)&&fromPage>0?fromPage:41;
 let latest=CURRENT,checking=false,lastCheck=0;
 const base='./';
 const byId=id=>document.getElementById(id);
@@ -21,21 +22,21 @@ async function check(force=false){
  finally{checking=false}
 }
 async function refresh(){
- status('Refreshing app files…');
+ status('Opening the latest FORGE app…');
  try{
-  if('serviceWorker' in navigator){
-   const reg=await navigator.serviceWorker.getRegistration('./');
-   if(reg)try{await reg.update()}catch(e){}
-  }
-  // User data is deliberately never touched. Change URL to bypass HTTP caches.
-  location.assign(base+'index.html?v='+Math.max(CURRENT,latest)+'&fresh='+Date.now());
- }catch(e){status('Update could not finish. Try opening the recovery link in Chrome.')}
+  // Never block navigation on an unresponsive service worker update.
+  if('serviceWorker' in navigator)navigator.serviceWorker.getRegistration('./').then(reg=>reg?.update()).catch(()=>{});
+  const next=new URL('index.html',location.href);
+  next.searchParams.set('v',String(Math.max(CURRENT,latest)));
+  next.searchParams.set('fresh',String(Date.now()));
+  location.assign(next.href);
+ }catch(e){status('Refresh interrupted. Use the safe recovery link below.')}
 }
 function openPanel(){const p=byId('forge-update-panel');if(p){p.hidden=false;check(true)}}
 function mount(){
  if(byId('forge-update-panel'))return;
  const panel=document.createElement('div');panel.id='forge-update-panel';panel.hidden=true;
- panel.innerHTML='<div class="forge-update-dialog" role="dialog" aria-label="FORGE update settings"><header><b>FORGE APP UPDATES</b><button type="button" data-close aria-label="Close">✕</button></header><p id="forge-update-status">Checking FORGE version…</p><div class="forge-update-buttons"><button type="button" data-check>Check again</button><button type="button" data-refresh>Refresh FORGE</button></div><small>Safe refresh: your saved workouts, meal diary, measurements and private photos are not deleted.</small></div>';
+ panel.innerHTML='<div class="forge-update-dialog" role="dialog" aria-label="FORGE update settings"><header><b>FORGE APP UPDATES</b><button type="button" data-close aria-label="Close">✕</button></header><p id="forge-update-status">Checking FORGE version…</p><div class="forge-update-buttons"><button type="button" data-check>Check again</button><button type="button" data-refresh>Update / refresh FORGE</button></div><p style="font-size:11px;margin:12px 0"><a href="./refresh-forge.html?from=updater">Still seeing the old version? Safely repair cached app files ↗</a></p><small>Safe refresh: your saved workouts, meal diary, measurements and private photos are not deleted.</small></div>';
  document.body.append(panel);
  panel.querySelector('[data-close]').addEventListener('click',()=>panel.hidden=true);
  panel.querySelector('[data-check]').addEventListener('click',()=>check(true));
