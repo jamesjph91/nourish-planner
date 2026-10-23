@@ -2919,7 +2919,84 @@ function walkingCard(week){let ds=days().filter(d=>d.week===week);let count=ds.f
 function overview(){let ds=days().filter(d=>d.week===s.week);let wg=ds.filter(d=>d.gym).length;return hero()+(window.nourishHealthDashboard?window.nourishHealthDashboard():(window.nourishFoodDashboard?window.nourishFoodDashboard():''))+statcards()+`<div class="twocol"><div class="card"><div class="row"><h2 style="margin:0;font-size:19px">Your weekly rhythm</h2><span class="pill">Week ${s.week} / 4</span></div>${barChart(s.week)}<div class="chips" style="margin-top:19px"><span class="chip">${wg} gym days</span><span class="chip">${one(ds.reduce((a,d)=>a+d.n.protein,0)/7)}g avg protein</span><span class="chip">${one(ds.reduce((a,d)=>a+d.n.fibre,0)/7)}g estimated fibre</span></div></div><div class="card"><div class="eyebrow">SIMPLE ROUTINE</div><h2 style="margin:8px 0 12px;font-size:20px">One delivery. Fresh top-ups.</h2><p class="muted" style="line-height:1.8">Order shelf-stable ingredients and freezer staples for all 28 days. Add week-one fresh food to the delivery, then use the auto-calculated top-up list for weeks two, three and four.</p><div class="actions"><button class="btn dark" onclick="navigate('shopping')">Open shopping →</button><button class="btn" onclick="navigate('prep')">Prep routine</button></div></div></div>${walkingCard(s.week)}<div class="sectionhead"><h2>This week's meals</h2><button class="btn" onclick="navigate('planner')">Full calendar →</button></div>${moveBanner()}${weekBtns()}${renderDays(s.week)}<div class="notice" style="margin-top:22px"><b>Planning targets, not medical advice:</b> Rest days ${money(s.settings.restCal)} kcal; gym days ${money(s.settings.gymCal)} kcal. Your individual energy needs depend on your activity, health and weight trends. Packet labels and individual needs vary; evaluate hunger, recovery, gym performance and weight trends before adjusting.</div>`;}
 function dayCard(d){let excess=d.n.kcal>goal(d)+75,protpct=Math.min(100,d.n.protein/s.settings.prot*100);return `<div class="day"><div class="day-head"><div><div class="weekday">${d.weekday}</div><div class="daynum">Day ${d.day}</div></div><button class="gym ${d.gym?'':'off'}" aria-label="Toggle gym day ${d.day}" onclick="toggleGym(${d.day})">${d.gym?'🏋 Gym':'○ Rest'}</button></div><div><div class="daytotal" style="color:${excess?'#ad6241':'var(--ink)'}">${money(d.n.kcal)}<small> kcal</small></div><div class="muted" style="font-size:11px">${money(d.n.protein)}g protein · ${money(d.n.carbs)}g carbs</div><div class="prog" title="Protein vs target"><i style="width:${protpct}%"></i></div><div class="forge-day-guidance"><span>${d.n.kcal>=goal(d)?"+":""}${money(d.n.kcal-goal(d))} kcal vs reference</span><span>${money(s.settings.prot)}g protein reference</span></div></div>${CATS.map((cat,i)=>{let rr=rs[d.ids[i]],meal=d.meals[i],selected=moveFrom?.day===d.day&&moveFrom?.cat===cat,mismatch=window.forgeDiet&&!window.forgeDiet.matches(rr);return `<div class="meal-block ${selected?'selected':''}" draggable="true" data-day="${d.day}" data-cat="${cat}" ondragstart="dragStart(event,${d.day},'${cat}')" ondragover="dragOver(event,${d.day},'${cat}')" ondragleave="dragLeave(event)" ondrop="dropSlot(event,${d.day},'${cat}')"><button class="meal" onclick="openRecipe('${rr.id}',${d.day},'${cat}')"><small>${foodemoji[cat]} ${cat}</small><b>${esc(rr.name)}</b>${mismatch?`<span class="forge-diet-conflict">⚠ Outside current filters — review this meal</span>`:""}<span>${money(meal.n.kcal)} kcal · ${money(meal.n.protein)}g protein ↗</span></button><label class="forge-serving-control">Household portions <select aria-label="Servings for day ${d.day} ${cat}" onchange="forgeDiet.setServings(${d.day},'${cat}',this.value)">${[1,2,3,4,5,6,7,8].map(q=>`<option value="${q}" ${q===(window.forgeDiet?.portions(d.day,cat)||1)?"selected":""}>${q}</option>`).join("")}</select></label><div class="meal-actions"><button class="forge-smart-picks" type="button" onclick="openMealPicker(${d.day},\'${cat}\',\'smart\')" aria-label="Find smart ${cat} choices for day ${d.day}">✦ Smart picks</button><button class="meal-change-btn" type="button" onclick="openMealPicker(${d.day},'${cat}')" aria-label="Choose another ${cat} for day ${d.day}">▦ Change meal</button><button class="swap-btn ${selected?'active':''}" onclick="moveStart(${d.day},'${cat}')" aria-label="${moveFrom?'Swap here':'Select to swap'} day ${d.day} ${cat}">${selected?'✓ Selected':moveFrom?.cat===cat?'↔ Swap here':'↔ Swap'}</button><button class="fav-mini ${isFav(rr.id)?'faved':''}" aria-label="${isFav(rr.id)?'Remove from':'Add to'} favourites" aria-pressed="${isFav(rr.id)}" onclick="toggleFavorite('${rr.id}')">${isFav(rr.id)?'♥':'♡'}</button></div></div>`;}).join('')}</div>`;}
 function renderDays(week){return `<div class="days">${days().filter(d=>d.week===week).map(dayCard).join('')}</div>`;}
-function planner(){let dt=days(),over=dt.filter(d=>d.n.kcal>goal(d)+75).length;return `<div class="sectionhead"><div><div class="eyebrow">28 DAYS / 84 MEALS</div><h2>Meal calendar & swapping</h2></div><div class="actions"><button class="btn" onclick="exportPlan()">↓ Export 28-day CSV</button><button class="btn" onclick="navigate('settings')">Adjust goals</button></div></div><div class="forge-plan-intro"><span>28-DAY FLEXIBLE PLAN</span><p>Tap <b>Change meal</b> on any breakfast, lunch or dinner to browse alternatives. Your selected recipe updates the meal calendar and shopping list.</p><button type="button" class="btn dark" onclick="document.getElementById('library')?.scrollIntoView({behavior:'smooth',block:'start'})">Browse full meal library ↓</button></div><div class="notice" style="margin:0 0 16px">Drag meals on Chromebook, or tap <b>Swap</b> then <b>Swap here</b> on your phone. You can switch weeks between the two taps. For recipe replacements, use the library below. <b>${over} of 28 days</b> currently exceed the rest/gym calorie references by more than 75 kcal.</div>${window.forgeDiet?.panel()||''}${moveBanner()}${weekBtns()}${forgeSmartSummary(s.week)}<div style="margin-top:18px">${renderDays(s.week)}</div>${quickLibrary()}<div class="sectionhead"><h2>Weekly macro overview</h2></div><div class="grid4">${[1,2,3,4].map(w=>{let ds=dt.filter(d=>d.week===w);let k=ds.reduce((a,d)=>a+d.n.kcal,0)/7,p=ds.reduce((a,d)=>a+d.n.protein,0)/7;return `<div class="stat"><div class="mini">WEEK ${w}</div><strong>${money(k)}<span style="font-size:13px"> kcal</span></strong><small>${money(p)}g avg protein / day</small></div>`}).join('')}</div>`;}
+
+/* FORGE v35: deterministic, opt-in seven-day plan generator.
+   Preview never writes to saved state; acceptance uses the existing assignment engine.
+   Matches ingredient filters but never certifies allergens. */
+function forgeGenerateWeek(week){
+ const index=Number(week);if(!Number.isInteger(index)||index<1||index>4)return null;
+ const weekDays=days().filter(x=>x.week===index),used=new Set(),suggested=[];
+ for(const day of weekDays){
+  const plans=[],totals={kcal:0,protein:0};
+  for(let ci=0;ci<CATS.length;ci++){
+   const cat=CATS[ci],last=ci===2,energyGoal=last?goal(day)-totals.kcal:goal(day)*[.28,.33,.39][ci],
+    proteinGoal=last?s.settings.prot-totals.protein:s.settings.prot*[.28,.33,.39][ci];
+   const options=Object.values(rs).filter(x=>x.cat===cat&&(!window.forgeDiet||window.forgeDiet.matches(x))&&x.items&&Object.keys(x.items).length);
+   if(!options.length)return {error:'No '+cat+' recipes match your current preferences. Broaden the filters or add your own compatible recipe.'};
+   const ranked=options.map(recipe=>{
+    const n=portion(recipe.id,day.gym).n;
+    const calorieGap=Math.abs(n.kcal-energyGoal)/Math.max(300,goal(day));
+    const proteinGap=Math.max(0,proteinGoal-n.protein)/Math.max(20,s.settings.prot);
+    const cuisine=window.forgeDiet?.cuisine(recipe)||'Other';
+    return {recipe,n,cuisine,score:calorieGap*100+proteinGap*105+(used.has(recipe.id)?150:0)+Math.min(45,recipe.time)/100};
+   }).sort((a,b)=>a.score-b.score||a.recipe.id.localeCompare(b.recipe.id));
+   // Deterministic variety among the five best, without choosing recipes already used.
+   const eligible=ranked.filter(x=>!used.has(x.recipe.id));
+   const finalists=(eligible.length?eligible:ranked).slice(0,5);
+   const choice=finalists[(day.day+ci*2)%finalists.length];
+   if(!choice)return {error:'Not enough matching recipes to generate the week.'};
+   used.add(choice.recipe.id);plans.push({cat,id:choice.recipe.id,name:choice.recipe.name,kcal:choice.n.kcal,protein:choice.n.protein});
+   totals.kcal+=choice.n.kcal;totals.protein+=choice.n.protein;
+  }
+  suggested.push({day:day.day,weekday:day.weekday,gym:day.gym,meals:plans,...totals,target:goal(day)});
+ }
+ return {week:index,days:suggested};
+}
+function forgeAutoWeekPreview(week){
+ const next=forgeGenerateWeek(week),inner=document.getElementById('modalinner');
+ if(!next||!inner)return;
+ window.forgeAutoWeek=next.error?null:next;
+ inner.innerHTML='<div class="forge-auto-plan"><div class="eyebrow">FORGE · WEEKLY PLANNER</div><h2>Build week '+Number(week)+'</h2>'+
+ (next.error?'<p class="notice">'+esc(next.error)+'</p>':
+ '<p class="short">This is a preview of <b>21 suggested meals</b> using your calorie and protein references, dietary filters and existing recipe library. Cooking times and portions are estimates. Your current plan is unchanged until you apply these suggestions.</p>'+
+ '<div class="forge-auto-list">'+next.days.map(day=>'<section><div><b>Day '+day.day+' · '+esc(day.weekday)+'</b><small>'+money(day.kcal)+' kcal · '+money(day.protein)+'g protein · target '+money(day.target)+' kcal</small></div>'+
+ day.meals.map(meal=>'<p><span>'+esc(meal.cat)+'</span> '+esc(meal.name)+'</p>').join('')+'</section>').join('')+'</div>'+
+ '<p class="forge-auto-caution">Check food labels and allergies yourself. This generator does not guarantee target attainment, nutritional completeness, variety requirements or medical suitability. It will replace all 21 meal slots in the selected week only.</p>'+
+ '<button type="button" class="btn dark" onclick="forgeApplyAutoWeek()">✓ Apply week '+next.week+' to my plan</button>')+'</div>';
+ document.getElementById('modalback').classList.add('open');
+}
+function forgeApplyAutoWeek(){
+ const next=window.forgeAutoWeek;if(!next||!Number.isInteger(next.week)||next.days.length!==7)return false;
+ // Validate every slot before touching persistent state.
+ for(const day of next.days){
+  const base=raw.find(x=>x.day===day.day);if(!base||day.meals.length!==3)return false;
+  for(const item of day.meals)if(!CATS.includes(item.cat)||!rs[item.id]||rs[item.id].cat!==item.cat||(window.forgeDiet&&!window.forgeDiet.matches(rs[item.id])))return false;
+ }
+ const previous=next.days.flatMap(x=>CATS.map(cat=>({day:x.day,cat,id:getSlot(x.day,cat)})));
+ for(const day of next.days)for(const item of day.meals)
+  if(!assignSlot(day.day,item.cat,item.id))return false;
+ window.forgeAutoWeek=null;
+ window.forgeAutoUndo=previous;
+ s.week=next.week;s.shopDirty=true;moveFrom=null;s.undo=null;save();closeModal();navigate('planner');
+ notify('Week '+next.week+' updated. Shopping and planned nutrition have recalculated.');
+ return true;
+}
+function forgeUndoAutoWeek(){
+ const rows=window.forgeAutoUndo;if(!Array.isArray(rows)||rows.length!==21)return false;
+ for(const row of rows)if(!rs[row.id]||rs[row.id].cat!==row.cat)return false;
+ // Undo may restore an older recipe that no longer matches the new filters;
+ // restore exact prior valid slots directly, without silently discarding them.
+ for(const row of rows){const baseline=raw.find(x=>x.day===row.day);if(!baseline)return false;
+  const key=row.day+':'+row.cat;if(baseline[row.cat]===row.id)delete s.swaps[key];else s.swaps[key]=row.id;
+ }
+ window.forgeAutoUndo=null;s.shopDirty=true;save();renderCurrent();notify('Previous week plan restored.');return true;
+}
+function forgeAutoWeekCard(week){
+ return '<section class="forge-auto-card"><div><small>AUTOMATIC WEEK PLANNING</small><h3>Plan seven days in one go</h3><p>Choose meals around your saved goals and ingredient preferences. Preview all 21 meals before making changes.</p></div><div class="forge-auto-buttons"><button type="button" onclick="forgeAutoWeekPreview('+Number(week)+')">✦ Generate week '+Number(week)+'</button>'+
+ (window.forgeAutoUndo?'<button type="button" onclick="forgeUndoAutoWeek()">↶ Undo last generated week</button>':'')+'</div></section>';
+}
+
+function planner(){let dt=days(),over=dt.filter(d=>d.n.kcal>goal(d)+75).length;return `<div class="sectionhead"><div><div class="eyebrow">28 DAYS / 84 MEALS</div><h2>Meal calendar & swapping</h2></div><div class="actions"><button class="btn" onclick="exportPlan()">↓ Export 28-day CSV</button><button class="btn" onclick="navigate('settings')">Adjust goals</button></div></div><div class="forge-plan-intro"><span>28-DAY FLEXIBLE PLAN</span><p>Tap <b>Change meal</b> on any breakfast, lunch or dinner to browse alternatives. Your selected recipe updates the meal calendar and shopping list.</p><button type="button" class="btn dark" onclick="document.getElementById('library')?.scrollIntoView({behavior:'smooth',block:'start'})">Browse full meal library ↓</button></div><div class="notice" style="margin:0 0 16px">Drag meals on Chromebook, or tap <b>Swap</b> then <b>Swap here</b> on your phone. You can switch weeks between the two taps. For recipe replacements, use the library below. <b>${over} of 28 days</b> currently exceed the rest/gym calorie references by more than 75 kcal.</div>${window.forgeDiet?.panel()||''}${forgeAutoWeekCard(s.week)}${moveBanner()}${weekBtns()}${forgeSmartSummary(s.week)}<div style="margin-top:18px">${renderDays(s.week)}</div>${quickLibrary()}<div class="sectionhead"><h2>Weekly macro overview</h2></div><div class="grid4">${[1,2,3,4].map(w=>{let ds=dt.filter(d=>d.week===w);let k=ds.reduce((a,d)=>a+d.n.kcal,0)/7,p=ds.reduce((a,d)=>a+d.n.protein,0)/7;return `<div class="stat"><div class="mini">WEEK ${w}</div><strong>${money(k)}<span style="font-size:13px"> kcal</span></strong><small>${money(p)}g avg protein / day</small></div>`}).join('')}</div>`;}
 function recipes(){let q=s.query.toLowerCase();let vals=Object.values(rs).filter(x=>(!window.forgeDiet||window.forgeDiet.matches(x))&&(s.recipeFilter==='all'||(s.recipeFilter==='favourites'&&isFav(x.id))||(s.recipeFilter==='mine'&&x.custom)||x.cat===s.recipeFilter)&&x.name.toLowerCase().includes(q));return `<div class="sectionhead"><div><div class="eyebrow">THE RECIPE LIBRARY</div><h2>${Object.keys(rs).length} balanced meal ideas</h2></div><div class="actions"><button class="btn dark" onclick="openCreateMeal()">＋ Create meal</button><span class="pill">Amounts per serving</span></div></div><div class="filterbar" style="margin-bottom:20px"><div class="tabs">${['all','favourites','breakfast','lunch','dinner','mine'].map(x=>`<button class="tab ${s.recipeFilter===x?'on':''}" onclick="s.recipeFilter='${x}';save();renderCurrent()">${x==='all'?'All meals':x==='favourites'?'♥ Favourites':x==='mine'?'My Meals':x[0].toUpperCase()+x.slice(1)}</button>`).join('')}</div><input class="search" placeholder="Find a dish…" aria-label="Search recipes" value="${esc(s.query)}" oninput="s.query=this.value;save();updateRecipeGrid()"></div><div id="recipe-list">${recipeGrid(vals)}</div>`;}
 function recipeGrid(vals){return `<div class="recipegrid">${vals.length?vals.map(r=>`<article class="card recipe-card"><div class="foodhead"><div class="foodicon">${foodemoji[r.cat]}</div><button class="heart ${isFav(r.id)?'faved':''}" aria-label="${isFav(r.id)?'Remove':'Add'} ${esc(r.name)} ${isFav(r.id)?'from':'to'} favourites" aria-pressed="${isFav(r.id)}" onclick="toggleFavorite('${r.id}')">${isFav(r.id)?'♥':'♡'}</button></div><div class="eyebrow">${r.cat} · ${r.time} MIN · ${esc(window.forgeDiet?.cuisine(r)||r.cuisine||"Mixed")}</div><h3>${esc(r.name)}</h3><div class="recstats"><span><b>${money(r.nutrition.kcal)}</b> kcal</span><span><b>${money(r.nutrition.protein)}g</b> protein</span><span>${money(r.nutrition.fibre)}g fibre</span></div><button class="btn dark" onclick="openRecipe('${r.id}')">Ingredients & method →</button><button class="btn" onclick="openAssign('${r.id}')">＋ Add to meal plan</button>${r.custom?`<button class="btn" onclick="openCreateMeal('${r.id}')">✎ Edit my meal</button>`:''}</article>`).join(''):'<p class="short">No matching recipes. Try a different filter or search.</p>'}</div>`;}
 function updateRecipeGrid(){let q=s.query.toLowerCase();document.getElementById('recipe-list').innerHTML=recipeGrid(Object.values(rs).filter(x=>(!window.forgeDiet||window.forgeDiet.matches(x))&&(s.recipeFilter==='all'||(s.recipeFilter==='favourites'&&isFav(x.id))||(s.recipeFilter==='mine'&&x.custom)||x.cat===s.recipeFilter)&&x.name.toLowerCase().includes(q)));}
