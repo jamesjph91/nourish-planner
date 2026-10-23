@@ -2,7 +2,7 @@
    Google identity and server-side data ownership remain in Firebase; this is UI only. */
 (()=>{'use strict';
 const ACCOUNT='nourish-last-account-v1';
-let status='checking',account=null,openedGuest=false,mode='welcome',notice='';
+let status='checking',account=null,openedGuest=false,mode='welcome',notice='',conflictHasRemote=false;
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const node=id=>document.getElementById(id);
 const remembered=()=>{try{return !!localStorage.getItem(ACCOUNT)}catch{return true}};
@@ -44,6 +44,11 @@ function signupForm(){
 function welcome(){
  if(status==='checking'||status==='loading')return '<div class="fa37-intro"><small>PRIVATE ACCOUNTS</small><h2>Restoring your account…</h2><p>Checking your Google sign-in and private plan before showing personal data.</p></div>'+
  '<div class="fa37-buttons"><button type="button" data-fa-out>Switch Google account</button></div>';
+ if(status==='conflict')return '<div class="fa37-intro"><small>PRIVATE ACCOUNT DECISION</small><h2>Choose your FORGE data</h2><p>'+escape(notice||'This browser and Google account have different plans.')+'</p><p>Nothing will be uploaded until you choose. Only use the device plan if the records belong to you. If unsure, export a backup before continuing.</p></div>'+
+ '<div class="fa37-buttons">'+(conflictHasRemote?'<button type="button" data-fa-conflict="cloud">Use my private cloud plan</button>':'')+
+ '<button type="button" data-fa-conflict="device">Use this browser’s plan</button>'+
+ '<button type="button" data-fa-conflict="fresh">Start with a fresh profile</button>'+
+ '<button type="button" data-fa-out>Sign out</button></div>';
  if(status==='error')return '<div class="fa37-intro"><small>ACCOUNT CHECK REQUIRED</small><h2>We couldn’t verify your account</h2><p>Personal records stay hidden until sign-in succeeds. Check your internet connection and try again. Avoid clearing device storage.</p></div>'+
  '<div class="fa37-buttons"><button type="button" data-fa-retry>Retry sign-in check</button><button type="button" data-fa-out>Sign out safely</button></div>';
  if(status==='ready'&&mode==='manage')return accountCard();
@@ -99,9 +104,11 @@ function mount(){
  render();
 }
 document.addEventListener('click',event=>{
- const el=event.target.closest?.('[data-fa-in],[data-fa-out],[data-fa-retry],[data-fa-close],[data-fa-guest]');
+ const el=event.target.closest?.('[data-fa-in],[data-fa-out],[data-fa-retry],[data-fa-close],[data-fa-guest],[data-fa-conflict]');
  if(!el||!node('forge-account-gate')?.contains(el))return;
- if(el.hasAttribute('data-fa-in')){
+ if(el.hasAttribute('data-fa-conflict')){
+  const decision=el.getAttribute('data-fa-conflict');if(window.forgeCloudResolveConflict?.(decision)){status='loading';show('Processing your selected account data…')}
+ }else if(el.hasAttribute('data-fa-in')){
   const operation=el.getAttribute('data-fa-in');
   if(operation==='create'||operation==='signin'){
    mode=operation;
@@ -129,6 +136,7 @@ document.addEventListener('submit',event=>{
 });
 window.addEventListener('forge:cloud-session',event=>onAuth(event.detail?.state,event.detail?.user));
 window.addEventListener('forge:cloud-ready',cloudReady);
+window.addEventListener('forge:cloud-conflict',event=>{status='conflict';conflictHasRemote=!!event.detail?.hasRemote;notice=String(event.detail?.reason||'Data selection required');render()});
 window.addEventListener('forge:cloud-error',event=>cloudError(event.detail?.message));
 window.addEventListener('storage',event=>{if(event.key==='nourish-last-account-v1'&&event.newValue!==event.oldValue){status='checking';guard();location.reload()}});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
