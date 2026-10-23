@@ -14,6 +14,12 @@ function badge(){
  const name=signed()?account?.displayName||account?.email||'My profile':openedGuest?'Guest · local only':remembered()?'Checking account…':'Your FORGE profile';
  chip.textContent='◉ '+String(name).slice(0,30);
  chip.title=signed()?'Manage this private FORGE account':'Open FORGE account sign-in';
+ const mobile=node('forge-account-mobile-chip');
+ if(mobile){
+  mobile.textContent='◉';
+  mobile.title=chip.title+(signed()?' · '+String(account?.email||''):'');
+  mobile.setAttribute('aria-label','Manage your FORGE personal account');
+ }
 }
 function show(msg=''){notice=msg;render()}
 function profile(){
@@ -101,6 +107,15 @@ function mount(){
  btn.addEventListener('click',showManage);
  const top=document.querySelector('.topline');
  if(top)top.append(btn);
+ const mobile=document.querySelector('.forge-mobile-header');
+ if(mobile){
+  const compact=document.createElement('button');
+  compact.type='button';compact.id='forge-account-mobile-chip';compact.className='fa37-mobile-chip';
+  compact.setAttribute('aria-label','Manage your FORGE account');
+  compact.textContent='◉';compact.addEventListener('click',showManage);
+  const version=mobile.querySelector('.forge-version-btn');
+  if(version)mobile.insertBefore(compact,version);else mobile.append(compact);
+ }
  render();
 }
 document.addEventListener('click',event=>{
