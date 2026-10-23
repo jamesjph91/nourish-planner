@@ -66,7 +66,7 @@ test('Installed mobile index retains original planner and has FORGE navigation s
  assert.match(html,/data-tab="planner"/);
  assert.match(html,/<section class="tabpage hidden" id="planner">/);
  assert.match(html,/forge-food-navigation\.js\?v=29/);
- assert.match(html,/forge-food-navigation\.css\?v=29/);
+ assert.match(html,/forge-food-navigation\.css\?v=30/);
  assert.match(css,/\.forge-food-parent-active/);
  assert.match(css,/scroll-snap-type:x mandatory/);
 });
