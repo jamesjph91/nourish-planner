@@ -2882,7 +2882,7 @@ function resetPrivatePlan(){
  try{localStorage.removeItem('nourishHigherDeficitV1');}catch(e){}
  navigate('overview');
 }
-function exportBackup(){const backup={app:'nourish',version:2,exportedAt:new Date().toISOString(),state:s};download('nourish-plan-backup.json',JSON.stringify(backup,null,2),'application/json;charset=utf-8');notify('Backup downloaded. Transfer the file to your other device, then Import backup there.');}
+function exportBackup(){const backup={app:'nourish',version:2,exportedAt:new Date().toISOString(),state:s};download('nourish-plan-backup.json',JSON.stringify(backup,null,2),'application/json;charset=utf-8');notify('Backup download requested. Check your Downloads for nourish-plan-backup.json before relying on it.');}
 async function importBackup(file){if(!file)return;try{if(file.size>1400000){throw new Error('This backup is unusually large.');}
  const blob=JSON.parse(await file.text());if(blob.app!=='nourish'||!blob.state||typeof blob.state!=='object')throw new Error('Not a Nourish backup file.');const x=blob.state;
  const own=registerMyMeals(x.customFoods,x.customRecipes);
@@ -2899,14 +2899,34 @@ async function importBackup(file){if(!file)return;try{if(file.size>1400000){thro
  }catch(e){alert('Could not import this file: '+e.message);}finally{document.getElementById('backup-input').value='';}}
 
 const money=x=>Math.round(x).toLocaleString('en-GB');const one=x=>Math.round(x*10)/10;const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const save=()=>{try{localStorage.setItem('nourishHigherDeficitV1',JSON.stringify(s));}catch(e){} window.dispatchEvent(new CustomEvent('nourish:changed'));};
+const save=()=>{let saved=false,reason='';try{localStorage.setItem('nourishHigherDeficitV1',JSON.stringify(s));saved=true;}catch(e){reason=e?.name||'Storage error';}
+ if(typeof window.dispatchEvent==='function'&&typeof CustomEvent==='function')window.dispatchEvent(new CustomEvent('forge:save-status',{detail:{ok:saved,at:saved?Date.now():null,error:reason}}));
+ window.dispatchEvent(new CustomEvent('nourish:changed'));return saved;};
 const portion=(id,gym)=>{const rr=rs[id],items={...rr.items};if(gym)for(const [k,v] of Object.entries(rr.gymExtras||{}))items[k]=(items[k]||0)+v;const n={};for(const k of ['kcal','protein','carbs','fat','fibre'])n[k]=Object.entries(items).reduce((total,[id,amount])=>{const ff=food[id],unit=(ff.unit==='each'||ff.unit==='slice')?amount:amount/100;return total+ff[k]*unit},0);if(rr.custom&&rr.manualNutrition)return {items,n:{...rr.manualNutrition}};return {items,n};};
 const days=()=>raw.map(d=>{const gym=s.gym[d.day]!==undefined?s.gym[d.day]:(d.gym||(s.settings.extraGym&&d.weekday==='Saturday'));const ids=['breakfast','lunch','dinner'].map(cat=>s.swaps[`${d.day}:${cat}`]||d[cat]);const meals=ids.map(id=>portion(id,gym));const n={};for(const k of ['kcal','protein','carbs','fat','fibre'])n[k]=meals.reduce((t,m)=>t+m.n[k],0);return {...d,ids,meals,n,gym};});
 const goal=d=>d.gym?s.settings.gymCal:s.settings.restCal;
 const dnut=(d,k)=>one(d.n[k]);const avg=k=>one(days().reduce((a,d)=>a+d.n[k],0)/28);const nfmt=(n,unit='g')=>{const q=one(n);return (Number.isInteger(q)?q:q.toFixed(1))+' '+unit};
 const qty=(id,n)=>{const ff=food[id],u=ff.unit;if(u==='each'||u==='slice')return u==='each'?String(one(n)):one(n)+' slices';if(u==='ml')return nfmt(n,'ml');return n>=1000?nfmt(n/1000,'kg'):nfmt(n,'g')};
 const foodemoji={breakfast:'🥣',lunch:'🥗',dinner:'🍲'};
-function navigate(t){if(s.tab==='diary'&&t!=='diary')window.nourishFoodCleanup?.();s.tab=t;save();document.querySelectorAll('.tabpage').forEach(e=>e.classList.toggle('hidden',e.id!==t));document.querySelectorAll('#nav button').forEach(e=>e.classList.toggle('on',e.dataset.tab===t));renderCurrent();window.scrollTo({top:0,behavior:'smooth'});}
+let forgeHistoryBack=false;
+function navigate(t){
+ const page=document.getElementById(t);
+ if(!page||!page.classList.contains('tabpage'))return;
+ const previous=s.tab;
+ if(s.tab==='diary'&&t!=='diary')window.nourishFoodCleanup?.();
+ s.tab=t;save();
+ document.querySelectorAll('.tabpage').forEach(e=>e.classList.toggle('hidden',e.id!==t));
+ document.querySelectorAll('#nav button').forEach(e=>e.classList.toggle('on',e.dataset.tab===t));
+ if(!forgeHistoryBack&&previous!==t&&typeof history!=='undefined'&&typeof history.pushState==='function')
+  history.pushState({forgeTab:t},'', '#forge/'+t);
+ renderCurrent();window.scrollTo({top:0,behavior:'smooth'});
+}
+if(typeof window.addEventListener==='function')window.addEventListener('popstate',event=>{
+ const target=event.state?.forgeTab||(/^#forge\/(overview|workouts|diary|health|progress|planner|recipes|shopping|prep|settings)$/.exec(typeof location!=='undefined'?location.hash:'')||[])[1];
+ if(target&&target!==s.tab&&document.getElementById(target)?.classList.contains('tabpage')){
+  forgeHistoryBack=true;try{navigate(target)}finally{forgeHistoryBack=false}
+ }
+});
 function setWeek(w){s.week=w;save();renderCurrent();}
 function weekBtns(){return `<div class="weeks">${[1,2,3,4].map(w=>`<button class="weekbtn ${s.week===w?'on':''}" onclick="setWeek(${w})">Week ${w}</button>`).join('')}</div>`;}
 function hero(){return `<div class="hero"><div><div class="eyebrow">HIGH-PROTEIN MEAL PLAN • 28 DAYS</div><h1>Build consistency.<br>Lose fat. Stay strong.</h1><p>A 28-day meal and activity routine with three high-protein meals daily, measured portions, manageable dog walks and more carbohydrates on gym days. Change workout days or meals and your shopping updates instantly.</p><div class="actions"><button class="btn primary" onclick="navigate('planner')">Organise your meal plan →</button><button class="btn" onclick="navigate('shopping')">Plan the monthly order ↗</button><button class="btn" onclick="navigate('workouts')">🏋 Open Gym Lab →</button><button class="btn" onclick="navigate('diary')">🍎 Log your food →</button></div></div><div class="hero-art">🥗<br>🏋️</div></div>`;}
@@ -3022,7 +3042,12 @@ function exportShopping(){let rows=shoppingRows();download(`nourish-${s.scope}-s
 function copyShopping(){let rows=shoppingRows().filter(x=>!s.checked[`${s.scope}:${Object.keys(food).find(id=>food[id].name===x.name)}`]);let txt=`FORGE: ${s.scope.toUpperCase()} REMAINING SHOPPING LIST\n(Check store pack sizes, labels and use-by dates)\n\n`+rows.map(x=>`[ ] ${x.name} — ${x.display} (${x.group})`).join('\n');if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>alert('Shopping list copied.')).catch(()=>fallbackCopy(txt));}else fallbackCopy(txt);}
 function fallbackCopy(txt){const a=document.createElement('textarea');a.value=txt;a.style.position='fixed';a.style.top='0';document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy');}catch(e){}a.remove();if(ok)alert('Shopping list copied.');else prompt('Select and copy the list:',txt);}
 function exportPlan(){let rows=days().flatMap(d=>d.ids.map((id,i)=>[d.week,d.day,d.weekday,d.gym?'gym':'rest',['Breakfast','Lunch','Dinner'][i],rs[id].name,window.forgeDiet?.portions(d.day,['breakfast','lunch','dinner'][i])||1,one(d.meals[i].n.kcal),one(d.meals[i].n.protein),Object.entries(d.meals[i].items).map(([fid,amount])=>food[fid].name+' '+qty(fid,amount)).join('; ')]));download('nourish-higher-deficit-28-day-meal-plan.csv',[['Week','Day','Weekday','Training','Meal','Recipe','Household servings','kcal per person','Protein g per person','Ingredients (1 person)'].map(csvCell).join(','),...rows.map(row=>row.map(csvCell).join(','))].join('\r\n'));}
-document.getElementById('modalback').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});document.querySelectorAll('#nav button').forEach(x=>x.addEventListener('click',()=>navigate(x.dataset.tab)));navigate(s.tab);
+document.getElementById('modalback').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});document.querySelectorAll('#nav button').forEach(x=>x.addEventListener('click',()=>navigate(x.dataset.tab)));if(typeof history!=='undefined'&&typeof history.replaceState==='function'){
+ const requested=(/^#forge\/(overview|workouts|diary|health|progress|planner|recipes|shopping|prep|settings)$/.exec(typeof location!=='undefined'?location.hash:'')||[])[1];
+ if(requested)s.tab=requested;
+ history.replaceState({forgeTab:s.tab},'', '#forge/'+s.tab);
+}
+navigate(s.tab);
 
 window.nourishCloudBridge={
  resetPrivatePlan,
