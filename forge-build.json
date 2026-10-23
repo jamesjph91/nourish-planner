@@ -1,12 +1,13 @@
 {
-  "version": 32,
+  "version": 33,
   "name": "FORGE",
   "released": "2026-10-23",
   "features": [
-    "180 original breakfast, lunch and dinner recipe ideas",
-    "Smart meal matching against planned calorie and protein targets",
-    "Sort and filter meals by goals, protein, calories and prep time",
-    "Review day-level nutrition before confirming a swap",
-    "7-day planned nutrition overview; custom meals and tracking preserved"
+    "210 unique original recipe ideas: 68 breakfasts, 70 lunches, 72 dinners",
+    "Ingredient-level dietary preferences and cuisine-inspired meal filters",
+    "Carefully qualified ingredient exclusion controls; not certified allergen screening",
+    "Household portions from 1 to 8 per meal with recalculated shopping totals",
+    "Keep saved plan intact and flag incompatible meals for review",
+    "Preserve preferences through backups and supported cloud sync"
   ]
 }
