@@ -1,0 +1,20 @@
+/* FORGE v35 automatic meal generation */
+.forge-auto-card{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:15px;margin:14px 0;padding:19px;border:1px solid #385a2f;border-radius:17px;background:radial-gradient(circle at 100% 0,#3e602545,transparent 52%),#111d13}
+.forge-auto-card small{color:#b9ff16;letter-spacing:1.4px;font-size:9px;font-weight:950}
+.forge-auto-card h3{font-size:20px;font-weight:950;margin:7px 0!important;color:#edf7eb}
+.forge-auto-card p{color:#a4b6a2;font-size:11px;line-height:1.6;margin:0}
+.forge-auto-card>div:first-child{flex:1 1 220px}
+.forge-auto-buttons{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.forge-auto-buttons button,.forge-auto-plan>.btn{color:#071009;background:#b9ff16;border:1px solid #b9ff16;border-radius:11px;padding:13px 15px;min-height:45px;font-size:11px;font-weight:950;cursor:pointer}
+.forge-auto-buttons button+button{background:#0d180f;color:#b9ff16;border-color:#507640}
+.forge-auto-plan h2{font-size:28px;margin:8px 0 12px;color:#f2faef}
+.forge-auto-plan>.short{font-size:11px;line-height:1.6;color:#a9bea6}
+.forge-auto-list{max-height:51dvh;overflow:auto;display:grid;gap:8px;margin:15px 0}
+.forge-auto-list>section{border:1px solid #2d412d;background:#0a160c;border-radius:13px;padding:13px}
+.forge-auto-list>section>div{display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.forge-auto-list>section>div b{font-size:13px;color:#b9ff16}
+.forge-auto-list>section>div small{font-size:10px;color:#aebcac}
+.forge-auto-list p{color:#e0eddd;font-size:11px;line-height:1.5;margin:5px 0}
+.forge-auto-list p span{display:inline-block;text-transform:uppercase;color:#8fa98d;font-size:9px;letter-spacing:.8px;width:65px}
+.forge-auto-caution{color:#f5c888;background:#2a2113;border:1px solid #74532b;padding:11px 13px;border-radius:10px;font-size:10px;line-height:1.6}
+@media(max-width:520px){.forge-auto-card{padding:13px}.forge-auto-buttons,.forge-auto-buttons button{width:100%}.forge-auto-plan h2{font-size:25px}.forge-auto-list{max-height:48dvh}}
