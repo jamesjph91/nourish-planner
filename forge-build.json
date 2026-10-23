@@ -1,13 +1,14 @@
 {
-  "version": 36,
+  "version": 37,
   "name": "FORGE",
   "released": "2026-10-23",
   "features": [
-    "Display verified local-save and online/offline status without claiming cloud sync",
-    "Warn visibly if local storage fails or another tab changes the same plan",
-    "Support Android/browser Back between existing FORGE screens",
-    "Request optional persistent browser storage and explain photo backup limitations",
-    "Improved mobile keyboard focus, touch targets and reduced motion",
-    "All meal plans and workout trackers retained"
+    "Personal FORGE account welcome and Google sign-in flow",
+    "Create an individual profile with nickname and optional weight goal",
+    "Prevent sharing of active browser plan on sign-out or account switch",
+    "Require consent before adopting unclaimed guest browser data",
+    "Per-UID local progress photo journals and explicit owner-only legacy photo migration",
+    "Personal account switcher in the mobile header",
+    "Cloud rules enforcement must be verified in the live Firebase console before privacy guarantees"
   ]
 }
