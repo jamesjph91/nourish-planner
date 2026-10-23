@@ -74,6 +74,6 @@ test('Reliability layer preserves all personal data and avoids mutation observer
  assert.match(rel,/nourishHigherDeficitV1/);
  assert.doesNotMatch(rel,/localStorage\.setItem|localStorage\.clear|localStorage\.removeItem|indexedDB\.deleteDatabase/);
  assert.doesNotMatch(rel,/MutationObserver|document\.write/);
- assert.match(rel,/not included/i);
+ assert.match(rel,/NOT local IndexedDB progress photos/);
  assert.match(fs.readFileSync('forge-v36-reliability.css','utf8'),/prefers-reduced-motion/);
 });
