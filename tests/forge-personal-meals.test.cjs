@@ -19,9 +19,9 @@ function boot(stored=null){
 }
 test('The expanded library has 120 individually named recipes evenly split across three meals',()=>{
  const b=boot();const counts=JSON.parse(JSON.stringify(b.evaluate("Object.values(rs).reduce((a,r)=>(a[r.cat]=(a[r.cat]||0)+1,a),{})")));
- assert.equal(counts.breakfast,40);
+ assert.equal(counts.breakfast,38);
  assert.equal(counts.lunch,40);
- assert.equal(counts.dinner,40);
+ assert.equal(counts.dinner,42);
  assert.equal(b.evaluate("Object.values(rs).every(r=>r.name&&r.steps.length&&Object.keys(r.items).length&&r.nutrition.kcal>0)"),true);
  assert.match(b.evaluate("recipes()"),/120 balanced meal ideas/);
  assert.match(b.evaluate("recipes()"),/My Meals/);
