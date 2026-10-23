@@ -2909,10 +2909,10 @@ const goal=d=>d.gym?s.settings.gymCal:s.settings.restCal;
 const dnut=(d,k)=>one(d.n[k]);const avg=k=>one(days().reduce((a,d)=>a+d.n[k],0)/28);const nfmt=(n,unit='g')=>{const q=one(n);return (Number.isInteger(q)?q:q.toFixed(1))+' '+unit};
 const qty=(id,n)=>{const ff=food[id],u=ff.unit;if(u==='each'||u==='slice')return u==='each'?String(one(n)):one(n)+' slices';if(u==='ml')return nfmt(n,'ml');return n>=1000?nfmt(n/1000,'kg'):nfmt(n,'g')};
 const foodemoji={breakfast:'🥣',lunch:'🥗',dinner:'🍲'};
+const FORGE_NAV_TABS=['overview','workouts','diary','health','progress','planner','recipes','shopping','prep','settings'];
 let forgeHistoryBack=false;
 function navigate(t){
- const page=document.getElementById(t);
- if(!page||!page.classList.contains('tabpage'))return;
+ if(!FORGE_NAV_TABS.includes(t))return;
  const previous=s.tab;
  if(s.tab==='diary'&&t!=='diary')window.nourishFoodCleanup?.();
  s.tab=t;save();
@@ -2924,7 +2924,7 @@ function navigate(t){
 }
 if(typeof window.addEventListener==='function')window.addEventListener('popstate',event=>{
  const target=event.state?.forgeTab||(/^#forge\/(overview|workouts|diary|health|progress|planner|recipes|shopping|prep|settings)$/.exec(typeof location!=='undefined'?location.hash:'')||[])[1];
- if(target&&target!==s.tab&&document.getElementById(target)?.classList.contains('tabpage')){
+ if(target&&target!==s.tab&&FORGE_NAV_TABS.includes(target)){
   forgeHistoryBack=true;try{navigate(target)}finally{forgeHistoryBack=false}
  }
 });
