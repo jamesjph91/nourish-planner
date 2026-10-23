@@ -1,10 +1,11 @@
 {
-  "version": 29,
+  "version": 30,
   "name": "FORGE",
   "released": "2026-10-23",
   "features": [
-    "Mobile Food Diary / Meal Plan / Recipes / Shopping / Meal Prep navigation",
-    "Swipeable seven-day meal planner",
-    "PWA update controls"
+    "Interactive in-plan meal library picker",
+    "Meal filters, favourites and one-tap replacement",
+    "Automatic recalculation of macros and shopping",
+    "Mobile Fuel navigation"
   ]
 }
