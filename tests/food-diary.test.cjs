@@ -108,6 +108,7 @@ test('Untrusted backup record is bounded, escaped and malformed entries discarde
  const round=JSON.parse(JSON.stringify(b.cloud()));round.foodDiary=bad;
  b.context.window.nourishCloudBridge.applyData(round);
  b.evaluate("navigate('diary')");
+ b.context.window.fdChangeDate('2026-10-22');
  assert.ok(!b.element('diary').innerHTML.includes('<script>alert(1)</script>'));
  assert.match(b.element('diary').innerHTML,/&lt;script&gt;/);
 });
