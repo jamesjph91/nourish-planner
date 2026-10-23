@@ -1,14 +1,10 @@
 {
-  "version": 37,
+  "version": 38,
   "name": "FORGE",
   "released": "2026-10-23",
   "features": [
-    "Personal FORGE account welcome and Google sign-in flow",
-    "Create an individual profile with nickname and optional weight goal",
-    "Prevent sharing of active browser plan on sign-out or account switch",
-    "Require consent before adopting unclaimed guest browser data",
-    "Per-UID local progress photo journals and explicit owner-only legacy photo migration",
-    "Personal account switcher in the mobile header",
-    "Cloud rules enforcement must be verified in the live Firebase console before privacy guarantees"
+    "iPhone navigation clears Home Indicator safe area",
+    "Consistent SVG icons for all five main tabs",
+    "Preserves personal profiles, workout logs, food logs and cloud sync"
   ]
 }

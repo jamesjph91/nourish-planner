@@ -14,7 +14,7 @@ async function refresh(){
   status.textContent='Refreshing app service worker…';
   if('serviceWorker' in navigator){const registrations=await navigator.serviceWorker.getRegistrations();await Promise.all(registrations.filter(r=>r.scope.startsWith(base.href)).map(r=>r.unregister()))}
   status.textContent='Opening the current FORGE version…';
-  location.replace(new URL('index.html?v=37&repair='+Date.now(),base).href);
+  location.replace(new URL('index.html?v=38&repair='+Date.now(),base).href);
  }catch(error){status.textContent='Refresh interrupted. Check your internet connection and try again.';button.disabled=false;button.textContent='Retry safe refresh'}
 }
 button.addEventListener('click',refresh);

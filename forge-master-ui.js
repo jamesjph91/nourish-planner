@@ -1,6 +1,26 @@
 /* FORGE master UI: presentation layer only. Existing trackers/planners remain the functional engine. */
 (()=>{'use strict';
 const core=['overview','workouts','diary','health','progress'];
+/* Font-independent SVG navigation icons for iOS and Android. */
+const FORGE_NAV_ICONS={
+ overview:['M3 10 12 3l9 7','M5 9v12h14V9','M9 21v-7h6v7'],
+ workouts:['M6 6l12 12','M4 3l3 4 4-3-3-3z','M17 13l4 4-4 4-4-4z'],
+ diary:['M4 3v6a3 3 0 0 0 6 0V3','M7 3v18','M18 3c-3 3-3 8 0 11h2V3z','M18 14v7'],
+ health:['M2 12h5l3-6 4 12 3-6h5'],
+ progress:['M4 4v16h16','M7 16l5-6 4 3 4-7']
+};
+function installForgeNavIcons(){
+ const nav=document.getElementById('nav');if(!nav)return;
+ for(const [tab,paths] of Object.entries(FORGE_NAV_ICONS)){
+  const slot=nav.querySelector('[data-tab="'+tab+'"] .fn-icon');
+  if(!slot||slot.querySelector('svg'))continue;
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  for(const [k,v] of Object.entries({viewBox:'0 0 24 24',fill:'none',stroke:'currentColor','stroke-width':'2','stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true',focusable:'false'}))svg.setAttribute(k,v);
+  for(const d of paths){const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',d);svg.appendChild(path)}
+  slot.textContent='';slot.appendChild(svg);slot.setAttribute('aria-hidden','true');
+ }
+}
+
 function mark(){const on=document.querySelector('#nav [data-tab].on');const tab=on?.dataset.tab||'';document.body.dataset.forgeTab=tab;const tools=document.querySelector('.forge-tools');if(tools)tools.style.display=core.includes(tab)?'none':'';const root=tab&&document.getElementById(tab);if(root&&tab!=='overview'){root.classList.add('forge-screen');const head=root.querySelector('.sectionhead');if(head&&!head.dataset.forge){head.dataset.forge='1';const eye=head.querySelector('.eyebrow');if(eye){const names={workouts:'TRAIN · GET STRONGER',diary:'FUEL · EAT SMARTER',health:'ACTIVITY · STAY ACTIVE',progress:'PROGRESS · SEE RESULTS'};eye.textContent=names[tab]||eye.textContent}const h=head.querySelector('h2');if(h){const names={workouts:'Train',diary:'Fuel',health:'Activity',progress:'Progress'};h.textContent=names[tab]||h.textContent}}}}
 const css=document.createElement('style');css.id='forge-master-ui';css.textContent=`
 body[data-forge-tab="workouts"] #workouts,body[data-forge-tab="diary"] #diary,body[data-forge-tab="health"] #health,body[data-forge-tab="progress"] #progress{max-width:760px;margin:0 auto}.forge-screen>.sectionhead:first-child{margin:4px 0 16px!important;align-items:end!important}.forge-screen>.sectionhead:first-child h2{font-size:38px!important;line-height:.95!important;letter-spacing:-1.8px!important;margin:6px 0 0!important}.forge-screen>.sectionhead:first-child .eyebrow{font-size:9px!important}.forge-screen .sectionhead{margin:24px 0 10px!important}.forge-screen .sectionhead h2{font-size:22px!important;letter-spacing:-.6px!important}.forge-screen .card{padding:16px!important;margin-bottom:10px!important;background:linear-gradient(145deg,#0c1510,#070c09)!important;border:1px solid #1b2920!important;box-shadow:none!important}.forge-screen .stat{background:linear-gradient(145deg,#0d1711,#080e0a)!important;border:1px solid #1c2921!important;box-shadow:none!important}.forge-screen .btn{min-height:42px!important;border-radius:12px!important}.forge-screen .btn.dark,.forge-screen .btn.primary{background:#b9ff16!important;color:#050806!important}.forge-screen .actions{gap:7px!important}.forge-screen input,.forge-screen select,.forge-screen textarea{border-radius:11px!important;background:#0b140f!important}.forge-screen table{border-collapse:separate!important;border-spacing:0 6px!important}.forge-screen tr{background:#0b140f!important}.forge-screen td,.forge-screen th{border-color:#1b2920!important}.forge-screen svg text{fill:#8b978f!important}.forge-screen svg polyline,.forge-screen svg circle{stroke:#b9ff16!important}.forge-screen svg circle{fill:#b9ff16!important}
@@ -13,4 +33,4 @@ body[data-forge-tab="workouts"] #workouts,body[data-forge-tab="diary"] #diary,bo
 /* Progress: compact visualiser analytics */
 #progress .grid4{gap:8px!important}#progress .stat strong{font-size:24px!important}#progress .stat .mini{color:#b9ff16!important;font-size:8px!important;letter-spacing:1px!important}#progress .prog-chart{background:#08100b!important;border:1px solid #1b2920!important;border-radius:14px!important;padding:8px!important}#progress .gym-history-row,#progress .prog-sharecard{background:#0a130e!important;border:1px solid #1b2920!important;border-radius:12px!important;padding:11px!important;margin:6px 0!important}
 @media(max-width:760px){main>.topline{display:none!important}.forge-screen>.sectionhead:first-child{padding-top:6px!important}.forge-screen>.sectionhead:first-child h2{font-size:34px!important}.forge-screen>.sectionhead:first-child .pill{display:none!important}.forge-screen .card{padding:14px!important}.forge-screen .notice{border-radius:13px!important;background:#10170d!important}.forge-screen .grid4{grid-template-columns:repeat(2,minmax(0,1fr))!important}.forge-screen .actions{display:flex!important;flex-wrap:wrap!important}.forge-screen .actions .btn{flex:1 1 auto!important}#workouts .gym-history-row,#diary .fd-choose-result{gap:8px!important}#health .hub-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
-`;document.head.appendChild(css);window.addEventListener('forge:view-rendered',mark);document.addEventListener('DOMContentLoaded',mark,{once:true});mark();})();
+`;document.head.appendChild(css);window.addEventListener('forge:view-rendered',mark);document.addEventListener('DOMContentLoaded',()=>{mark();installForgeNavIcons()},{once:true});mark();installForgeNavIcons();window.forgeInstallNavIcons=installForgeNavIcons;})();
