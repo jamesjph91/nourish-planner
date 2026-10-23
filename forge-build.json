@@ -1,12 +1,12 @@
 {
-  "version": 31,
+  "version": 32,
   "name": "FORGE",
   "released": "2026-10-23",
   "features": [
-    "120 balanced recipe ideas: 38 breakfast, 40 lunch, 42 dinner",
-    "Custom meal and ingredient builder",
-    "Per-serving nutritional estimates and optional manual values",
-    "Personal meals preserved in cloud sync and backups",
-    "Meal swaps update 28-day plan and shopping"
+    "180 original breakfast, lunch and dinner recipe ideas",
+    "Smart meal matching against planned calorie and protein targets",
+    "Sort and filter meals by goals, protein, calories and prep time",
+    "Review day-level nutrition before confirming a swap",
+    "7-day planned nutrition overview; custom meals and tracking preserved"
   ]
 }
