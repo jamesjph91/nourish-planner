@@ -5,18 +5,18 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const read=file=>fs.readFileSync(file,'utf8');
 
-test('FORGE v38 is wired into the installed app and remains on a stable start URL',()=>{
+test('FORGE v39 is wired into the installed app and remains on a stable start URL',()=>{
  const html=read('index.html'),manifest=JSON.parse(read('manifest.webmanifest')),build=JSON.parse(read('forge-build.json'));
- assert.equal(build.version,38);
+ assert.equal(build.version,39);
  assert.equal(manifest.start_url,'./index.html');
- assert.match(html,/forge-updater\.js\?v=38/);
- assert.match(html,/forge-updater\.css\?v=28/);
- assert.match(html,/name="forge-release" content="38"/);
+ assert.match(html,/forge-updater\.js\?v=39/);
+ assert.match(html,/forge-updater\.css\?v=39/);
+ assert.match(html,/name="forge-release" content="39"/);
 });
 test('FORGE update worker revalidates navigations and carries recovery files',()=>{
  const sw=read('service-worker.js');
  new vm.Script(sw);
- assert.match(sw,/forge-v38-ios-navigation/);
+ assert.match(sw,/forge-v39-ios-navigation/);
  assert.match(sw,/cache:'no-store'/);
  assert.match(sw,/forge-build\.json/);
  assert.match(sw,/refresh-forge\.html/);
@@ -25,7 +25,7 @@ test('Recovery only resets caches and service workers, not local workouts or pho
  const html=read('refresh-forge.html');
  assert.match(html,/caches\.keys\(\)/);
  assert.match(html,/\.unregister\(\)/);
- assert.match(html,/index\.html\?v=38/);
+ assert.match(html,/index\.html\?v=39/);
  assert.doesNotMatch(html,/localStorage\.(?:clear|removeItem)/);
  assert.doesNotMatch(html,/indexedDB\.deleteDatabase/);
  assert.doesNotMatch(html,/caches\.delete\([^)]*localStorage/);

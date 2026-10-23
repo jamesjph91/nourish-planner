@@ -1,10 +1,10 @@
 {
-  "version": 38,
+  "version": 39,
   "name": "FORGE",
   "released": "2026-10-23",
   "features": [
-    "iPhone navigation clears Home Indicator safe area",
-    "Consistent SVG icons for all five main tabs",
-    "Preserves personal profiles, workout logs, food logs and cloud sync"
+    "Restore iPhone five-tab navigation by hiding desktop update control",
+    "Keep iPhone update control in top header",
+    "Preserve all private workout and nutrition records"
   ]
 }

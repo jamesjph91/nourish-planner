@@ -24,3 +24,10 @@ test('All five main navigation icons use inline SVG, not platform font glyphs',(
  assert.match(src,/createElementNS/);
  assert.match(src,/installForgeNavIcons/);
 });
+
+test('Updater does not hide the five-tab iPhone dock',()=>{
+ const css=read('forge-updater.css');
+ assert.match(css,/@media\(max-width:760px\)/);
+ assert.match(css,/\.sidebar>\.forge-version-btn\{display:none!important\}/);
+ assert.match(css,/\.sidebar>\#nav\{flex:1 1 auto!important/);
+});

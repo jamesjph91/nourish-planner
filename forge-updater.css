@@ -16,3 +16,10 @@
 .forge-update-buttons button{border:1px solid #365335;background:#142319;color:#b9ff16;border-radius:10px;padding:12px;font-size:11px;font-weight:900}
 .forge-update-dialog small{display:block;margin-top:17px;font-size:10px;line-height:1.6;color:#9db09c}
 @media(min-width:761px){#forge-new-version{bottom:20px}}
+
+/* FORGE v39: keep the desktop-only updater outside the iOS/Android bottom dock. */
+@media(max-width:760px){
+ .sidebar>.forge-version-btn{display:none!important}
+ .sidebar{gap:0!important}
+ .sidebar>#nav{flex:1 1 auto!important;min-height:0!important;width:100%!important;margin:0!important}
+}
