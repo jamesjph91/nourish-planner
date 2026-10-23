@@ -67,6 +67,25 @@ async function enableCloud(){
  window.forgeCloudSignOut=signOutSafely;
  function chooseConflict(remote,reason,hasRemote){
   readyState=false;conflict=true;
+  window.forgeCloudResolveConflict=choice=>{
+   if(!user||!conflict)return false;
+   if(choice==='cloud'&&hasRemote){
+    if(!bridge.applyData(remote)){status('The cloud plan could not be loaded.');return false}
+    lastHash=encode(local());dirty=false;conflict=false;readyState=true;
+    status('✓ Your private cloud plan is loaded.');ready(user);return true;
+   }
+   if(choice==='device'){
+    if(!confirm('Only continue if these are YOUR records. Upload this browser’s plan to '+(user.email||'your Google account')+'?'))return false;
+    conflict=false;readyState=true;dirty=true;void writeNow(true,true);return true;
+   }
+   if(choice==='fresh'){
+    if(!confirm('Start a new private profile? The active browser plan will be cleared. Export a backup first if needed.'))return false;
+    bridge.resetPrivatePlan();conflict=false;readyState=true;lastHash='';dirty=true;
+    void writeNow(true,true);return true;
+   }
+   return false;
+  };
+  event('forge:cloud-conflict',{reason,hasRemote});
   show(reason+' Choose the correct owner of the data. Export a backup from Settings before overwriting anything.',[
    ...(hasRemote?[{label:'Use my account’s cloud plan',kind:'primary',callback:()=>{
     if(!user)return;
