@@ -9,7 +9,7 @@ test('FORGE v30 is wired into the installed app and remains on a stable start UR
  const html=read('index.html'),manifest=JSON.parse(read('manifest.webmanifest')),build=JSON.parse(read('forge-build.json'));
  assert.equal(build.version,30);
  assert.equal(manifest.start_url,'./index.html');
- assert.match(html,/forge-updater\.js\?v=29/);
+ assert.match(html,/forge-updater\.js\?v=30/);
  assert.match(html,/forge-updater\.css\?v=28/);
  assert.match(html,/name="forge-release" content="30"/);
 });
