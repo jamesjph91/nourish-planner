@@ -5,6 +5,18 @@ const section=()=>document.getElementById('progress');
 const TABS=['Overview','Stats','Photos','Goals'];
 const PERIODS={'7D':7,'30D':30,'90D':90,'1Y':365,'All':0};
 let tab='Overview',range='30D',photos=[],photoStatus='',photoBusy=false,urls=[],photoGeneration=0;
+const LEGACY_PHOTO_OWNER='forge-photo-legacy-owner-v1',LEGACY_PHOTO_IMPORTED='forge-photo-legacy-imported-v1';
+try{
+ if(!localStorage.getItem(LEGACY_PHOTO_OWNER)){
+  const previous=localStorage.getItem('nourish-last-account-v1');
+  localStorage.setItem(LEGACY_PHOTO_OWNER,previous||'guest');
+ }
+}catch(e){}
+const photoOwner=()=>window.forgeCurrentAccountUid||'guest';
+const photoDatabaseName=()=> 'forge-progress-photos-account-'+String(photoOwner()).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,128);
+function legacyAllowed(){
+ try{return !!photoOwner()&&photoOwner()===localStorage.getItem(LEGACY_PHOTO_OWNER)&&localStorage.getItem(LEGACY_PHOTO_IMPORTED)!==photoOwner()}catch{return false}
+}
 const finite=v=>v!==undefined&&v!==null&&v!==''&&Number.isFinite(Number(v));
 const fmt=(n,d=0)=>finite(n)?Number(n).toLocaleString('en-GB',{maximumFractionDigits:d,minimumFractionDigits:d}):'—';
 const signed=n=>finite(n)?(n>0?'+':n<0?'−':'')+fmt(Math.abs(n),1):'—';
@@ -60,6 +72,7 @@ function goals(d){
 }
 function photoView(){
  return '<article class="fp-panel"><div class="fp-heading"><div><small>PRIVATE PHOTO JOURNAL</small><h3>Progress photos</h3></div><span>'+photos.length+' saved</span></div><p class="fp-help"><b>Stored on this device only.</b> Photos are not uploaded or cloud synced. Clearing browser data or changing devices can permanently remove them.</p>'+
+ (legacyAllowed()?'<div class="fp-legacy-note"><b>Older local photos found?</b> They remain in the original on-device photo database. To copy them into this verified profile only, press <button type="button" data-fp-legacy>Import my older photos</button>. Nothing is deleted from the original database.</div>':'')+
  '<label class="fp-upload"><b>＋ Add a progress photo</b><small>JPG, PNG or WebP · 8 MB maximum</small><input type="file" accept="image/jpeg,image/png,image/webp" data-fp-upload '+(photoBusy?'disabled':'')+'></label><p class="fp-help" role="status">'+esc(photoStatus)+'</p>'+
  '<div class="fp-gallery">'+(photos.length?photos.map(x=>'<article class="fp-photo"><img src="'+esc(x.url)+'" alt="Progress photo '+esc(x.date)+'"><div><span>'+esc(x.date)+'</span><button data-fp-delete="'+x.id+'">Delete</button></div></article>').join(''):'<div class="fp-empty">Your first progress photo will appear here.</div>')+'</div></article>';
 }
@@ -87,8 +100,34 @@ function enhance(){
  if(!r.querySelector('.forge-progress-app')){const mount=document.createElement('div');mount.className='forge-progress-app';r.prepend(mount)}
  classify(r);render();
 }
-function db(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window)){reject(Error('Photo storage unavailable'));return}const req=indexedDB.open('forge-progress-photos',1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('items'))req.result.createObjectStore('items',{keyPath:'id',autoIncrement:true})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||Error('Storage error'))})}
+function db(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window)){reject(Error('Photo storage unavailable'));return}const req=indexedDB.open(photoDatabaseName(),1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('items'))req.result.createObjectStore('items',{keyPath:'id',autoIncrement:true})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||Error('Storage error'))})}
 async function operation(type,fn){const database=await db();try{return await new Promise((resolve,reject)=>{const tx=database.transaction('items',type),req=fn(tx.objectStore('items'));req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||Error('Operation failed'));tx.onabort=()=>reject(tx.error||Error('Storage interrupted'))})}finally{database.close()}}
+async function migrateOldPhotos(){
+ if(!legacyAllowed()){photoStatus='These older photos cannot be claimed by a different account.';render();return false}
+ if(!confirm('Copy photos from the older FORGE browser journal into your signed-in profile? The originals will remain on this device.'))return false;
+ try{
+  const old=await new Promise((resolve,reject)=>{
+   const request=indexedDB.open('forge-progress-photos',1);
+   request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);
+  });
+  let list=[];
+  try{
+   if(old.objectStoreNames.contains('items'))list=await new Promise((resolve,reject)=>{
+    const transaction=old.transaction('items','readonly'),request=transaction.objectStore('items').getAll();
+    request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);
+   });
+  }finally{old.close()}
+  const owner=photoOwner();
+  for(const item of list.slice(0,100)){
+   if(owner!==photoOwner())throw Error('Account changed; migration stopped');
+   await operation('readwrite',store=>store.add({date:item.date,blob:item.blob}));
+  }
+  if(owner!==photoOwner())throw Error('Account changed; migration stopped');
+  localStorage.setItem(LEGACY_PHOTO_IMPORTED,owner);
+  photoStatus=list.length+' older photos copied to this account. Existing originals were not deleted.';
+  await fetchPhotos();return true;
+ }catch(e){photoStatus='Could not finish copying old photos. No originals were deleted.';render();return false}
+}
 async function fetchPhotos(){const token=++photoGeneration;try{const items=await operation('readonly',s=>s.getAll());if(token!==photoGeneration)return;urls.forEach(URL.revokeObjectURL);urls=[];photos=items.sort((a,b)=>b.id-a.id).slice(0,40).map(x=>{const url=URL.createObjectURL(x.blob);urls.push(url);return {id:x.id,url,date:x.date}})}catch(e){photoStatus=e.message||'Could not read photos';photos=[]}if(tab==='Photos')render()}
 async function savePhoto(file){if(photoBusy||!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>8*1024*1024||!file.size){photoStatus='Choose a JPG, PNG or WebP image under 8 MB.';render();return}photoBusy=true;photoStatus='Saving to this device…';render();try{await operation('readwrite',s=>s.add({date:stamp(new Date()),blob:file}));await fetchPhotos();photoStatus='Photo saved on this device.'}catch(e){photoStatus=e.message||'Could not save photo'}photoBusy=false;if(tab==='Photos')render()}
 async function deletePhoto(id){if(!Number.isSafeInteger(id)||!confirm('Delete this photo from this browser?'))return;try{await operation('readwrite',s=>s.delete(id));await fetchPhotos();photoStatus='Photo deleted.'}catch(e){photoStatus=e.message||'Could not delete photo'}if(tab==='Photos')render()}
@@ -97,10 +136,12 @@ document.addEventListener('click',e=>{
  const t=e.target.closest('[data-fp-tab]');if(t){tab=t.dataset.fpTab;render();if(tab==='Photos')fetchPhotos();return}
  const p=e.target.closest('[data-fp-period]');if(p){range=p.dataset.fpPeriod;render();return}
  const g=e.target.closest('[data-fp-go]');if(g){document.querySelector('#nav [data-tab="'+g.dataset.fpGo+'"]')?.click();return}
+ const legacy=e.target.closest('[data-fp-legacy]');if(legacy){void migrateOldPhotos();return}
  const b=e.target.closest('[data-fp-delete]');if(b)deletePhoto(Number(b.dataset.fpDelete));
 });
 document.addEventListener('change',e=>{if(e.target.matches('[data-fp-upload]')&&e.target.files?.[0])savePhoto(e.target.files[0])});
 window.addEventListener('forge:view-rendered',e=>{if(e.detail?.tab==='progress')enhance()});
+window.addEventListener('forge:cloud-session',()=>{photoGeneration++;urls.forEach(URL.revokeObjectURL);urls=[];photos=[];photoStatus='';if(tab==='Photos')render()});
 document.addEventListener('DOMContentLoaded',enhance,{once:true});
-window.forgeProgress={enhance,render};
+window.forgeProgress={enhance,render,photoDatabaseName,legacyAllowed,migrateOldPhotos};
 })();
