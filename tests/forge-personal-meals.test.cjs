@@ -6,6 +6,7 @@ const vm=require('node:vm');
 const inline=fs.readFileSync('index.html','utf8').match(/<script>([\s\S]*?)<\/script>/)?.[1];
 const extension=fs.readFileSync('forge-meal-library-data.js','utf8');
 const extensionPlus=fs.readFileSync('forge-meal-library-plus.js','utf8');
+const cuisine=fs.readFileSync('forge-meal-cuisines.js','utf8');
 function boot(stored=null){
  const nodes=new Map(),store=new Map(),fields=new Map(),rows=[];
  const element=id=>{if(!nodes.has(id))nodes.set(id,{id,value:'',innerHTML:'',textContent:'',checked:false,style:{},classList:{add(){},remove(){},contains(){return false},toggle(){}},setAttribute(){},addEventListener(){},focus(){},append(){},scrollIntoView(){}});return nodes.get(id)};
@@ -13,18 +14,18 @@ function boot(stored=null){
  const context={document,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},console,Date,Intl,Math,JSON,Number,location:{protocol:'file:',hostname:'localhost'},navigator:{},alert(){},confirm:()=>true,CustomEvent:class{constructor(type){this.type=type}},dispatchEvent(){},addEventListener(){},scrollTo(){},setTimeout,clearTimeout};
  context.window=context;
  if(stored)store.set('nourishHigherDeficitV1',JSON.stringify(stored));
- vm.createContext(context);vm.runInContext(extension,context,{filename:'forge-meal-library-data.js'});vm.runInContext(extensionPlus,context,{filename:'forge-meal-library-plus.js'});vm.runInContext(inline,context,{filename:'index-inline.js'});
+ vm.createContext(context);vm.runInContext(extension,context,{filename:'forge-meal-library-data.js'});vm.runInContext(extensionPlus,context,{filename:'forge-meal-library-plus.js'});vm.runInContext(cuisine,context,{filename:'forge-meal-cuisines.js'});vm.runInContext(inline,context,{filename:'index-inline.js'});
  const evaluate=code=>vm.runInContext(code,context);
  function ingredient(id,qty){rows.push({querySelector(sel){if(sel==='.forge-ingredient-select')return{value:id};if(sel==='.forge-ingredient-quantity')return{value:String(qty)}}})}
  return {context,store,element,evaluate,ingredient,rows,cloud:()=>context.window.nourishCloudBridge.getData()};
 }
-test('The expanded library has 180 individually named recipes across three categories',()=>{
+test('The expanded library has 210 individually named recipes across three categories',()=>{
  const b=boot();const counts=JSON.parse(JSON.stringify(b.evaluate("Object.values(rs).reduce((a,r)=>(a[r.cat]=(a[r.cat]||0)+1,a),{})")));
- assert.equal(counts.breakfast,58);
- assert.equal(counts.lunch,60);
- assert.equal(counts.dinner,62);
+ assert.equal(counts.breakfast,68);
+ assert.equal(counts.lunch,70);
+ assert.equal(counts.dinner,72);
  assert.equal(b.evaluate("Object.values(rs).every(r=>r.name&&r.steps.length&&Object.keys(r.items).length&&r.nutrition.kcal>0)"),true);
- assert.match(b.evaluate("recipes()"),/180 balanced meal ideas/);
+ assert.match(b.evaluate("recipes()"),/210 balanced meal ideas/);
  assert.match(b.evaluate("recipes()"),/My Meals/);
 });
 test('Every extra meal is safe to add to the plan and has matching shopping ingredients',()=>{
