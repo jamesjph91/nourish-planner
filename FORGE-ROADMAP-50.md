@@ -45,11 +45,11 @@
 - [x] **25** End-of-session recap generated only from completed sets.
 
 ## v55 · Train: evidence-based performance (steps 26–30)
-- [ ] **26** Chart session load volume only for valid weight × repetitions.
-- [ ] **27** Separate working-weight bests from repetition bests.
-- [ ] **28** Show comparable trends for machine/bodyweight/time exercises without false equivalence.
-- [ ] **29** Make target recommendations respect low sample sizes and long gaps.
-- [ ] **30** Export exercise-history analytics as a user-controlled CSV.
+- [x] **26** Chart session load volume only for valid weight × repetitions.
+- [x] **27** Separate working-weight bests from repetition bests.
+- [x] **28** Show comparable trends for machine/bodyweight/time exercises without false equivalence.
+- [x] **29** Make target recommendations respect low sample sizes and long gaps.
+- [x] **30** Export exercise-history analytics as a user-controlled CSV.
 
 ## v56 · Fuel: faster food diary (steps 31–35)
 - [ ] **31** Favourite foods in the personal food library.
@@ -87,7 +87,7 @@
 | v52 | 11–15 | Verified deployed | Regression run `40116507047` · Pages `40116506598` · `tests/forge-data-safety-v52.test.cjs` |
 | v53 | 16–20 | Verified deployed | Regression run `40117118278` · Pages `40117118102` · `tests/forge-offline-v53.test.cjs` |
 | v54 | 21–25 | Verified deployed | Regression run `40118022805` · Pages `40118022911` · `tests/forge-gym-v54.test.cjs` |
-| v55 | 26–30 | Pending | — |
+| v55 | 26–30 | Verified deployed | Regression run `40118966606` · Pages `40118966549` · `tests/forge-strength-v55.test.cjs` |
 | v56 | 31–35 | Pending | — |
 | v57 | 36–40 | Pending | — |
 | v58 | 41–45 | Pending | — |
