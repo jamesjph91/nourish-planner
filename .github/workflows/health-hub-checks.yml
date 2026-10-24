@@ -16,6 +16,8 @@ on:
       - 'forge-train.js'
       - 'forge-train-coach.js'
       - 'forge-strength-insights.js'
+      - 'forge-strength-v50.js'
+      - 'forge-strength-v50.css'
       - 'forge-strength-insights.css'
       - 'forge-v27-train.css'
       - 'forge-train-v48.css'
@@ -147,6 +149,7 @@ jobs:
           node --check forge-train.js
           node --check forge-train-coach.js
           node --check forge-strength-insights.js
+          node --check forge-strength-v50.js
           node --check forge-updater.js
           node --check forge-food-navigation.js
           node --check forge-meal-library-data.js

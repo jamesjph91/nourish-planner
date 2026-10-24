@@ -429,6 +429,7 @@ document.head.append(style);
 work();
 window.nourishWorkoutsPage=gymPlanner;
 window.nourishGymExerciseName=id=>definition(id)?.name||'Exercise '+String(id).slice(0,12);
+window.forgeGymDefinition=id=>{const ex=definition(id);return ex?{name:String(ex.name||id),load:ex.load===true,unit:ex.unit||'reps',min:ex.min,max:ex.max,sets:ex.sets,focus:ex.focus}:null};
 window.gymSelectDay=selectDay;window.gymSelectWeek=selectWeek;window.gymSetDayPlan=setDayPlan;
 window.gymResetAnchor=resetAnchor;window.gymSetValue=setValue;window.gymTick=tick;
 window.gymSetNote=setNote;window.gymComplete=complete;window.gymAddSet=addSet;window.gymRemoveSet=removeSet;

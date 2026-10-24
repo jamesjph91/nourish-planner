@@ -1,13 +1,13 @@
 {
-  "version": 49,
+  "version": 50,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Faster logging with Repeat for next set, using checked sets from today or earlier training",
-    "Fill previous values copies earlier completed sets into blank fields only",
-    "Three recent completed workout references on each exercise card",
-    "Larger mobile weight/reps fields, more visible checkboxes and electric-lime quick-action buttons",
-    "Historical workout records and manual set-completion choices remain unchanged",
-    "Preserve v47 artwork, enlarged bottom navigation and v48 named routines"
+    "New Strength Progression Lab within Train: select any exercise for logged performance trends",
+    "Completed-set-only strength/load charts and verified historical personal-best status",
+    "Conservative next-session target suggestions based on actual reps, weight and exercise ranges",
+    "Bodyweight/time movements tracked without invented weights or calculated one-rep-max estimates",
+    "Progression module is read only and does not overwrite any workout entries or saved routines",
+    "Existing v47 artwork and enlarged mobile navigation are retained"
   ]
 }

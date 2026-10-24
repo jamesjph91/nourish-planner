@@ -1,0 +1,26 @@
+/* FORGE v50 Strength Progression */
+#workouts .fs50{margin:12px auto 16px;max-width:720px;padding:17px 15px;background:linear-gradient(135deg,#142619,#07110b);border:1px solid #536b3d;border-radius:20px;box-shadow:0 16px 32px #0009;color:#f7fff1}
+#workouts .fs50-heading{display:flex;justify-content:space-between;gap:12px;align-items:start}
+#workouts .fs50-heading small,#workouts .fs50-target small{color:#c7ff17;font-size:9px;font-weight:950;letter-spacing:1.3px}
+#workouts .fs50-heading h2{font-size:clamp(21px,4vw,29px);letter-spacing:-1px;margin:6px 0 14px;font-style:italic}
+#workouts .fs50-live{background:#b9ff1618;border:1px solid #799a4880;color:#d7ff87;border-radius:30px;padding:8px;font-size:9px;font-weight:900;white-space:nowrap}
+#workouts .fs50-select-label{display:block;color:#b3c6aa;font-size:10px;font-weight:900;margin-bottom:8px}
+#workouts #fs50-exercise{width:100%;min-height:50px;background:#09160e!important;color:#f6fff3!important;border:1px solid #66884d!important;border-radius:12px;padding:12px;font-size:15px;font-weight:850}
+#workouts #fs50-exercise:focus-visible{outline:2px solid #c7ff17;outline-offset:3px}
+#workouts .fs50-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:13px 0}
+#workouts .fs50-overview>div{min-width:0;display:flex;flex-direction:column;gap:7px;border:1px solid #324b32;border-radius:12px;background:#09150d;padding:11px 9px}
+#workouts .fs50-overview small{font-size:8px;letter-spacing:.5px;font-weight:900;color:#acd184}
+#workouts .fs50-overview strong{font-size:clamp(15px,3vw,22px);line-height:1.25;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#workouts .fs50-overview span{font-size:9px;color:#9dae9a;line-height:1.4}
+#workouts .fs50-chart{padding:9px 6px;border-radius:14px;background:#06120a;border:1px solid #314932}
+#workouts .fs50-plot{display:block;width:100%;height:auto;max-height:214px;overflow:visible}
+#workouts .fs50-plot circle{fill:#e4ff92;stroke:#0a1a0d;stroke-width:2}
+#workouts .fs50-grid-lines{stroke:#3d543b;stroke-width:1;stroke-dasharray:3 4;fill:none}
+#workouts .fs50-axis text{fill:#9aaf9b;font-size:9px;font-weight:700}
+#workouts .fs50-plot-caption{font-size:10px;color:#9cab9f;margin:0 8px 8px;line-height:1.45}
+#workouts .fs50-empty{font-size:12px;color:#a0b2a0;line-height:1.7;padding:18px}
+#workouts .fs50-target{margin-top:12px;border-radius:13px;background:linear-gradient(115deg,#1b311b,#0d1b11);border:1px solid #5e803e;padding:14px}
+#workouts .fs50-target p{font-size:13px;color:#ecf8e7;line-height:1.65;margin:7px 0 10px;font-weight:700}
+#workouts .fs50-target>span{font-size:10px;color:#abbca8;line-height:1.55}
+@media(max-width:420px){#workouts .fs50{padding:13px 9px}#workouts .fs50-overview{gap:5px}#workouts .fs50-overview>div{padding:10px 6px}#workouts .fs50-overview strong{font-size:15px}#workouts .fs50-overview small{font-size:7px}#workouts .fs50-overview span{font-size:8px}}
+@media(prefers-reduced-motion:reduce){#workouts .fs50 *{transition:none!important}}
