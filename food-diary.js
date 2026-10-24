@@ -51,7 +51,15 @@ function deleteEntry(id){
  diary.entries=diary.entries.filter(x=>x.id!==id);s.foodDiary=diary;save();renderCurrent();
 }
 function fillDraft(food,id=''){
- editing=id;draft={...blankDraft(),...food,perUnit:copyN(food.perUnit)};
+ editing=id;
+ // Keep unknown fields blank while preparing the editable form.
+ // Previously copyN() coerced them to zero, making incomplete food labels appear complete.
+ const values={};
+ for(const key of NUT){
+  const v=food.perUnit?.[key];
+  values[key]=v===undefined||v===null||v===''?'':f(v);
+ }
+ draft={...blankDraft(),...food,perUnit:values};
  renderCurrent();
  const el=document.getElementById('fd-name');el?.focus();el?.scrollIntoView({block:'center',behavior:'smooth'});
 }
