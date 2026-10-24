@@ -39,6 +39,8 @@ on:
       - 'refresh-forge.html'
       - 'forge-fuel.js'
       - 'forge-activity.js'
+      - 'forge-activity-explorer.js'
+      - 'forge-activity-explorer.css'
       - 'forge-progress.js'
       - 'forge-fuel-insights.js'
       - 'forge-v26.css'
@@ -84,6 +86,8 @@ on:
       - 'refresh-forge.html'
       - 'forge-fuel.js'
       - 'forge-activity.js'
+      - 'forge-activity-explorer.js'
+      - 'forge-activity-explorer.css'
       - 'forge-progress.js'
       - 'forge-fuel-insights.js'
       - 'forge-v26.css'
@@ -125,6 +129,7 @@ jobs:
           node --check forge-accounts.js
           node --check forge-fuel.js
           node --check forge-activity.js
+          node --check forge-activity-explorer.js
           node --check forge-progress.js
           node --check forge-fuel-insights.js
           node --check service-worker.js

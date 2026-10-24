@@ -1,10 +1,11 @@
 {
-  "version": 41,
+  "version": 42,
   "name": "FORGE",
-  "released": "2026-10-23",
+  "released": "2026-10-24",
   "features": [
-    "Repair stale version detection and installed-app refresh",
-    "Include FORGE v40 photographic visual overhaul",
-    "Preserve all private workouts, nutrition history, measurements and progress photos"
+    "Working Steps / Cardio / Sleep / All activity explorer with seven-day trends",
+    "Record, import and goal shortcuts use existing Health Hub controls",
+    "Distinguish missing readings from zero and remove inferred distance/active-time display",
+    "Keep v40 cinematic design, v41 updater and private user records"
   ]
 }
