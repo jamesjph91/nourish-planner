@@ -1,13 +1,13 @@
 {
-  "version": 55,
+  "version": 56,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Completed-set-only external-load volume trend in kg × repetitions",
-    "Separate best working weight from best repetitions or timed duration",
-    "Comparable per-exercise trends that never invent weighted volume for bodyweight or timed sets",
-    "Guarded next-session guidance requiring adequate recent evidence before proposing load increases",
-    "One-tap user-controlled CSV export of the selected exercise's real historical analytics",
-    "Visualiser styling, prior fitness data and account state preserved"
+    "Persistent personal food favourites, backed by the existing cloud-safe food library",
+    "Repeat historical diary entries and edit amounts without overwriting previous meals",
+    "Clear barcode source, match confidence and 0–5 nutritional-field coverage before save",
+    "Confirmation before same barcode, amount and meal are logged twice on the same date",
+    "Barcode and food search Enter-key submission, helpful focus hints and larger mobile controls",
+    "Preserves prior food data, workout history and the premium FORGE visual design"
   ]
 }

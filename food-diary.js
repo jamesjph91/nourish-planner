@@ -83,7 +83,7 @@ const RETAIL_CHOICES=[
  {name:'Tesco Tuna Chunks in Spring Water 400g',drained:280,n:{kcal:109,protein:24.9,carbs:0,fat:1,fibre:0},url:'https://www.tesco.com/shop/en-GB/products/310092502'}
 ];
 let foodSearchQuery='',searchProducts=[],foodSearchMessage='',foodSearchBusy=false,foodSearchController=null,foodSearchToken=0;
-let privateFoodQuery='',lastQuickLog={key:'',time:0};
+let privateFoodQuery='',lastQuickLog={key:'',time:0},lastManualSubmission={key:'',time:0};
 function suggestionsHTML(){
  const query=foodSearchQuery.toLowerCase().trim();
  if(query.length<2)return '<p class="short">Enter at least two letters (for example “Tesco tuna”) to find foods by name, even when a barcode is missing.</p>';
@@ -150,7 +150,7 @@ function chooseSearch(i){
 }
 function foodSearchUI(){
  return '<div class="fd-search-panel" id="fd-search-panel"><h4 style="margin:0 0 6px">Find food by name</h4><p class="short">Missing barcode? Search names instead. Our starter Tesco choices use published retailer nutrition; broader results come from Open Food Facts. Confirm the exact type and drained weight.</p>'+
-  '<div class="fd-lookup"><input id="fd-food-query" aria-label="Food name search" placeholder="e.g. Tesco tuna" maxlength="80" value="'+escape(foodSearchQuery)+'" oninput="fdSearchTyping(this.value)"><button class="btn" type="button" onclick="fdSearchNames()">Search more foods</button></div>'+
+  '<div class="fd-lookup"><input id="fd-food-query" type="search" aria-label="Food name search" enterkeyhint="search" autocomplete="off" placeholder="e.g. Tesco tuna" maxlength="80" value="'+escape(foodSearchQuery)+'" oninput="fdSearchTyping(this.value)" onkeydown="fdFoodSearchKey(event)"><button class="btn" type="button" onclick="fdSearchNames()">Search more foods</button></div>'+
   '<div id="fd-search-results">'+suggestionsHTML()+'</div></div>';
 }
 
@@ -175,10 +175,50 @@ function savedBarcode(code){
 function upsertSaved(data){
  const diary=cleanDiary();
  const key=data.barcode?diary.savedFoods.findIndex(x=>sameBarcode(x.barcode,data.barcode)):diary.savedFoods.findIndex(x=>x.name.toLowerCase()===data.name.toLowerCase()&&!x.barcode);
- const item={id:key>=0?diary.savedFoods[key].id:uid(),name:data.name,barcode:data.barcode||'',unit:data.unit,category:data.category,perUnit:data.perUnit,lastQuantity:data.quantity};
+ const item={id:key>=0?diary.savedFoods[key].id:uid(),name:data.name,barcode:data.barcode||'',unit:data.unit,category:data.category,perUnit:data.perUnit,lastQuantity:data.quantity,favorite:key>=0&&diary.savedFoods[key].favorite===true};
  if(key>=0)diary.savedFoods.splice(key,1);diary.savedFoods.unshift(item);
  diary.savedFoods=diary.savedFoods.slice(0,80);s.foodDiary=diary;
 }
+/* FORGE v56: an intentional second serving requires explicit confirmation for
+   identical same-day barcode, quantity and meal. No automatic dedup deletions. */
+function fd56SameFood(a,b){
+ return !!(a.barcode&&b?.barcode&&sameBarcode(a.barcode,b.barcode)&&a.date===b.date&&
+  a.category===b.category&&a.unit===b.unit&&Number(a.quantity)===Number(b.quantity));
+}
+function fd56Duplicate(entries,entry,excludeId=''){
+ return entries.some(old=>old.id!==excludeId&&fd56SameFood(entry,old));
+}
+function fd56Repeat(id){
+ const diary=cleanDiary(),old=diary.entries.find(e=>e.id===id);
+ if(!old)return false;
+ const now=Date.now(),key=selected+'|entry:'+id;
+ if(lastQuickLog.key===key&&now-lastQuickLog.time<1000)return false;
+ const entry={...old,id:uid(),date:selected,perUnit:copyN(old.perUnit),totals:total(old.unit,old.quantity,old.perUnit)};
+ if(fd56Duplicate(diary.entries,entry)&&!confirm('That barcode, quantity and meal are already logged on this date. Log another serving anyway?'))return false;
+ lastQuickLog={key,time:now};
+ diary.entries.push(entry);diary.entries=diary.entries.slice(-1200);
+ s.foodDiary=diary;save();renderCurrent();notify(entry.name+' logged again.');return true;
+}
+function fd56ToggleFavorite(key){
+ const selectedFood=libraryPick(key);if(!selectedFood)return false;
+ let diary=cleanDiary();
+ const findIndex=items=>items.findIndex(x=>x.id===selectedFood.id||
+  (selectedFood.barcode&&sameBarcode(x.barcode,selectedFood.barcode))||
+  (!selectedFood.barcode&&!x.barcode&&x.name.toLowerCase()===selectedFood.name.toLowerCase()&&x.unit===selectedFood.unit));
+ let index=findIndex(diary.savedFoods);
+ if(index<0){
+  // Favourite from recent history: create a saved-food record, then use
+  // the new validated object so it survives cloud sync and backups.
+  upsertSaved({...selectedFood,quantity:selectedFood.quantity});
+  diary=cleanDiary();index=findIndex(diary.savedFoods);
+  if(index<0)return false;
+  diary.savedFoods[index].favorite=true;
+ }else diary.savedFoods[index].favorite=diary.savedFoods[index].favorite!==true;
+ const nowFavorite=diary.savedFoods[index].favorite===true;
+ s.foodDiary=diary;save();renderCurrent();
+ notify(nowFavorite?'Added to your favourite foods.':'Removed from favourites.');return true;
+}
+
 function saveManual(){
  const name=(document.getElementById('fd-name')?.value||'').trim().slice(0,100);
  const unit=document.getElementById('fd-unit')?.value||'g',cat=document.getElementById('fd-category')?.value||'snack';
@@ -204,8 +244,13 @@ function saveManual(){
  const source=isPlanned?'plan':code?'barcode':'manual';
  const entry={id:old?.id||uid(),date:selected,category:cat,source,name,barcode:code,unit,quantity:f(quantity),perUnit,totals:total(unit,quantity,perUnit)};
  if(isPlanned&&old.recipeId)entry.recipeId=old.recipeId;
+ const signature=selected+'|'+cat+'|'+code+'|'+f(quantity)+'|'+unit+'|'+name.toLowerCase();
+ const now=Date.now();
+ if(!editing&&lastManualSubmission.key===signature&&now-lastManualSubmission.time<1200)return;
+ if(fd56Duplicate(diary.entries,entry,editing)&&!confirm('That barcode, quantity and meal are already logged on this date. Add another serving anyway?'))return;
  if(old)diary.entries=diary.entries.filter(x=>x.id!==old.id);
- diary.entries.push(entry);diary.entries=diary.entries.slice(-1200);
+ diary.entries.push(entry);
+ lastManualSubmission={key:signature,time:now};diary.entries=diary.entries.slice(-1200);
  s.foodDiary=diary;
  if(document.getElementById('fd-save-food')?.checked)upsertSaved(entry);
  draft=null;editing='';save();renderCurrent();notify(name+' added to your food diary.');
@@ -295,7 +340,7 @@ async function lookup(code){
    showMessage('Barcode '+normalized+' saved. '+detail+' Try Find food by name below and choose an exact matching product, or enter label values.');
    return;
   }
-  draft=parseProduct(product,normalized);editing='';
+  draft={...parseProduct(product,normalized),barcodeMatch:sameBarcode(String(product.code||''),normalized)};editing='';
   renderCurrent();
   const missing=draft.missing||[];
   const alias=matchedCode!==normalized?' UPC/EAN representation matched.':'';
@@ -330,6 +375,18 @@ function showMessage(msg){
  const el=document.getElementById('fd-message');if(el){el.textContent=lookupMessage;el.setAttribute('role','status');}
 }
 function beginManual(){fillDraft(blankDraft());}
+function lookupKey(event,value){
+ if(event?.key!=='Enter')return false;
+ event.preventDefault?.();
+ void lookup(value);
+ return true;
+}
+function foodSearchKey(event){
+ if(event?.key!=='Enter')return false;
+ event.preventDefault?.();
+ void searchFoodNames();
+ return true;
+}
 function parseScan(code){
  if(scannerBusy)return;
  const c=String(code||'').replace(/\s/g,'');
@@ -409,7 +466,7 @@ function logRows(){
  (all.length?CATS.map(cat=>{
   const items=all.filter(x=>x.category===cat);if(!items.length)return '';
   return '<div class="fd-log-group"><h4>'+cat[0].toUpperCase()+cat.slice(1)+'</h4>'+items.map(item=>
-   '<div class="fd-log"><div><b>'+escape(item.name)+'</b><small>'+f(item.quantity)+' '+escape(item.unit==='portion'?'portion(s)':item.unit)+' · '+escape(item.source==='plan'?'Planned meal':item.source==='barcode'?'Scanned product':'Manual / saved food')+'</small><small>'+f(item.totals.protein)+'g protein · '+f(item.totals.carbs)+'g carbs · '+f(item.totals.fat)+'g fat</small></div><div class="fd-log-actions"><strong>'+Math.round(item.totals.kcal)+' kcal</strong><button class="btn sm" onclick="fdEditEntry(\''+item.id+'\')">Edit</button><button class="btn sm" onclick="fdDeleteEntry(\''+item.id+'\')">Delete</button></div></div>').join('')+'</div>';
+   '<div class="fd-log"><div><b>'+escape(item.name)+'</b><small>'+f(item.quantity)+' '+escape(item.unit==='portion'?'portion(s)':item.unit)+' · '+escape(item.source==='plan'?'Planned meal':item.source==='barcode'?'Scanned product':'Manual / saved food')+'</small><small>'+f(item.totals.protein)+'g protein · '+f(item.totals.carbs)+'g carbs · '+f(item.totals.fat)+'g fat</small></div><div class="fd-log-actions"><strong>'+Math.round(item.totals.kcal)+' kcal</strong><button class="btn sm" onclick="fdEditEntry(\''+item.id+'\')">Edit</button><button class="btn sm" onclick="fdRepeatEntry(\''+item.id+'\')">↻ Repeat</button><button class="btn sm" onclick="fdDeleteEntry(\''+item.id+'\')">Delete</button></div></div>').join('')+'</div>';
  }).join(''):'<p class="short">Nothing logged yet. Tap “I ate this” on a planned meal or add any other food below.</p>')+'</div>';
 }
 function exportDiary(){
@@ -455,7 +512,7 @@ function libraryCandidates(){
   if(food.source==='plan')continue;
   add(food,false);
  }
- return [...map.values()].slice(0,80);
+ return [...map.values()].sort((a,b)=>Number(b.favorite===true)-Number(a.favorite===true)).slice(0,80);
 }
 function libraryResults(query=privateFoodQuery){
  const q=String(query||'').toLocaleLowerCase('en-GB').trim().slice(0,80);
@@ -472,8 +529,8 @@ function libraryHTML(){
   const key=escape(x.key);
   return '<div class="fd44-library-item"><div><b>'+escape(x.name)+'</b>'+
     '<small>'+escape(amount)+' · '+fmtQuick(nutrition.kcal)+' kcal · '+fmtQuick(nutrition.protein)+'g protein</small>'+
-    '<small>'+(x.saved?'★ Saved food':'Recent food')+' · Label data per '+unitLabel+'</small></div>'+
-    '<div class="fd44-library-actions"><button type="button" class="btn sm" data-fd44-edit="'+key+'">Edit amount</button>'+
+    '<small>'+(x.favorite?'★ Favourite · ':'')+(x.saved?'Saved food':'Recent food')+' · Label data per '+unitLabel+'</small></div>'+
+    '<div class="fd44-library-actions"><button type="button" class="btn sm fd56-favorite" data-fd56-fav="'+key+'" aria-pressed="'+(x.favorite===true)+'" aria-label="'+(x.favorite?'Remove from favourites: ':'Add to favourites: ')+escape(x.name)+'">'+(x.favorite?'★ Favourited':'☆ Favourite')+'</button><button type="button" class="btn sm" data-fd44-edit="'+key+'">Edit amount</button>'+
     '<button type="button" class="btn sm dark" data-fd44-log="'+key+'">＋ Log again</button></div></div>';
  }).join('');
  return '<section class="card fd44-library" aria-label="Personal food library"><div class="fd44-library-head"><div><small>QUICK LOG</small><h3>My food library</h3></div><span>'+all.length+' foods</span></div>'+
@@ -500,11 +557,12 @@ function quickRepeat(key){
  if(!x)return false;
  const now=Date.now();
  if(lastQuickLog.key===key&&now-lastQuickLog.time<1000)return false;
- lastQuickLog={key,time:now};
  const entry={id:uid(),date:selected,category:CATS.includes(x.category)?x.category:'snack',
   source:'manual',name:x.name,barcode:x.barcode||'',unit:x.unit,quantity:f(x.quantity),
   perUnit:copyN(x.perUnit),totals:total(x.unit,x.quantity,x.perUnit)};
  const diary=cleanDiary();
+ if(fd56Duplicate(diary.entries,entry)&&!confirm('That barcode, quantity and meal are already logged on this date. Add another serving anyway?'))return false;
+ lastQuickLog={key,time:now};
  diary.entries.push(entry);diary.entries=diary.entries.slice(-1200);
  s.foodDiary=diary;save();renderCurrent();notify(x.name+' logged — '+fmtQuick(entry.totals.kcal)+' kcal.');
  return true;
@@ -529,6 +587,12 @@ function draftReview(d){
  const unit=d.unit==='portion'?'portion':'100 '+(d.unit==='ml'?'ml':'g');
  return '<div class="fd46-review" id="fd46-review" aria-label="Check product nutritional values">'+
  '<div class="fd46-source"><b>'+escape(source)+'</b><span>Values per '+escape(unit)+'</span></div>'+
+ '<div class="fd56-provenance"><strong>'+(d.barcode?'Barcode '+escape(d.barcode):'No barcode entered')+'</strong><span>'+
+  (d.lookupSource==='community'?(d.barcodeMatch===true?'Returned product code matches the entered barcode · community data, not manufacturer certification':'Community product record · code not independently confirmed'):
+   d.lookupSource==='retailer-choice'||d.lookupSource==='name-choice'?'Chosen by name · NOT a verified barcode match':
+   d.lookupSource==='personal'?'Your previously saved label values · confirm current packaging':
+   'Manual label values · confirm packaging')+'</span>'+
+  '<b id="fd56-coverage">'+(NUT.length-missing.length)+' / '+NUT.length+' nutrition fields supplied'+(missing.length?' · missing '+escape(missing.join(', ')):'')+'</b></div>'+
  unknown+'<p class="fd46-detail">Preview of the amount eaten, using the values currently entered:</p>'+
  '<div class="fd46-preview" id="fd46-preview" role="status">'+nutritionPreview(d.unit,d.quantity,d.perUnit)+'</div>'+
  '<small>Open Food Facts and retailer name matches are not official barcode certification. Verify variety, serving weight and nutrition on the pack.</small></div>';
@@ -551,6 +615,8 @@ function refreshPreview(){
  const preview=document.getElementById('fd46-preview');
  if(preview)preview.innerHTML=nutritionPreview(unit,quantity,values);
  const unknown=NUT.filter(k=>values[k]==='');
+ const completeness=document.getElementById('fd56-coverage');
+ if(completeness)completeness.textContent=(NUT.length-unknown.length)+' / '+NUT.length+' nutrition fields supplied'+(unknown.length?' · missing '+unknown.join(', '):'');
  const warning=r.querySelector('.fd46-unknown,.fd46-complete');
  if(warning){
   warning.className=unknown.length?'fd46-unknown':'fd46-complete';
@@ -560,11 +626,11 @@ function refreshPreview(){
  if(basis)basis.textContent='Values per '+(unit==='portion'?'portion':'100 '+unit);
 }
 function inputPanel(){
- const d=draft||blankDraft();const input=(id,label,step,maximum)=>'<label>'+label+'<input id="fd-'+id+'" type="number" step="'+step+'" min="0" max="'+maximum+'" inputmode="decimal" value="'+(d.perUnit[id]??'')+'" placeholder="Enter label value"></label>';
+ const d=draft||blankDraft();const input=(id,label,step,maximum)=>'<label>'+label+'<input id="fd-'+id+'" aria-label="'+label+' per label unit" enterkeyhint="next" type="number" step="'+step+'" min="0" max="'+maximum+'" inputmode="decimal" value="'+(d.perUnit[id]??'')+'" placeholder="Enter label value"></label>';
  return '<div class="card" id="fd-entry"><div class="row" style="justify-content:space-between;flex-wrap:wrap"><div><h3 style="margin:0">Add extra food</h3><p class="short">Snacks, drinks, takeaways, supplements or anything outside the plan.</p></div><button class="btn" onclick="fdBeginManual()">＋ New manual food</button></div>'+
- '<div class="fd-lookup"><button class="btn dark" onclick="fdOpenScanner()">▦ Scan barcode</button><label class="short" for="fd-lookup-code">Barcode digits</label><input id="fd-lookup-code" inputmode="numeric" pattern="[0-9]*" maxlength="14" placeholder="EAN/UPC barcode" aria-label="Barcode digits" value="'+escape(lastBarcode)+'"><button class="btn" onclick="fdLookup(document.getElementById(\'fd-lookup-code\').value)">Find product</button></div><div id="fd-scan-holder" hidden></div><div class="actions" style="margin:8px 0"><button class="btn sm" onclick="fdTestLookup()">Test food database connection</button></div><p class="short" id="fd-message" role="status">'+escape(lookupMessage||"Scan or enter a barcode to look up a product. Barcode data comes from Open Food Facts; verify against the label.")+'</p>'+(lastBarcode?'<p class="short">Scanned code: <b>'+escape(lastBarcode)+'</b> · <a href="https://world.openfoodfacts.org/product/'+encodeURIComponent(lastBarcode)+'" target="_blank" rel="noopener noreferrer">Check this barcode on Open Food Facts ↗</a></p>':'')+
+ '<div class="fd-lookup"><button class="btn dark" onclick="fdOpenScanner()">▦ Scan barcode</button><label class="short" for="fd-lookup-code">Barcode digits</label><input id="fd-lookup-code" type="text" inputmode="numeric" pattern="[0-9]*" enterkeyhint="search" autocomplete="off" onkeydown="fdLookupKey(event,this.value)" maxlength="14" placeholder="EAN/UPC barcode" aria-label="Barcode digits" value="'+escape(lastBarcode)+'"><button class="btn" onclick="fdLookup(document.getElementById(\'fd-lookup-code\').value)">Find product</button></div><div id="fd-scan-holder" hidden></div><div class="actions" style="margin:8px 0"><button class="btn sm" onclick="fdTestLookup()">Test food database connection</button></div><p class="short" id="fd-message" role="status">'+escape(lookupMessage||"Scan or enter a barcode to look up a product. Barcode data comes from Open Food Facts; verify against the label.")+'</p>'+(lastBarcode?'<p class="short">Scanned code: <b>'+escape(lastBarcode)+'</b> · <a href="https://world.openfoodfacts.org/product/'+encodeURIComponent(lastBarcode)+'" target="_blank" rel="noopener noreferrer">Check this barcode on Open Food Facts ↗</a></p>':'')+
  foodSearchUI()+
- (draft?'<form onsubmit="event.preventDefault();fdSaveManual()"><div class="fd-inputs"><label class="fd-wide">Product / food name<input id="fd-name" maxlength="100" required value="'+escape(d.name)+'" placeholder="e.g. Chicken sandwich"></label><label>Meal<select id="fd-category">'+CATS.map(c=>'<option value="'+c+'" '+(d.category===c?'selected':'')+'>'+c[0].toUpperCase()+c.slice(1)+'</option>').join('')+'</select></label><label>Quantity eaten<input id="fd-quantity" required type="number" inputmode="decimal" min="0.1" max="5000" step="0.1" value="'+f(d.quantity)+'"></label><label>Unit<select id="fd-unit" onchange="fdUnitChanged(this.value)">'+['g','ml','portion'].map(u=>'<option value="'+u+'" '+(d.unit===u?'selected':'')+'>'+escape(u==='portion'?'Portions':u==='ml'?'Millilitres (ml)':'Grams (g)')+'</option>').join('')+'</select></label><label>Barcode (optional)<input id="fd-barcode" inputmode="numeric" maxlength="14" value="'+escape(d.barcode||'')+'" placeholder="Optional"></label></div><p class="short fd-base-label" id="fd-base-label">Nutritional values per '+(d.unit==='portion'?'one portion':'100 '+d.unit)+'. You can change values to match the package label.</p><div class="fd-inputs">'+input('kcal','Calories (kcal)',.1,5000)+input('protein','Protein (g)',.1,300)+input('carbs','Carbohydrates (g)',.1,500)+input('fat','Fat (g)',.1,300)+input('fibre','Fibre (g)',.1,200)+'</div>'+draftReview(d)+'<label class="fd-check"><input type="checkbox" id="fd-save-food" '+(d.saveFood?'checked':'')+'> Save food for next time</label><div class="actions"><button class="btn dark" type="submit">'+(editing?'Update diary entry':'Add to my diary')+'</button><button type="button" class="btn" onclick="fdCancelDraft()">Cancel</button></div></form>':'<p class="short">Scan or find a barcode to fill the nutrition values, or choose “New manual food” to enter values from the packaging.</p>')+'</div>';
+ (draft?'<form id="fd56-entry-form" onsubmit="event.preventDefault();fdSaveManual()"><div class="fd-inputs"><label class="fd-wide">Product / food name<input id="fd-name" autocomplete="off" enterkeyhint="next" maxlength="100" required value="'+escape(d.name)+'" placeholder="e.g. Chicken sandwich"></label><label>Meal<select id="fd-category">'+CATS.map(c=>'<option value="'+c+'" '+(d.category===c?'selected':'')+'>'+c[0].toUpperCase()+c.slice(1)+'</option>').join('')+'</select></label><label>Quantity eaten<input id="fd-quantity" required type="number" inputmode="decimal" enterkeyhint="next" min="0.1" max="5000" step="0.1" value="'+f(d.quantity)+'"></label><label>Unit<select id="fd-unit" onchange="fdUnitChanged(this.value)">'+['g','ml','portion'].map(u=>'<option value="'+u+'" '+(d.unit===u?'selected':'')+'>'+escape(u==='portion'?'Portions':u==='ml'?'Millilitres (ml)':'Grams (g)')+'</option>').join('')+'</select></label><label>Barcode (optional)<input id="fd-barcode" inputmode="numeric" enterkeyhint="next" autocomplete="off" maxlength="14" value="'+escape(d.barcode||'')+'" placeholder="Optional"></label></div><p class="short fd-base-label" id="fd-base-label">Nutritional values per '+(d.unit==='portion'?'one portion':'100 '+d.unit)+'. You can change values to match the package label.</p><div class="fd-inputs">'+input('kcal','Calories (kcal)',.1,5000)+input('protein','Protein (g)',.1,300)+input('carbs','Carbohydrates (g)',.1,500)+input('fat','Fat (g)',.1,300)+input('fibre','Fibre (g)',.1,200)+'</div>'+draftReview(d)+'<label class="fd-check"><input type="checkbox" id="fd-save-food" '+(d.saveFood?'checked':'')+'> Save food for next time</label><div class="actions"><button class="btn dark" type="submit">'+(editing?'Update diary entry':'Add to my diary')+'</button><button type="button" class="btn" onclick="fdCancelDraft()">Cancel</button></div></form>':'<p class="short">Scan or find a barcode to fill the nutrition values, or choose “New manual food” to enter values from the packaging.</p>')+'</div>';
 }
 function unitChanged(unit){
  const label=document.getElementById('fd-base-label');
@@ -594,6 +660,8 @@ document.addEventListener?.('change',e=>{
  if(e.target?.id==='fd-unit')refreshPreview();
 });
 document.addEventListener?.('click',e=>{
+ const fav=e.target.closest?.('[data-fd56-fav]');
+ if(fav&&document.getElementById('diary')?.contains(fav)){fd56ToggleFavorite(fav.dataset.fd56Fav);return;}
  const log=e.target.closest?.('[data-fd44-log]');
  const edit=e.target.closest?.('[data-fd44-edit]');
  const control=log||edit;
@@ -602,12 +670,13 @@ document.addEventListener?.('click',e=>{
  else if(edit)quickEdit(edit.dataset.fd44Edit);
 });
 window.fdPrivateSearch=privateSearch;window.fdQuickRepeat=quickRepeat;window.fdQuickEdit=quickEdit;
+window.fdRepeatEntry=fd56Repeat;window.fdToggleFoodFavorite=fd56ToggleFavorite;
 window.forgeFoodQuickLog={libraryCandidates,libraryResults,quickRepeat,quickEdit};
 window.forgeBarcodeV46={barcodeVariants,nutritionCoverage,nutritionPreview,refreshPreview};
 window.fdChangeDate=changeDate;window.fdAdjustDate=adjustDate;window.fdAddPlanned=addPlanned;
 window.fdDeleteEntry=deleteEntry;window.fdEditEntry=editEntry;window.fdUseSaved=useSaved;
 window.fdBeginManual=beginManual;window.fdCancelDraft=cancelDraft;window.fdSaveManual=saveManual;
-window.fdSearchTyping=searchTyping;window.fdSearchNames=searchFoodNames;window.fdChooseVerified=chooseVerified;window.fdChooseSearch=chooseSearch;
+window.fdSearchTyping=searchTyping;window.fdSearchNames=searchFoodNames;window.fdLookupKey=lookupKey;window.fdFoodSearchKey=foodSearchKey;window.fdChooseVerified=chooseVerified;window.fdChooseSearch=chooseSearch;
 window.fdLookup=lookup;window.fdTestLookup=testFoodDatabase;window.fdExport=exportDiary;window.fdOpenScanner=openScanner;window.fdStopScanner=stopScanner;window.fdUnitChanged=unitChanged;
 window.nourishFoodCleanup=stopScanner;window.nourishFoodReset=resetDiaryUI;
 if(s.tab==='diary'||s.tab==='overview')renderCurrent();

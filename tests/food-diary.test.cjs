@@ -14,7 +14,7 @@ function boot(options={}){
  const context={document:doc,navigator:{},location:{protocol:'file:',hostname:'localhost'},
   localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},
   window:{addEventListener(){},dispatchEvent(){},scrollTo(){}},
-  alert:message=>alerts.push(message),confirm:()=>true,CustomEvent:class{},
+  alert:message=>alerts.push(message),confirm:options.confirm||(()=>true),CustomEvent:class{},
   setTimeout,clearTimeout,console,fetch:options.fetch||(()=>Promise.reject(Error('No mock response'))),AbortController,
   crypto:{randomUUID:()=>Math.random().toString(36).slice(2,12)+Math.random().toString(36).slice(2,12)}
  };
@@ -353,4 +353,100 @@ test('v46 preview distinguishes missing nutrients from explicit zero and scales 
  assert.match(b.element('diary').innerHTML,/Unknown fields/);
  assert.match(b.element('diary').innerHTML,/MANUAL LABEL ENTRY/);
  assert.match(b.element('diary').innerHTML,/fd46-preview/);
+});
+
+
+// FORGE v56 — private favourites, direct repeat logging and barcode confidence.
+test('v56 favourite toggle is persisted and survives validated cloud roundtrip',()=>{
+ const b=boot();b.evaluate("navigate('diary')");b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'Favourite yoghurt',code:'5012345678900',quantity:'175'});
+ b.context.window.fdSaveManual();
+ let st=b.cloud();assert.equal(st.foodDiary.savedFoods[0].favorite,false);
+ const key=b.context.window.forgeFoodQuickLog.libraryCandidates()[0].key;
+ assert.equal(b.context.window.fdToggleFoodFavorite(key),true);
+ st=b.cloud();assert.equal(st.foodDiary.savedFoods[0].favorite,true);
+ assert.match(b.element('diary').innerHTML,/Favourited/);
+ assert.equal(b.context.window.nourishCloudBridge.applyData(st),true);
+ assert.equal(b.cloud().foodDiary.savedFoods[0].favorite,true);
+ assert.equal(b.context.window.fdToggleFoodFavorite(key),true);
+ assert.equal(b.cloud().foodDiary.savedFoods[0].favorite,false);
+});
+test('v56 favourites can be created from recently logged foods without marking every food favourite',()=>{
+ const b=boot();b.evaluate("navigate('diary')");b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'Recent unsaved banana',code:'',quantity:'105',saveFood:false});
+ b.context.window.fdSaveManual();
+ assert.equal(b.cloud().foodDiary.savedFoods.length,0);
+ const key=b.context.window.forgeFoodQuickLog.libraryCandidates()[0].key;
+ assert.equal(b.context.window.fdToggleFoodFavorite(key),true);
+ assert.equal(b.cloud().foodDiary.savedFoods.length,1);
+ assert.equal(b.cloud().foodDiary.savedFoods[0].favorite,true);
+ assert.equal(b.cloud().foodDiary.entries.length,1,'Favouriting must not log another meal');
+ const first=b.context.window.forgeFoodQuickLog.libraryCandidates()[0];
+ assert.equal(first.favorite,true);
+});
+test('v56 repeat-from-history creates a new entry with identical serving and does not mutate original',()=>{
+ const b=boot();b.evaluate("navigate('diary')");b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'Breakfast porridge',quantity:'225',category:'breakfast',saveFood:false});
+ b.context.window.fdSaveManual();
+ const original=JSON.parse(JSON.stringify(b.cloud().foodDiary.entries[0]));
+ assert.match(b.element('diary').innerHTML,/fdRepeatEntry/);
+ assert.equal(b.context.window.fdRepeatEntry(original.id),true);
+ const entries=b.cloud().foodDiary.entries;
+ assert.equal(entries.length,2);
+ assert.notEqual(entries[0].id,entries[1].id);
+ assert.equal(entries[1].quantity,225);
+ assert.equal(entries[1].totals.kcal,entries[0].totals.kcal);
+ assert.deepEqual(entries[0],original);
+ assert.equal(b.context.window.fdRepeatEntry(original.id),false,'Immediate double click must not log twice');
+});
+test('v56 same-day duplicate scanned serving requires a deliberate confirmation',()=>{
+ let prompts=0;
+ const b=boot({confirm:()=>{prompts++;return false}});
+ b.evaluate("navigate('diary')");b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'Tuna in brine',code:'966340011833',quantity:'102',saveFood:true});
+ b.context.window.fdSaveManual();
+ const key=b.context.window.forgeFoodQuickLog.libraryCandidates()[0].key;
+ assert.equal(b.context.window.forgeFoodQuickLog.quickRepeat(key),false);
+ assert.equal(b.cloud().foodDiary.entries.length,1);
+ assert.ok(prompts>=1,'Barcode/quantity duplicate must ask permission');
+ // A different amount is not a duplicate, and a genuine second serving can be recorded.
+ b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'Tuna in brine',code:'966340011833',quantity:'55'});
+ b.context.window.fdSaveManual();
+ assert.equal(b.cloud().foodDiary.entries.length,2);
+});
+test('v56 source, barcode and completeness appear alongside the existing macro preview',()=>{
+ const b=boot();b.evaluate("navigate('diary')");b.context.window.fdBeginManual();
+ let page=b.element('diary').innerHTML;
+ assert.match(page,/fd56-coverage/);
+ assert.match(page,/0 \/ 5 nutrition fields supplied/);
+ assert.match(page,/MANUAL LABEL ENTRY/);
+ assert.match(page,/No barcode entered/);
+ assert.match(page,/onkeydown="fdLookupKey\(event,this.value\)"/);
+ assert.match(page,/onkeydown="fdFoodSearchKey\(event\)"/);
+ assert.match(page,/fd56-entry-form/);
+ assert.match(page,/enterkeyhint="next"/);
+ b.context.window.fdChooseVerified(0);
+ page=b.element('diary').innerHTML;
+ assert.match(page,/Chosen by name · NOT a verified barcode match/);
+ assert.match(page,/5 \/ 5 nutrition fields supplied/);
+});
+test('v56 scanner Enter key launches a lookup and prevents accidental form submission',()=>{
+ const b=boot();let blocked=false;
+ assert.equal(b.context.window.fdLookupKey({key:'Tab',preventDefault(){blocked=true}},'12345678'),false);
+ assert.equal(blocked,false);
+ assert.equal(b.context.window.fdLookupKey({key:'Enter',preventDefault(){blocked=true}},'bad-code'),true);
+ assert.equal(blocked,true);
+ assert.match(b.element('fd-message').textContent,/valid 8–14 digit barcode/);
+});
+test('v56 saved food validator sanitizes malicious or nonboolean favourite flags',()=>{
+ const b=boot();b.evaluate("navigate('diary')");b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'My breakfast toast',code:'',saveFood:true});
+ b.context.window.fdSaveManual();
+ const st=b.cloud();st.foodDiary.savedFoods[0].favorite='yes';
+ assert.equal(b.context.window.nourishCloudBridge.applyData(st),true);
+ assert.equal(b.cloud().foodDiary.savedFoods[0].favorite,false);
+ st.foodDiary.savedFoods[0].favorite=true;
+ assert.equal(b.context.window.nourishCloudBridge.applyData(st),true);
+ assert.equal(b.cloud().foodDiary.savedFoods[0].favorite,true);
 });

@@ -1,0 +1,28 @@
+/* FORGE v56 — personal food favourites, faster repeats and trustworthy barcode status. */
+#diary .fd44-library-item{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid #345337;padding:12px 0}
+#diary .fd44-library-item>div:first-child{min-width:0}
+#diary .fd44-library-item b{font-size:13px;color:#f7fff2}
+#diary .fd44-library-item small{display:block;font-size:10px;color:#a8c19e;line-height:1.55;margin-top:4px}
+#diary .fd44-library-actions{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+#diary .fd44-library-actions button{min-height:44px;border-radius:10px;font-weight:900;font-size:10px;padding:9px 11px}
+#diary .fd56-favorite{border:1px solid #739248!important;background:#162a19!important;color:#dcffa2!important}
+#diary .fd56-favorite[aria-pressed="true"]{background:#c7ff17!important;border-color:#e7ff91!important;color:#091309!important}
+#diary .fd56-repeat{min-height:43px!important;border:1px solid #8bad58!important;background:#c7ff17!important;color:#071309!important;font-weight:950!important;border-radius:10px}
+#diary .fd56-provenance{display:grid;gap:6px;margin:9px 0;padding:13px;background:linear-gradient(110deg,#152b1b,#08140d);border:1px solid #516e3b;border-radius:12px;color:#d7f0d1}
+#diary .fd56-provenance strong{font-size:11px;color:#c7ff17;overflow-wrap:anywhere}
+#diary .fd56-provenance span{font-size:11px;line-height:1.55}
+#diary .fd56-provenance b{font-size:11px;font-weight:850;color:#e7ffcc}
+#diary .fd46-review{border-color:#527b40!important}
+#diary .fd46-review .fd46-unknown{color:#ffe0b6!important}
+#diary #fd-lookup-code{min-height:48px;font-size:16px}
+#diary #fd56-entry-form input,#diary #fd56-entry-form select{min-height:47px;font-size:16px}
+#diary #fd56-entry-form input:focus-visible,#diary #fd56-entry-form select:focus-visible,#diary #fd-lookup-code:focus-visible,#diary .fd56-favorite:focus-visible{outline:3px solid #d6ff78!important;outline-offset:2px}
+#diary #fd56-entry-form .actions button{min-height:46px}
+@media(max-width:560px){
+ #diary .fd44-library-item{flex-direction:column;align-items:stretch}
+ #diary .fd44-library-actions{justify-content:stretch}
+ #diary .fd44-library-actions button{flex:1 1 96px}
+ #diary .fd56-repeat{min-width:75px}
+ #diary .fd-lookup button{min-height:46px}
+}
+@media(prefers-reduced-motion:reduce){#diary .fd56-favorite,#diary .fd56-repeat{transition:none!important;animation:none!important}}

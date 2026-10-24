@@ -5,9 +5,9 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const read=file=>fs.readFileSync(file,'utf8');
 
-test('FORGE v55 is wired into the installed app and remains on a stable start URL',()=>{
+test('FORGE v56 is wired into the installed app and remains on a stable start URL',()=>{
  const html=read('index.html'),manifest=JSON.parse(read('manifest.webmanifest')),build=JSON.parse(read('forge-build.json'));
- assert.equal(build.version,55);
+ assert.equal(build.version,56);
  assert.equal(manifest.start_url,'./index.html');
  assert.match(html,/forge-updater\.js\?v=41/);
  assert.match(html,/forge-updater\.css\?v=39/);
@@ -17,8 +17,9 @@ test('FORGE v55 is wired into the installed app and remains on a stable start UR
  assert.match(html,/forge-strength-insights\.css\?v=43/);
  assert.match(html,/forge-strength-insights\.js\?v=43/);
  assert.match(html,/forge-fuel-v44\.css\?v=44/);
- assert.match(html,/food-diary\.js\?v=46/);
+ assert.match(html,/food-diary\.js\?v=56/);
  assert.match(html,/forge-fuel-v46\.css\?v=46/);
+ assert.match(html,/forge-fuel-v56\.css\?v=56/);
  assert.match(html,/forge-visual-v47\.css\?v=47/);
  assert.match(html,/forge-train-v48\.css\?v=48/);
  assert.match(html,/gym\.js\?v=54/);
@@ -38,12 +39,12 @@ test('FORGE v55 is wired into the installed app and remains on a stable start UR
  assert.match(html,/forge-today-v45\.js\?v=45/);
  assert.match(html,/forge-today-v45\.css\?v=45/);
  assert.match(html,/forge-train-coach\.js\?v=43/);
- assert.match(html,/name="forge-release" content="55"/);
+ assert.match(html,/name="forge-release" content="56"/);
 });
 test('FORGE update worker revalidates navigations and carries recovery files',()=>{
  const sw=read('service-worker.js');
  new vm.Script(sw);
- assert.match(sw,/forge-v55-strength-evidence/);
+ assert.match(sw,/forge-v56-fuel-quicklog/);
  assert.match(sw,/cache:'no-store'/);
  assert.match(sw,/forge-build\.json/);
  assert.match(sw,/refresh-forge\.html/);
@@ -52,7 +53,7 @@ test('Recovery only resets caches and service workers, not local workouts or pho
  const html=read('refresh-forge.html');
  assert.match(html,/caches\.keys\(\)/);
  assert.match(html,/\.unregister\(\)/);
- assert.match(html,/index\.html\?v=55/);
+ assert.match(html,/index\.html\?v=56/);
  assert.doesNotMatch(html,/localStorage\.(?:clear|removeItem)/);
  assert.doesNotMatch(html,/indexedDB\.deleteDatabase/);
  assert.doesNotMatch(html,/caches\.delete\([^)]*localStorage/);
