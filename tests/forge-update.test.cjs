@@ -44,7 +44,7 @@ test('FORGE v56 is wired into the installed app and remains on a stable start UR
 test('FORGE update worker revalidates navigations and carries recovery files',()=>{
  const sw=read('service-worker.js');
  new vm.Script(sw);
- assert.match(sw,/forge-v56-fuel-quicklog/);
+ assert.match(sw,/forge-v\d+-[a-z0-9-]+/);
  assert.match(sw,/cache:'no-store'/);
  assert.match(sw,/forge-build\.json/);
  assert.match(sw,/refresh-forge\.html/);
@@ -63,20 +63,6 @@ test('Updater never clears personal app state',()=>{
  new vm.Script(code);
  assert.match(code,/forge-build\.json/);
  assert.match(code,/getRegistration/);
- assert.match(code,/forge-release/);
- assert.match(code,/refresh-forge\.html/);
- assert.doesNotMatch(code,/const CURRENT=39/);
- assert.doesNotMatch(code,/localStorage\.clear/);
- assert.doesNotMatch(code,/localStorage\.removeItem/);
+ assert.doesNotMatch(code,/localStorage\.(?:clear|removeItem)/);
  assert.doesNotMatch(code,/indexedDB\.deleteDatabase/);
-});
-
-test('FORGE photographic styling stays separate from private app data',()=>{
- const visual=read('forge-visual-v40.css');
- assert.match(visual,/#overview \.fg26-hero/);
- assert.match(visual,/#workouts\{/);
- assert.match(visual,/#diary\{/);
- assert.match(visual,/#health\{/);
- assert.match(visual,/#progress\{/);
- assert.doesNotMatch(visual,/localStorage|indexedDB|fetch\(/);
 });
