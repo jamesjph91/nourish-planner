@@ -31,11 +31,11 @@
 - [x] **15** Give users an explicit, safe pre-update backup checklist.
 
 ## v53 · Offline and recovery (steps 16–20)
-- [ ] **16** Report offline readiness for critical app assets.
-- [ ] **17** Detect missing app assets and offer the safe refresh path.
-- [ ] **18** Show deployed vs installed build identifiers without touching user records.
-- [ ] **19** Add an offline smoke-test to CI with simulated network failure.
-- [ ] **20** Improve app-shell recovery guidance for Android installed-PWA users.
+- [x] **16** Report offline readiness for critical app assets.
+- [x] **17** Detect missing app assets and offer the safe refresh path.
+- [x] **18** Show deployed vs installed build identifiers without touching user records.
+- [x] **19** Add an offline smoke-test to CI with simulated network failure.
+- [x] **20** Improve app-shell recovery guidance for Android installed-PWA users.
 
 ## v54 · Train: fewer taps (steps 21–25)
 - [ ] **21** Jump to the next uncompleted set.
@@ -85,7 +85,7 @@
 |---|---|---|---|
 | v51 | 01–10 | Verified deployed | Regression run `40113619270` · Pages `40113618711` |
 | v52 | 11–15 | Verified deployed | Regression run `40116507047` · Pages `40116506598` · `tests/forge-data-safety-v52.test.cjs` |
-| v53 | 16–20 | Pending | — |
+| v53 | 16–20 | Verified deployed | Regression run `40117118278` · Pages `40117118102` · `tests/forge-offline-v53.test.cjs` |
 | v54 | 21–25 | Pending | — |
 | v55 | 26–30 | Pending | — |
 | v56 | 31–35 | Pending | — |
