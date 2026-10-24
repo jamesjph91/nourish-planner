@@ -27,6 +27,8 @@ on:
       - 'forge-v27-train.css'
       - 'forge-train-v48.css'
       - 'forge-train-v49.css'
+      - 'forge-offline-v53.js'
+      - 'forge-offline-v53.css'
       - 'forge-updater.js'
       - 'forge-food-navigation.js'
       - 'forge-meal-library-data.js'
@@ -87,6 +89,8 @@ on:
       - 'forge-strength-insights.css'
       - 'forge-v27-train.css'
       - 'forge-train-v48.css'
+      - 'forge-offline-v53.js'
+      - 'forge-offline-v53.css'
       - 'forge-updater.js'
       - 'forge-food-navigation.js'
       - 'forge-meal-library-data.js'
@@ -157,6 +161,7 @@ jobs:
           node --check forge-strength-v50.js
           node --check forge-access-v51.js
           node --check forge-data-safety-v52.js
+          node --check forge-offline-v53.js
           node --check forge-updater.js
           node --check forge-food-navigation.js
           node --check forge-meal-library-data.js

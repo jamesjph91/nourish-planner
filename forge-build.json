@@ -1,13 +1,14 @@
 {
-  "version": 52,
+  "version": 53,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Read-only per-device food, workout, activity and measurement record counts in Settings",
-    "Separate browser storage and cloud-sync status on Settings and the signed-in account card",
-    "Per-account last JSON backup request timestamp, explicitly not a successful download guarantee",
-    "Preflight JSON backup file structure and show record counts before any import with explicit confirmation",
-    "Pre-update checklist with separate photo backup warning and opt-in version check",
-    "Preserve all existing v47 brand art, mobile navigation, gym training, meals and account data"
+    "Real-time read-only offline readiness inspection of ten critical cached app assets",
+    "Service worker resolves offline versioned JavaScript and CSS from canonical precached files",
+    "Failed essential precaches block a broken service-worker upgrade, preserving prior version",
+    "Clear installed-versus-published release versions without claiming online checks when unavailable",
+    "Android installed-app recovery guidance and missing-asset refresh link inside Settings",
+    "Safe refresh verifies live network via HEAD before deleting downloaded app caches",
+    "Offline and recovery smoke tests in GitHub CI; no private data storage is modified"
   ]
 }
