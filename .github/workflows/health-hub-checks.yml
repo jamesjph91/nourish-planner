@@ -10,6 +10,8 @@ on:
       - 'progress.js'
       - 'forge-original-theme.js'
       - 'forge-dashboard.js'
+      - 'forge-today-v45.js'
+      - 'forge-today-v45.css'
       - 'forge-master-ui.js'
       - 'forge-train.js'
       - 'forge-train-coach.js'
@@ -60,6 +62,8 @@ on:
       - 'progress.js'
       - 'forge-original-theme.js'
       - 'forge-dashboard.js'
+      - 'forge-today-v45.js'
+      - 'forge-today-v45.css'
       - 'forge-master-ui.js'
       - 'forge-train.js'
       - 'forge-train-coach.js'
@@ -121,6 +125,7 @@ jobs:
           node --check progress.js
           node --check forge-original-theme.js
           node --check forge-dashboard.js
+          node --check forge-today-v45.js
           node --check forge-master-ui.js
           node --check forge-train.js
           node --check forge-train-coach.js

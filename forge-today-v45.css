@@ -1,0 +1,41 @@
+/* FORGE v45 · Weekly performance layer in the real Today screen */
+#overview .fg45{margin:12px 0 0;border-radius:20px;padding:18px 17px;background:linear-gradient(145deg,#101d14,#060e09);border:1px solid #364f30;color:#f7fbf5;box-shadow:0 12px 30px #0005}
+#overview .fg45-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 15px}
+#overview .fg45-heading span:first-child,#overview .fg45-chart-top small,#overview .fg45-weight small,#overview .fg45-next>span{font-size:9px;font-weight:950;color:#b9ff16;letter-spacing:1.2px}
+#overview .fg45-heading h2{font-size:clamp(22px,4vw,29px);font-style:italic;letter-spacing:-.9px;margin:5px 0!important;line-height:1.1}
+#overview .fg45-heading>.fg45-live{white-space:nowrap;color:#cbff73;border:1px solid #486335;background:#142719;padding:8px;border-radius:50px;font-size:9px;font-weight:900}
+#overview .fg45-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+#overview .fg45-card{min-width:0;padding:14px 10px;background:#09140e;border:1px solid #29432b;border-radius:13px;display:flex;flex-direction:column;gap:6px}
+#overview .fg45-card small{font-size:8px;letter-spacing:.6px;color:#a8d17e;font-weight:900}
+#overview .fg45-card strong{font-size:26px;line-height:1.15;letter-spacing:-1px;font-weight:950;white-space:nowrap}
+#overview .fg45-card strong em{font-style:normal;color:#718e77;font-size:14px}
+#overview .fg45-card span{font-size:9px;line-height:1.4;color:#95a899}
+#overview .fg45-chart{background:#09120c;border:1px solid #2e402c;border-radius:15px;padding:16px 12px;margin:12px 0}
+#overview .fg45-chart-top{display:flex;justify-content:space-between;align-items:flex-start;gap:11px;flex-wrap:wrap}
+#overview .fg45-chart-top h3{font-size:19px;letter-spacing:-.4px;margin:4px 0 0}
+#overview .fg45-tabs{display:flex;flex-wrap:wrap;gap:4px;background:#112016;border:1px solid #2e462f;border-radius:10px;padding:3px}
+#overview .fg45-tabs button{border:0;background:transparent;color:#a0b8a5;padding:8px 10px;font-size:10px;font-weight:900;border-radius:7px;min-height:35px}
+#overview .fg45-tabs button.on{background:#c7ff17;color:#081009}
+#overview .fg45-graph{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px;margin:13px 0 8px;height:156px}
+#overview .fg45-day{display:flex;flex-direction:column;align-items:center;justify-content:end;height:100%;min-width:0;gap:6px}
+#overview .fg45-track{height:114px;width:100%;display:flex;align-items:flex-end;justify-content:center}
+#overview .fg45-track i{display:block;width:100%;max-width:32px;background:linear-gradient(#d0ff46,#6b9a20);border-radius:6px 6px 0 0}
+#overview .fg45-protein .fg45-track i{background:linear-gradient(#55e0d1,#207f86)}
+#overview .fg45-steps .fg45-track i{background:linear-gradient(#c8abff,#7550bb)}
+#overview .fg45-track i.fg45-empty{height:2px;border-top:1px dashed #647767;background:transparent}
+#overview .fg45-day b{font-size:9px;font-variant-numeric:tabular-nums;white-space:nowrap}
+#overview .fg45-day small{font-size:9px;color:#90a895}
+#overview .fg45-chart-note,#overview .fg45-note{font-size:10px;line-height:1.5;color:#99a99a;margin:10px 0 0}
+#overview .fg45-chart-note b{color:#d7f5b5}
+#overview .fg45-weight{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:stretch;margin:12px 0}
+#overview .fg45-weight>div{background:#0a160e;border:1px solid #28412c;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px}
+#overview .fg45-weight strong{font-size:22px;letter-spacing:-.5px}
+#overview .fg45-weight span{font-size:9px;color:#9daf9f}
+#overview .fg45-weight button,#overview .fg45-next button{border:1px solid #496834;background:#172919;color:#d5ff9f;font-size:10px;font-weight:900;padding:11px;border-radius:11px}
+#overview .fg45-next{padding:14px;background:linear-gradient(120deg,#1c311c,#111f15);border:1px solid #405a33;border-radius:13px}
+#overview .fg45-next p{margin:6px 0 12px;color:#e0eede;font-size:12px;line-height:1.55}
+#overview .fg45-next>div{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+#overview .fg45-next button:first-child{background:#b9ff16;color:#08110a;border-color:#b9ff16}
+@media(max-width:550px){#overview .fg45{padding:13px 10px}#overview .fg45-cards{grid-template-columns:repeat(2,minmax(0,1fr))}#overview .fg45-card strong{font-size:24px}#overview .fg45-chart{padding:12px 8px}#overview .fg45-graph{gap:5px}#overview .fg45-weight{grid-template-columns:1fr 1fr}#overview .fg45-weight button{grid-column:1/-1;min-height:42px}}
+@media(max-width:365px){#overview .fg45-heading h2{font-size:22px}#overview .fg45-graph{gap:3px}#overview .fg45-day b{font-size:8px}#overview .fg45-tabs button{padding:7px}}
+@media(prefers-reduced-motion:reduce){#overview .fg45 *{transition:none!important}}
