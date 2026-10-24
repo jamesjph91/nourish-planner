@@ -83,6 +83,7 @@ function gymBoot(){
  };
  ctx.window=ctx;
  vm.createContext(ctx);vm.runInContext(inline,ctx);vm.runInContext(gym,ctx);
+ vm.runInContext('navigate("workouts")',ctx); // Mount the real Train view before testing its rendered controls.
  const date=vm.runInContext('s.workouts.startDate',ctx);
  vm.runInContext('gymSelectDay("'+date+'")',ctx);
  vm.runInContext('gymSetDayPlan("'+date+'","A")',ctx);
