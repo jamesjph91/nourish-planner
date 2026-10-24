@@ -244,3 +244,57 @@ test('Name-based search returns community products without assigning an unconfir
  assert.match(b.element('fd-message').textContent,/NOT a confirmed barcode match/);
  assert.equal(b.cloud().foodDiary.entries.length,0);
 });
+
+
+test('v44 private library repeats validated saved portions without re-querying nutrition',()=>{
+ let calls=0;
+ const b=boot({fetch:async()=>{calls++;throw Error('Network should not be needed')}});
+ b.evaluate("navigate('diary')");
+ b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'My UK yoghurt',quantity:'175',kcal:'84',protein:'9.5',carbs:'7',fat:'1.5',fibre:'0.5',saveFood:true});
+ b.context.window.fdSaveManual();
+ const api=b.context.window.forgeFoodQuickLog;
+ const list=api.libraryCandidates();
+ assert.equal(list.length,1);
+ assert.equal(list[0].name,'My UK yoghurt');
+ assert.match(b.element('diary').innerHTML,/fd44-private-search/);
+ assert.match(b.element('diary').innerHTML,/Log again/);
+ assert.equal(api.quickRepeat(list[0].key),true);
+ assert.equal(api.quickRepeat(list[0].key),false,'rapid second tap cannot duplicate the same food');
+ const state=b.cloud();
+ assert.equal(state.foodDiary.entries.length,2);
+ assert.equal(state.foodDiary.entries[1].quantity,175);
+ assert.equal(state.foodDiary.entries[1].totals.kcal,147);
+ assert.equal(state.foodDiary.entries[1].source,'manual');
+ assert.equal(calls,0);
+});
+test('v44 library contains recent unsaved food but never uneaten planned meals',()=>{
+ const b=boot();b.evaluate("navigate('diary')");
+ b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'Unfavourited snack',quantity:'65',kcal:'210',saveFood:false});
+ b.context.window.fdSaveManual();
+ const lib=b.context.window.forgeFoodQuickLog.libraryCandidates();
+ assert.equal(lib.length,1);
+ assert.equal(lib[0].saved,false);
+ assert.ok(b.context.window.forgeFoodQuickLog.libraryResults('snack').length===1);
+ assert.ok(b.context.window.forgeFoodQuickLog.libraryResults('missing').length===0);
+ const start=b.evaluate('s.workouts.startDate');
+ b.context.window.fdChangeDate(start);
+ b.context.window.fdAddPlanned('breakfast',1);
+ assert.equal(b.context.window.forgeFoodQuickLog.libraryCandidates().length,1,'planned recipe is excluded');
+ b.context.window.nourishCloudBridge.resetPrivatePlan();
+ assert.equal(b.context.window.forgeFoodQuickLog.libraryCandidates().length,0,'account reset clears library');
+});
+test('v44 barcode mismatch is never used to populate an unverified product',async()=>{
+ let count=0;
+ const b=boot({fetch:async()=>{count++;return {ok:true,status:200,json:async()=>({
+  status:'success',product:{code:'9999999999999',product_name:'Wrong barcode food',
+   nutriments:{'energy-kcal_100g':400,proteins_100g:40}}
+ })}}});
+ b.evaluate("navigate('diary')");
+ await b.context.window.fdLookup('5012345678900');
+ assert.equal(count,2,'fallback endpoint is also checked for a matching record');
+ assert.doesNotMatch(b.element('diary').innerHTML,/Wrong barcode food/);
+ assert.match(b.element('fd-message').textContent,/did not match/);
+ assert.equal(b.cloud().foodDiary.entries.length,0);
+});

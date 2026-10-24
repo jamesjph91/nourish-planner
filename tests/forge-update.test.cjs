@@ -5,9 +5,9 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const read=file=>fs.readFileSync(file,'utf8');
 
-test('FORGE v43 is wired into the installed app and remains on a stable start URL',()=>{
+test('FORGE v44 is wired into the installed app and remains on a stable start URL',()=>{
  const html=read('index.html'),manifest=JSON.parse(read('manifest.webmanifest')),build=JSON.parse(read('forge-build.json'));
- assert.equal(build.version,43);
+ assert.equal(build.version,44);
  assert.equal(manifest.start_url,'./index.html');
  assert.match(html,/forge-updater\.js\?v=41/);
  assert.match(html,/forge-updater\.css\?v=39/);
@@ -16,13 +16,15 @@ test('FORGE v43 is wired into the installed app and remains on a stable start UR
  assert.match(html,/forge-activity-explorer\.js\?v=42/);
  assert.match(html,/forge-strength-insights\.css\?v=43/);
  assert.match(html,/forge-strength-insights\.js\?v=43/);
+ assert.match(html,/forge-fuel-v44\.css\?v=44/);
+ assert.match(html,/food-diary\.js\?v=44/);
  assert.match(html,/forge-train-coach\.js\?v=43/);
- assert.match(html,/name="forge-release" content="43"/);
+ assert.match(html,/name="forge-release" content="44"/);
 });
 test('FORGE update worker revalidates navigations and carries recovery files',()=>{
  const sw=read('service-worker.js');
  new vm.Script(sw);
- assert.match(sw,/forge-v43-strength-coach/);
+ assert.match(sw,/forge-v44-smart-fuel/);
  assert.match(sw,/cache:'no-store'/);
  assert.match(sw,/forge-build\.json/);
  assert.match(sw,/refresh-forge\.html/);
@@ -31,7 +33,7 @@ test('Recovery only resets caches and service workers, not local workouts or pho
  const html=read('refresh-forge.html');
  assert.match(html,/caches\.keys\(\)/);
  assert.match(html,/\.unregister\(\)/);
- assert.match(html,/index\.html\?v=43/);
+ assert.match(html,/index\.html\?v=44/);
  assert.doesNotMatch(html,/localStorage\.(?:clear|removeItem)/);
  assert.doesNotMatch(html,/indexedDB\.deleteDatabase/);
  assert.doesNotMatch(html,/caches\.delete\([^)]*localStorage/);

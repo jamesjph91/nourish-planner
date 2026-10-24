@@ -1,11 +1,11 @@
 {
-  "version": 43,
+  "version": 44,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Auto-start, pause, reset and configure the in-gym rest timer when a today's set is completed",
-    "Live completed-set counts and previous training load comparisons",
-    "Highlight real new weight personal bests without treating first-time logs as prior records",
-    "Preserve adaptive workout logging, exercise substitutions, private cloud records and v40 visual design"
+    "Searchable personal food library combines saved foods and previous food-diary entries",
+    "One-tap repeat logs the actual previously eaten quantity and macros, with duplicate tap protection",
+    "Edit amount shortcut for past foods, and private account reset compatibility",
+    "Reject mismatched barcode responses instead of implying an exact confirmed nutrition match"
   ]
 }

@@ -75,6 +75,7 @@ const RETAIL_CHOICES=[
  {name:'Tesco Tuna Chunks in Spring Water 400g',drained:280,n:{kcal:109,protein:24.9,carbs:0,fat:1,fibre:0},url:'https://www.tesco.com/shop/en-GB/products/310092502'}
 ];
 let foodSearchQuery='',searchProducts=[],foodSearchMessage='',foodSearchBusy=false,foodSearchController=null,foodSearchToken=0;
+let privateFoodQuery='',lastQuickLog={key:'',time:0};
 function suggestionsHTML(){
  const query=foodSearchQuery.toLowerCase().trim();
  if(query.length<2)return '<p class="short">Enter at least two letters (for example “Tesco tuna”) to find foods by name, even when a barcode is missing.</p>';
@@ -247,8 +248,13 @@ async function lookup(code){
     if(res.status===429)throw Error('The food database is temporarily limiting requests (429).');
     if(!res.ok){if(res.status===404){notFound=true;continue;}throw Error('Food database returned HTTP '+res.status+'.');}
     const data=await res.json();
-    const found=!!data?.product&&(data.status===1||data.status==='success'||data.result?.id==='product_found');
-    if(found){product=data.product;break;}
+    const found=!!data?.product&&(data.status===1||data.status==='success'||data.status==='success_with_warnings'||data.result?.id==='product_found');
+    // Some feeds contain incomplete or mismatched codes. Never assert an exact hit when returned code differs.
+    if(found){
+     const returned=String(data.product.code||'').trim();
+     if(returned&&!sameBarcode(returned,normalized)){failure=Error('Returned barcode does not match the scanned number.');notFound=true;continue;}
+     product=data.product;break;
+    }
     notFound=true;
    }catch(e){
     failure=e;
@@ -262,7 +268,7 @@ async function lookup(code){
     renderCurrent();
     document.getElementById('fd-search-panel')?.scrollIntoView({behavior:'smooth',block:'center'});
    }
-   const detail=abort.signal.aborted?'The lookup timed out.':notFound?'No matching product was found in the database.':(failure?.message==='Failed to fetch'?'The food database could not be reached from this browser.':failure?.message||'The product database could not be reached.');
+   const detail=abort.signal.aborted?'The lookup timed out.':failure?.message==='Returned barcode does not match the scanned number.'?'Product data did not match the scanned barcode.':notFound?'No matching product was found in the database.':(failure?.message==='Failed to fetch'?'The food database could not be reached from this browser.':failure?.message||'The product database could not be reached.');
    showMessage('Barcode '+normalized+' saved. '+detail+' Try Find food by name below and choose an exact matching product, or enter label values.');
    return;
   }
@@ -344,6 +350,7 @@ async function stopScanner(){
  if(el){el.hidden=true;el.innerHTML='';}
 }
 function resetDiaryUI(){
+ privateFoodQuery='';lastQuickLog={key:'',time:0};
  lookupToken++;lookupController?.abort();lookupController=null;lookupBusy=false;
  foodSearchToken++;foodSearchController?.abort();foodSearchController=null;searchFoodNames.pending=false;
  foodSearchQuery='';searchProducts=[];foodSearchMessage='';
@@ -404,10 +411,88 @@ function weekIntake(){
  }
  return '<div class="card"><h3>Last seven days</h3><p class="short">Unlogged days are marked “Not logged”, never assumed to mean you ate zero calories.</p>'+rows.join('')+'</div>';
 }
-function saved(){
- const foods=cleanDiary().savedFoods;
- return foods.length?'<div class="card"><h3>My saved foods</h3><p class="short">Tap a favourite to fill the form and add it again.</p><div class="fd-saved">'+foods.slice(0,18).map(x=>'<button class="btn" onclick="fdUseSaved(\''+x.id+'\')">'+escape(x.name)+' · '+Math.round(x.perUnit.kcal)+' kcal/'+(x.unit==='portion'?'portion':'100'+x.unit)+'</button>').join('')+'</div></div>':'';
+
+/* Quick Log: private library from validated saved foods and actual logged meals.
+   Never includes planned-but-uneaten recipes or other user accounts. */
+function libraryCandidates(){
+ const d=cleanDiary(),map=new Map();
+ const add=(food,saved=false)=>{
+  if(!food||food.source==='plan'||!food.name||!['g','ml','portion'].includes(food.unit))return;
+  const key=(food.barcode?'barcode:'+food.barcode.replace(/^0+(?=\d)/,''):'name:'+food.name.toLocaleLowerCase('en-GB'))+'|'+food.unit;
+  const previous=map.get(key);
+  if(previous){if(saved&&!previous.saved){map.set(key,{...food,saved:true});}return;}
+  const amount=Number(food.lastQuantity??food.quantity??100);
+  if(!Number.isFinite(amount)||amount<=0||amount>5000)return;
+  map.set(key,{...food,key,quantity:amount,saved});
+ };
+ // Most recently saved foods are first; recent logged items may supplement them.
+ for(const food of d.savedFoods.slice(0,80))add(food,true);
+ for(const food of d.entries.slice().reverse().slice(0,160)){
+  if(food.source==='plan')continue;
+  add(food,false);
+ }
+ return [...map.values()].slice(0,80);
 }
+function libraryResults(query=privateFoodQuery){
+ const q=String(query||'').toLocaleLowerCase('en-GB').trim().slice(0,80);
+ const words=q.split(/\s+/).filter(Boolean);
+ return libraryCandidates().filter(f=>words.every(word=>(f.name+' '+(f.barcode||'')).toLocaleLowerCase('en-GB').includes(word))).slice(0,25);
+}
+function libraryHTML(){
+ const all=libraryCandidates(),items=libraryResults();
+ const rows=items.map(x=>{
+  const unitLabel=x.unit==='portion'?'portion':'100 '+x.unit;
+  const serving=f(x.quantity);
+  const amount=x.unit==='portion'?serving+' portion(s)':serving+' '+x.unit;
+  const nutrition=total(x.unit,x.quantity,x.perUnit);
+  const key=escape(x.key);
+  return '<div class="fd44-library-item"><div><b>'+escape(x.name)+'</b>'+
+    '<small>'+escape(amount)+' · '+fmtQuick(nutrition.kcal)+' kcal · '+fmtQuick(nutrition.protein)+'g protein</small>'+
+    '<small>'+(x.saved?'★ Saved food':'Recent food')+' · Label data per '+unitLabel+'</small></div>'+
+    '<div class="fd44-library-actions"><button type="button" class="btn sm" data-fd44-edit="'+key+'">Edit amount</button>'+
+    '<button type="button" class="btn sm dark" data-fd44-log="'+key+'">＋ Log again</button></div></div>';
+ }).join('');
+ return '<section class="card fd44-library" aria-label="Personal food library"><div class="fd44-library-head"><div><small>QUICK LOG</small><h3>My food library</h3></div><span>'+all.length+' foods</span></div>'+
+ '<p class="short">Find your own saved or previously eaten foods, then log the same portion again. You can edit the new diary entry afterwards. No food is added until you tap Log again.</p>'+
+ '<input id="fd44-private-search" aria-label="Search my food library" type="search" maxlength="80" placeholder="Search a food or barcode…" value="'+escape(privateFoodQuery)+'" oninput="fdPrivateSearch(this.value)">'+
+ '<div id="fd44-private-results" aria-live="polite">'+(rows||'<p class="short">'+(all.length?'No foods match that search.':'Log your first food or save a product to build this library.')+'</p>')+'</div></section>';
+}
+const fmtQuick=n=>Math.round(Number(n||0)).toLocaleString('en-GB');
+function privateSearch(q){
+ privateFoodQuery=String(q||'').slice(0,80);
+ const old=document.getElementById('fd44-private-results');
+ if(!old)return;
+ const current=document.activeElement;
+ const search=document.getElementById('fd44-private-search');
+ if(search&&current!==search)search.value=privateFoodQuery;
+ const panel=libraryHTML(),start=panel.indexOf('<div id="fd44-private-results" aria-live="polite">'),end=panel.lastIndexOf('</div></section>');
+ if(start>=0&&end>=0)old.innerHTML=panel.slice(start+'<div id="fd44-private-results" aria-live="polite">'.length,end);
+}
+function libraryPick(key){
+ return libraryCandidates().find(x=>x.key===key);
+}
+function quickRepeat(key){
+ const x=libraryPick(key);
+ if(!x)return false;
+ const now=Date.now();
+ if(lastQuickLog.key===key&&now-lastQuickLog.time<1000)return false;
+ lastQuickLog={key,time:now};
+ const entry={id:uid(),date:selected,category:CATS.includes(x.category)?x.category:'snack',
+  source:'manual',name:x.name,barcode:x.barcode||'',unit:x.unit,quantity:f(x.quantity),
+  perUnit:copyN(x.perUnit),totals:total(x.unit,x.quantity,x.perUnit)};
+ const diary=cleanDiary();
+ diary.entries.push(entry);diary.entries=diary.entries.slice(-1200);
+ s.foodDiary=diary;save();renderCurrent();notify(x.name+' logged — '+fmtQuick(entry.totals.kcal)+' kcal.');
+ return true;
+}
+function quickEdit(key){
+ const x=libraryPick(key);if(!x)return false;
+ fillDraft({name:x.name,barcode:x.barcode||'',unit:x.unit,quantity:x.quantity,category:x.category||'snack',perUnit:x.perUnit,saveFood:true});
+ return true;
+}
+
+function saved(){return libraryHTML()}
+
 function inputPanel(){
  const d=draft||blankDraft();const input=(id,label,step,maximum)=>'<label>'+label+'<input id="fd-'+id+'" type="number" step="'+step+'" min="0" max="'+maximum+'" inputmode="decimal" value="'+(d.perUnit[id]??'')+'" placeholder="Enter label value"></label>';
  return '<div class="card" id="fd-entry"><div class="row" style="justify-content:space-between;flex-wrap:wrap"><div><h3 style="margin:0">Add extra food</h3><p class="short">Snacks, drinks, takeaways, supplements or anything outside the plan.</p></div><button class="btn" onclick="fdBeginManual()">＋ New manual food</button></div>'+
@@ -434,6 +519,16 @@ css.textContent+='.fd-week-numbers{text-align:right}.fd-week-numbers small{displ
 window.nourishFoodDiaryPage=diaryPage;
 window.nourishFoodDashboard=dashboardCard;
 window.nourishFoodTodaySummary=()=>({date:localDate(new Date()),totals:grand(diaryFor(localDate(new Date()))),target:targetFor(localDate(new Date()))});
+document.addEventListener?.('click',e=>{
+ const log=e.target.closest?.('[data-fd44-log]');
+ const edit=e.target.closest?.('[data-fd44-edit]');
+ const control=log||edit;
+ if(!control||!document.getElementById('diary')?.contains(control))return;
+ if(log)quickRepeat(log.dataset.fd44Log);
+ else if(edit)quickEdit(edit.dataset.fd44Edit);
+});
+window.fdPrivateSearch=privateSearch;window.fdQuickRepeat=quickRepeat;window.fdQuickEdit=quickEdit;
+window.forgeFoodQuickLog={libraryCandidates,libraryResults,quickRepeat,quickEdit};
 window.fdChangeDate=changeDate;window.fdAdjustDate=adjustDate;window.fdAddPlanned=addPlanned;
 window.fdDeleteEntry=deleteEntry;window.fdEditEntry=editEntry;window.fdUseSaved=useSaved;
 window.fdBeginManual=beginManual;window.fdCancelDraft=cancelDraft;window.fdSaveManual=saveManual;
