@@ -1,13 +1,13 @@
 {
-  "version": 48,
+  "version": 49,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Save up to 12 named reusable workout lineups and load them onto any training day",
-    "Filter the exercise picker by muscle group and equipment while searching",
-    "Display the last actually completed weight/reps or timed set for every exercise",
-    "Preserve historical set data when applying or deleting saved workout lineups",
-    "Carry saved named routines through validated local backups and cloud-sync restores",
-    "Keep the v47 premium art and larger five-tab bottom navigation"
+    "Faster logging with Repeat for next set, using checked sets from today or earlier training",
+    "Fill previous values copies earlier completed sets into blank fields only",
+    "Three recent completed workout references on each exercise card",
+    "Larger mobile weight/reps fields, more visible checkboxes and electric-lime quick-action buttons",
+    "Historical workout records and manual set-completion choices remain unchanged",
+    "Preserve v47 artwork, enlarged bottom navigation and v48 named routines"
   ]
 }

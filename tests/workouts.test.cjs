@@ -157,3 +157,37 @@ const validTest=vm.runInContext('validateWorkouts('+JSON.stringify(malformed)+')
 assert.equal(Object.keys(validTest.savedRoutines).length,1,'Malformed saved routine IDs are rejected on restore');
 assert.equal(validTest.savedRoutines.routine_good123.exerciseIds.length,1,'Duplicate and unsafe exercise IDs are filtered');
 console.log('PASS FORGE v48: named splits, exercise filters, previous performance, sync, safe validation and history retention');
+
+
+// v49: only completed history can prefill BLANK fields; never silently tick or overwrite.
+const history49=vm.runInContext('window.forgeGymHistorySets("'+thirdDate+'","goblet")',ctx);
+assert(history49.length>=1,'Historical completed exercise found');
+assert.equal(history49[0].date,day,'Only an earlier dated training session is used');
+assert.equal(history49[0].sets[0].kg,20);
+assert.equal(history49[0].sets[0].reps,10);
+assert(element('workouts').innerHTML.includes('Repeat for next set'),'Quick set entry button visible');
+assert(element('workouts').innerHTML.includes('RECENT COMPLETED WORKOUTS'),'Historical strip visible on workout card');
+const firstFill=vm.runInContext('gymPrefillFromHistory("'+thirdDate+'","goblet")',ctx);
+assert(firstFill>=2,'Previous weight and reps populate blank set fields');
+assert.equal(vm.runInContext('s.workouts.sessions["'+thirdDate+'"].sets.goblet[0].kg',ctx),20);
+assert.equal(vm.runInContext('s.workouts.sessions["'+thirdDate+'"].sets.goblet[0].reps',ctx),10);
+assert.equal(vm.runInContext('s.workouts.sessions["'+thirdDate+'"].sets.goblet[0].done',ctx),false,'Prefill never counts as completed');
+vm.runInContext('gymSetValue("'+thirdDate+'","goblet",0,"kg","27.5")',ctx);
+const repeatFill=vm.runInContext('gymPrefillFromHistory("'+thirdDate+'","goblet")',ctx);
+assert.equal(repeatFill,0,'Reapplying a history template skips populated fields');
+assert.equal(vm.runInContext('s.workouts.sessions["'+thirdDate+'"].sets.goblet[0].kg',ctx),27.5,'Edited values are not overwritten');
+vm.runInContext('gymSetValue("'+thirdDate+'","goblet",1,"kg","")',ctx);
+vm.runInContext('gymSetValue("'+thirdDate+'","goblet",1,"reps","")',ctx);
+vm.runInContext('gymTick("'+thirdDate+'","goblet",0,true)',ctx);
+const todayFill=vm.runInContext('gymRepeatNext("'+thirdDate+'","goblet")',ctx);
+assert.equal(todayFill,2,'Repeat fills only the next blank set');
+assert.equal(vm.runInContext('s.workouts.sessions["'+thirdDate+'"].sets.goblet[1].kg',ctx),27.5,'Most recent completed set today takes priority over older history');
+assert.equal(vm.runInContext('s.workouts.sessions["'+thirdDate+'"].sets.goblet[1].reps',ctx),10);
+assert.equal(vm.runInContext('s.workouts.sessions["'+thirdDate+'"].sets.goblet[1].done',ctx),false,'Repeat does not mark set completed');
+assert.equal(vm.runInContext('s.workouts.sessions["'+thirdDate+'"].sets.goblet[2].done',ctx),false,'Unrelated sets remain unfinished');
+assert.equal(vm.runInContext('s.workouts.sessions["'+nextDate+'"].sets.curlbiceps[0].done',ctx),true,'Earlier removed-exercise log survives quick entry');
+const v49data=vm.runInContext('window.nourishCloudBridge.getData()',ctx);
+vm.runInContext('window.nourishCloudBridge.applyData('+JSON.stringify(v49data)+')',ctx);
+assert.equal(vm.runInContext('s.workouts.sessions["'+thirdDate+'"].sets.goblet[1].kg',ctx),27.5,'Prefilled values survive validated cloud restore');
+assert.equal(vm.runInContext('s.workouts.sessions["'+thirdDate+'"].sets.goblet[1].done',ctx),false,'Restore retains pending-set status');
+console.log('PASS FORGE v49: historical values, non-destructive prefill, repeat-next and cloud round trip');

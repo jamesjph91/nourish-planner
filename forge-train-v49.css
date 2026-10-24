@@ -1,0 +1,33 @@
+/* FORGE v49 | In-Gym Mode | Fast set logging and exercise-by-exercise history */
+#workouts .gym49-fastbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 13px;padding:11px;border:1px solid #345333;background:linear-gradient(115deg,#15271a,#0b160f);border-radius:13px}
+#workouts .gym49-fastbar button{flex:1 1 172px;display:inline-flex!important;justify-content:center!important;align-items:center!important;min-height:45px!important;font-size:11px!important;font-weight:950!important;padding:11px 9px!important;border-radius:10px!important}
+#workouts .gym49-fastbar button:first-child{background:#c7ff17!important;color:#071009!important;border:1px solid #d8ff74!important;box-shadow:0 7px 20px #a7ff1522}
+#workouts .gym49-fastbar button:nth-child(2){background:#18291b!important;border:1px solid #456e35!important;color:#d2fca6!important}
+#workouts .gym49-history{margin:10px 0;padding:11px;border:1px solid #355337;background:#0a170e;border-radius:14px}
+#workouts .gym49-history>span{display:block;font-size:9px;font-weight:950;letter-spacing:1.25px;color:#c7ff17;margin-bottom:9px}
+#workouts .gym49-history>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+#workouts .gym49-history-chip{min-width:0;display:flex;flex-direction:column;gap:5px;border:1px solid #2a482e;background:linear-gradient(145deg,#142519,#07110b);border-radius:11px;padding:10px 8px}
+#workouts .gym49-history-chip small{font-size:9px;color:#a6b5a8;white-space:nowrap}
+#workouts .gym49-history-chip b{font-size:12px;color:#f8fff1;line-height:1.2;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+#workouts .gym49-history-chip em{font-size:9px;color:#9cac99;font-style:normal}
+#workouts .gym-setrow{min-height:53px!important}
+#workouts .gym-setrow input[type=number]{min-height:45px!important;background:#101d14!important;color:#f6fcf2!important;border:1px solid #40543c!important;border-radius:10px!important;font-size:16px!important;font-weight:800!important;font-variant-numeric:tabular-nums}
+#workouts .gym-setrow input[type=number]:focus{border-color:#c7ff17!important;outline:2px solid #c7ff1760;outline-offset:1px}
+#workouts .gym-setrow input[type=checkbox]{width:27px!important;height:27px!important;accent-color:#c7ff17!important;cursor:pointer}
+#workouts .gym-setrow:has(input[type=checkbox]:checked){background:linear-gradient(90deg,#b9ff160d,transparent 70%);border-radius:9px}
+#workouts .gym-setrow b{font-size:13px;color:#d9fbc4}
+#workouts .gym-exercise{border-color:#426039!important;box-shadow:inset 0 1px 0 #c7ff1712,0 12px 28px #0005!important}
+#workouts .gym-exercise>.row>div>strong{font-size:clamp(15px,3.5vw,19px)!important;color:#f7fff4!important}
+#workouts .gym-exercise .gym48-previous{border-left-color:#b9ff16!important}
+#workouts .gym-edit-actions button{min-height:44px!important}
+@media(max-width:520px){
+ #workouts .gym49-history{padding:10px 7px}
+ #workouts .gym49-history>div{gap:4px}
+ #workouts .gym49-history-chip{padding:9px 5px}
+ #workouts .gym49-history-chip b{font-size:10px}
+ #workouts .gym49-history-chip small,#workouts .gym49-history-chip em{font-size:8px}
+ #workouts .gym49-fastbar{padding:8px;gap:6px}
+ #workouts .gym49-fastbar button{flex:1 1 125px;font-size:10px!important}
+ #workouts .gym-setrow{gap:4px!important}
+}
+@media(prefers-reduced-motion:reduce){#workouts .gym49-fastbar button{transition:none!important}}

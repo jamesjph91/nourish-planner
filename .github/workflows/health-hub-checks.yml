@@ -19,6 +19,7 @@ on:
       - 'forge-strength-insights.css'
       - 'forge-v27-train.css'
       - 'forge-train-v48.css'
+      - 'forge-train-v49.css'
       - 'forge-updater.js'
       - 'forge-food-navigation.js'
       - 'forge-meal-library-data.js'

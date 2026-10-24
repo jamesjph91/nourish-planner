@@ -281,6 +281,55 @@ function previousSet(date,id){
  }
  return null;
 }
+
+/* v49 workout helpers: only checked older sets are eligible as copy sources. */
+function gym49History(date,id){
+ const ex=definition(id);if(!ex)return [];
+ return Object.entries(work().sessions).filter(([d])=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&d<date)
+ .sort((a,b)=>b[0].localeCompare(a[0])).map(([d,session])=>{
+  const completed=(Array.isArray(session.sets?.[id])?session.sets[id]:[]).filter(x=>x?.done===true&&x.reps!==''&&x.reps!==null&&Number.isFinite(Number(x.reps))&&Number(x.reps)>=0&&(!ex.load||(x.kg!==''&&x.kg!==null&&Number.isFinite(Number(x.kg))&&Number(x.kg)>=0&&Number(x.kg)<=600)))
+  .map(x=>({kg:ex.load?Number(x.kg):'',reps:Number(x.reps)}));
+  return completed.length?{date:d,sets:completed}:null;
+ }).filter(Boolean);
+}
+function gym49CopyBlank(target,source,ex){
+ if(!target||target.done||!source)return 0;
+ let edits=0;
+ if(target.reps===''||target.reps===null||target.reps===undefined){target.reps=source.reps;edits++}
+ if(ex.load&&(target.kg===''||target.kg===null||target.kg===undefined)&&source.kg!==''&&source.kg!==null&&source.kg!==undefined){target.kg=source.kg;edits++}
+ return edits;
+}
+function gymPrefillFromHistory(date,id){
+ if(!validExercise(id)||planFor(date)==='rest')return 0;
+ const session=getSession(date,planFor(date)),ex=definition(id),prior=gym49History(date,id)[0];
+ if(!session.exerciseIds.includes(id)||!prior){notify('No previous completed sets for this exercise yet.');return 0}
+ let edits=0;
+ (session.sets[id]||[]).forEach((x,i)=>{edits+=gym49CopyBlank(x,prior.sets[Math.min(i,prior.sets.length-1)],ex)});
+ if(!edits){notify('No blank fields to fill. Nothing changed.');return 0}
+ session.updatedAt=new Date().toISOString();save();renderCurrent();
+ notify('Previous values filled in. Review before ticking sets complete.');return edits;
+}
+function gymRepeatNext(date,id){
+ if(!validExercise(id)||planFor(date)==='rest')return 0;
+ const session=getSession(date,planFor(date)),ex=definition(id);
+ if(!session.exerciseIds.includes(id))return 0;
+ const sets=session.sets[id]||[];
+ const idx=sets.findIndex(x=>x&&!x.done&&(x.reps===''||x.reps===null||x.reps===undefined||(ex.load&&(x.kg===''||x.kg===null||x.kg===undefined))));
+ if(idx<0){notify('All pending set values are already entered.');return 0}
+ const eligible=sets.slice(0,idx).filter(x=>x.done===true&&x.reps!==''&&x.reps!==null&&Number.isFinite(Number(x.reps))&&(!ex.load||(x.kg!==''&&x.kg!==null&&Number.isFinite(Number(x.kg)))));
+ const prior=gym49History(date,id)[0],source=eligible.length?eligible[eligible.length-1]:prior?.sets[Math.min(idx,prior.sets.length-1)];
+ if(!source){notify('Complete a set or an earlier workout to use this shortcut.');return 0}
+ const edits=gym49CopyBlank(sets[idx],source,ex);
+ if(!edits)return 0;
+ session.updatedAt=new Date().toISOString();save();renderCurrent();
+ notify('Set '+(idx+1)+' prefilled. Check the values and tick Done after completing it.');return edits;
+}
+function gym49HistoryStrip(date,id){
+ const ex=definition(id),history=gym49History(date,id).slice(0,3);if(!history.length)return '';
+ return '<div class="gym49-history"><span>RECENT COMPLETED WORKOUTS</span><div>'+
+ history.map(x=>{const set=x.sets[x.sets.length-1];return '<div class="gym49-history-chip"><small>'+esc(x.date)+'</small><b>'+esc(ex.load?set.kg+' kg × '+set.reps:set.reps+' '+(ex.unit||'reps'))+'</b><em>'+x.sets.length+' logged sets</em></div>'}).join('')+'</div></div>';
+}
+
 function routineShelf(iso){
  const routines=Object.entries(work().savedRoutines||{});
  if(!PLANS[planFor(iso)])return '';
@@ -349,7 +398,9 @@ function exerciseRows(iso,exid){
  const x=definition(exid),ses=getSession(iso,planFor(iso)),list=ses.sets[exid]||[];
  const unit=x.unit||'reps',last=previousSet(iso,exid);
  const previous=last?'<div class="gym48-previous" aria-label="Previous completed set">↗ Last logged: '+esc(last.label)+'</div>':'<div class="gym48-previous missing">No earlier completed set · start conservatively</div>';
- return '<div class="gym-exercise"><div class="row" style="flex-wrap:wrap"><div><strong>'+esc(x.name)+'</strong><div class="short">'+x.sets+' sets · '+x.min+'–'+x.max+' '+unit+' · '+esc(x.focus)+'</div></div><button class="btn sm" onclick="gymOpenGuide(\''+exid+'\')">How to do it ↗</button></div>'+previous+'<div class="gym-sethead"><span>Set</span><span>'+(x.load?'Weight (kg)':'Bodyweight')+'</span><span>'+ (unit==='reps'?'Reps':unit==='sec'?'Seconds':'Minutes')+'</span><span>Done</span><span></span></div>'+list.map((set,i)=>'<div class="gym-setrow"><b>'+ (i+1)+'</b>'+(x.load?'<input inputmode="decimal" aria-label="'+esc(x.name)+' set '+(i+1)+' weight in kilograms" type="number" min="0" step="0.5" max="600" value="'+esc(set.kg??'')+'" placeholder="kg" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'kg\',this.value)">':'<span class="gym-bodyweight">—</span>')+'<input inputmode="numeric" aria-label="'+esc(x.name)+' set '+(i+1)+' reps or time" type="number" min="0" max="1000" step="1" value="'+esc(set.reps??'')+'" placeholder="'+x.min+'–'+x.max+'" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'reps\',this.value)"><input type="checkbox" aria-label="Completed '+esc(x.name)+' set '+(i+1)+'" '+(set.done?'checked':'')+' onchange="gymTick(\''+iso+'\',\''+exid+'\','+i+',this.checked)"><button class="btn sm" aria-label="Remove set" onclick="gymRemoveSet(\''+iso+'\',\''+exid+'\','+i+')">−</button></div>').join('')+'<div class="gym-ex-actions"><button class="btn sm" onclick="gymMoveExercise(\''+iso+'\',\''+exid+'\',-1)">↑ Up</button><button class="btn sm" onclick="gymMoveExercise(\''+iso+'\',\''+exid+'\',1)">↓ Down</button><button class="btn sm" onclick="gymLibrary(\''+iso+'\',\''+exid+'\')">↔ Replace</button><button class="btn sm" onclick="gymRemoveExercise(\''+iso+'\',\''+exid+'\')">Remove</button></div>'+'<div style="margin-top:9px"><button class="btn sm" onclick="gymAddSet(\''+iso+'\',\''+exid+'\')">＋ Add set</button></div></div>';
+ const history49=gym49HistoryStrip(iso,exid);
+ const fast49='<div class="gym49-fastbar"><button type="button" class="btn sm" onclick="gymRepeatNext(\''+iso+'\',\''+exid+'\')">↻ Repeat for next set</button>'+(last?'<button type="button" class="btn sm dark" onclick="gymPrefillFromHistory(\''+iso+'\',\''+exid+'\')">↶ Fill previous values</button>':'')+'</div>';
+ return '<div class="gym-exercise"><div class="row" style="flex-wrap:wrap"><div><strong>'+esc(x.name)+'</strong><div class="short">'+x.sets+' sets · '+x.min+'–'+x.max+' '+unit+' · '+esc(x.focus)+'</div></div><button class="btn sm" onclick="gymOpenGuide(\''+exid+'\')">How to do it ↗</button></div>'+previous+history49+fast49+'<div class="gym-sethead"><span>Set</span><span>'+(x.load?'Weight (kg)':'Bodyweight')+'</span><span>'+ (unit==='reps'?'Reps':unit==='sec'?'Seconds':'Minutes')+'</span><span>Done</span><span></span></div>'+list.map((set,i)=>'<div class="gym-setrow"><b>'+ (i+1)+'</b>'+(x.load?'<input inputmode="decimal" aria-label="'+esc(x.name)+' set '+(i+1)+' weight in kilograms" type="number" min="0" step="0.5" max="600" value="'+esc(set.kg??'')+'" placeholder="kg" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'kg\',this.value)">':'<span class="gym-bodyweight">—</span>')+'<input inputmode="numeric" aria-label="'+esc(x.name)+' set '+(i+1)+' reps or time" type="number" min="0" max="1000" step="1" value="'+esc(set.reps??'')+'" placeholder="'+x.min+'–'+x.max+'" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'reps\',this.value)"><input type="checkbox" aria-label="Completed '+esc(x.name)+' set '+(i+1)+'" '+(set.done?'checked':'')+' onchange="gymTick(\''+iso+'\',\''+exid+'\','+i+',this.checked)"><button class="btn sm" aria-label="Remove set" onclick="gymRemoveSet(\''+iso+'\',\''+exid+'\','+i+')">−</button></div>').join('')+'<div class="gym-ex-actions"><button class="btn sm" onclick="gymMoveExercise(\''+iso+'\',\''+exid+'\',-1)">↑ Up</button><button class="btn sm" onclick="gymMoveExercise(\''+iso+'\',\''+exid+'\',1)">↓ Down</button><button class="btn sm" onclick="gymLibrary(\''+iso+'\',\''+exid+'\')">↔ Replace</button><button class="btn sm" onclick="gymRemoveExercise(\''+iso+'\',\''+exid+'\')">Remove</button></div>'+'<div style="margin-top:9px"><button class="btn sm" onclick="gymAddSet(\''+iso+'\',\''+exid+'\')">＋ Add set</button></div></div>';
 }
 function selectedSession(){
  const w=work(),iso=w.selected,id=planFor(iso),label=safeDate(iso);
@@ -383,6 +434,7 @@ window.gymResetAnchor=resetAnchor;window.gymSetValue=setValue;window.gymTick=tic
 window.gymSetNote=setNote;window.gymComplete=complete;window.gymAddSet=addSet;window.gymRemoveSet=removeSet;
 window.gymOpenGuide=openGuide;window.gymExport=logsCsv;
 window.gymLibrary=gymLibrary;window.gymFilter=gymFilter;window.gymFilterFocus=gymFilterFocus;window.gymFilterEquip=gymFilterEquip;window.gymChoose=gymChoose;
-window.gymSavePreset=gymSavePreset;window.gymApplyPreset=gymApplyPreset;window.gymDeletePreset=gymDeletePreset;window.forgePreviousSet=previousSet;window.gymCreateOwn=gymCreateOwn;window.gymRemoveExercise=gymRemoveExercise;window.gymMoveExercise=gymMoveExercise;window.gymSaveRoutine=gymSaveRoutine;window.gymRestoreDay=gymRestoreDay;window.gymResetTemplate=gymResetTemplate;
+window.gymSavePreset=gymSavePreset;window.gymApplyPreset=gymApplyPreset;window.gymDeletePreset=gymDeletePreset;window.forgePreviousSet=previousSet;
+window.gymPrefillFromHistory=gymPrefillFromHistory;window.gymRepeatNext=gymRepeatNext;window.forgeGymHistorySets=gym49History;window.gymCreateOwn=gymCreateOwn;window.gymRemoveExercise=gymRemoveExercise;window.gymMoveExercise=gymMoveExercise;window.gymSaveRoutine=gymSaveRoutine;window.gymRestoreDay=gymRestoreDay;window.gymResetTemplate=gymResetTemplate;
 if(s.tab==='workouts')renderCurrent();
 })();

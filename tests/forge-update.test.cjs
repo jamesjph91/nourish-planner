@@ -5,9 +5,9 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const read=file=>fs.readFileSync(file,'utf8');
 
-test('FORGE v48 is wired into the installed app and remains on a stable start URL',()=>{
+test('FORGE v49 is wired into the installed app and remains on a stable start URL',()=>{
  const html=read('index.html'),manifest=JSON.parse(read('manifest.webmanifest')),build=JSON.parse(read('forge-build.json'));
- assert.equal(build.version,48);
+ assert.equal(build.version,49);
  assert.equal(manifest.start_url,'./index.html');
  assert.match(html,/forge-updater\.js\?v=41/);
  assert.match(html,/forge-updater\.css\?v=39/);
@@ -21,16 +21,17 @@ test('FORGE v48 is wired into the installed app and remains on a stable start UR
  assert.match(html,/forge-fuel-v46\.css\?v=46/);
  assert.match(html,/forge-visual-v47\.css\?v=47/);
  assert.match(html,/forge-train-v48\.css\?v=48/);
- assert.match(html,/gym\.js\?v=48/);
+ assert.match(html,/gym\.js\?v=49/);
+ assert.match(html,/forge-train-v49\.css\?v=49/);
  assert.match(html,/forge-today-v45\.js\?v=45/);
  assert.match(html,/forge-today-v45\.css\?v=45/);
  assert.match(html,/forge-train-coach\.js\?v=43/);
- assert.match(html,/name="forge-release" content="48"/);
+ assert.match(html,/name="forge-release" content="49"/);
 });
 test('FORGE update worker revalidates navigations and carries recovery files',()=>{
  const sw=read('service-worker.js');
  new vm.Script(sw);
- assert.match(sw,/forge-v48-workout-splits/);
+ assert.match(sw,/forge-v49-gym-quick-log/);
  assert.match(sw,/cache:'no-store'/);
  assert.match(sw,/forge-build\.json/);
  assert.match(sw,/refresh-forge\.html/);
@@ -39,7 +40,7 @@ test('Recovery only resets caches and service workers, not local workouts or pho
  const html=read('refresh-forge.html');
  assert.match(html,/caches\.keys\(\)/);
  assert.match(html,/\.unregister\(\)/);
- assert.match(html,/index\.html\?v=48/);
+ assert.match(html,/index\.html\?v=49/);
  assert.doesNotMatch(html,/localStorage\.(?:clear|removeItem)/);
  assert.doesNotMatch(html,/indexedDB\.deleteDatabase/);
  assert.doesNotMatch(html,/caches\.delete\([^)]*localStorage/);
