@@ -1,0 +1,23 @@
+/* FORGE v46 – review label completeness before saving an Open Food Facts match. */
+#diary .fd46-review{
+ border:1px solid #496332;border-radius:16px;padding:15px;margin:14px 0;
+ background:linear-gradient(135deg,#122315,#08110c);
+ box-shadow:0 8px 22px #0005
+}
+#diary .fd46-source{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+#diary .fd46-source b{font-size:10px;letter-spacing:1.1px;color:#d4ff87;font-weight:950}
+#diary .fd46-source span{font-size:10px;color:#abc6ac}
+#diary .fd46-unknown,#diary .fd46-complete{font-size:11px;line-height:1.6;padding:9px 11px;border-radius:9px;margin:12px 0}
+#diary .fd46-unknown{background:#342a13;color:#ffe1a0;border:1px solid #6d5626}
+#diary .fd46-complete{background:#15301a;color:#c5fbb0;border:1px solid #385934}
+#diary .fd46-detail{font-size:10px;line-height:1.5;color:#96ae9c;margin:8px 0}
+#diary .fd46-preview{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:12px 0}
+#diary .fd46-preview>div{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:8px;background:#0a170e;border:1px solid #2a452b;border-radius:10px;padding:11px 7px}
+#diary .fd46-preview small{font-size:8px;letter-spacing:.6px;font-weight:900;color:#a9d584}
+#diary .fd46-preview b{font-variant-numeric:tabular-nums;font-size:14px;color:#fff;overflow-wrap:anywhere}
+#diary .fd46-review>small{display:block;font-size:10px;line-height:1.55;color:#9caf9e}
+@media(max-width:540px){
+ #diary .fd46-review{padding:12px}
+ #diary .fd46-preview{grid-template-columns:repeat(3,minmax(0,1fr))}
+ #diary .fd46-preview b{font-size:13px}
+}

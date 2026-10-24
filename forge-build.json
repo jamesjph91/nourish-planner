@@ -1,12 +1,12 @@
 {
-  "version": 45,
+  "version": 46,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Today dashboard with real seven-day calories, protein and steps trends",
-    "Recorded nutrition, activity and completed-workout goal-day scorecards",
-    "Recent weight and 30-day change only when dated measurements exist",
-    "Fast shortcuts to the existing Train, Fuel, Activity and Progress screens",
-    "Missing values stay unrecorded; calculated exercise calories are never inferred"
+    "Barcode lookup retries a 12-digit UPC with an equivalent leading-zero EAN-13 alias when needed",
+    "Incomplete Open Food Facts v3 results can be checked against the older v2 product record",
+    "Interactive serving-nutrition preview and visible unknown vs explicitly zero nutrient fields",
+    "Source and barcode-verification labels distinguish personal, community and name-selected foods",
+    "All logged foods remain user-confirmed; past nutrition, training and progress records are preserved"
   ]
 }

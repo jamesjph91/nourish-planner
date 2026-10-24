@@ -124,7 +124,7 @@ test('Current Open Food Facts v3 response populates nutrition and flags any miss
  }});
  b.evaluate("navigate('diary')");
  await b.context.window.fdLookup('3017624010701');
- assert.equal(calls.length,1);assert.match(calls[0],/\/api\/v3\/product\//);
+ assert.equal(calls.length,2,'v46 rechecks an incomplete v3 record against v2');assert.match(calls[0],/\/api\/v3\/product\//);
  assert.match(b.element('diary').innerHTML,/Example snack/);
  assert.match(b.element('diary').innerHTML,/value="190"/);
  assert.match(b.element('diary').innerHTML,/value="13"/);
@@ -297,4 +297,60 @@ test('v44 barcode mismatch is never used to populate an unverified product',asyn
  assert.doesNotMatch(b.element('diary').innerHTML,/Wrong barcode food/);
  assert.match(b.element('fd-message').textContent,/did not match/);
  assert.equal(b.cloud().foodDiary.entries.length,0);
+});
+
+
+test('v46 checks a zero-padded UPC alternative without pretending to identify unrelated products',async()=>{
+ const calls=[];
+ const b=boot({fetch:async url=>{
+  calls.push(url);
+  if(url.includes('/0966340011833.json')){
+   return {ok:true,status:200,json:async()=>({status:'success',product:{code:'0966340011833',product_name:'UPC compatible tin',
+     nutriments:{'energy-kcal_100g':109,proteins_100g:24.9,carbohydrates_100g:0,fat_100g:1,fiber_100g:0}}})};
+  }
+  return {ok:false,status:404};
+ }});
+ b.evaluate("navigate('diary')");
+ await b.context.window.fdLookup('966340011833');
+ assert.equal(calls.length,3,'one v3 and v2 lookup on exact UPC, then one padded lookup');
+ assert.match(calls[0],/\/api\/v3\/product\/966340011833/);
+ assert.match(calls[1],/\/api\/v2\/product\/966340011833/);
+ assert.match(calls[2],/\/api\/v3\/product\/0966340011833/);
+ assert.match(b.element('diary').innerHTML,/UPC compatible tin/);
+ assert.match(b.element('fd-message').textContent,/UPC\/EAN representation matched/);
+ assert.equal(b.cloud().foodDiary.entries.length,0,'lookup does not automatically log consumption');
+});
+test('v46 prefers fuller nutrients from v2 when a matched v3 record is incomplete',async()=>{
+ const calls=[];
+ const b=boot({fetch:async url=>{
+  calls.push(url);
+  if(url.includes('/api/v3/'))return {ok:true,json:async()=>({status:'success',product:{code:'5012345678900',product_name:'Partial UK soup',
+    nutriments:{'energy-kcal_100g':55}}})};
+  return {ok:true,json:async()=>({status:1,product:{code:'5012345678900',product_name:'Partial UK soup',
+   nutriments:{'energy-kcal_100g':55,proteins_100g:4.2,carbohydrates_100g:7,fat_100g:1,fiber_100g:0.5}}})};
+ }});
+ b.evaluate("navigate('diary')");
+ await b.context.window.fdLookup('5012345678900');
+ assert.equal(calls.length,2);
+ assert.match(b.element('diary').innerHTML,/fd46-review/);
+ assert.match(b.element('diary').innerHTML,/COMMUNITY PRODUCT LOOKUP/);
+ assert.match(b.element('diary').innerHTML,/value="4.2"/);
+ assert.doesNotMatch(b.element('fd-message').textContent,/Missing protein/);
+});
+test('v46 preview distinguishes missing nutrients from explicit zero and scales portions',()=>{
+ const b=boot();
+ const api=b.context.window.forgeBarcodeV46;
+ assert.deepEqual(Array.from(api.barcodeVariants('966340011833')),['966340011833','0966340011833']);
+ assert.deepEqual(Array.from(api.barcodeVariants('3017624010701')),['3017624010701']);
+ assert.equal(api.nutritionCoverage({nutriments:{'energy-kcal_100g':99,proteins_100g:0}}),2);
+ const html=api.nutritionPreview('g',150,{kcal:120,protein:10,carbs:'',fat:0,fibre:2});
+ assert.match(html,/180 kcal/);
+ assert.match(html,/15 g/);
+ assert.match(html,/0 g/);
+ assert.match(html,/—/);
+ b.evaluate("navigate('diary')");
+ b.context.window.fdBeginManual();
+ assert.match(b.element('diary').innerHTML,/Unknown fields/);
+ assert.match(b.element('diary').innerHTML,/MANUAL LABEL ENTRY/);
+ assert.match(b.element('diary').innerHTML,/fd46-preview/);
 });

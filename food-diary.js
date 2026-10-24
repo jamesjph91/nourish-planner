@@ -127,7 +127,7 @@ function renderSearchResults(){
 function chooseVerified(i){
  const p=RETAIL_CHOICES[i];if(!p)return;
  const code=lastBarcode||'';
- draft={...blankDraft(),name:p.name,barcode:code,unit:'g',quantity:p.drained,category:'snack',perUnit:{...p.n},saveFood:true};
+ draft={...blankDraft(),name:p.name,barcode:code,unit:'g',quantity:p.drained,category:'snack',perUnit:{...p.n},saveFood:true,lookupSource:'retailer-choice'};
  editing='';renderCurrent();
  showMessage('Selected by product name from Tesco: '+p.name+'. This barcode has NOT been verified as belonging to that listing. Check the tin size, spring water/brine/oil and nutrition label before saving. Your choice will be remembered privately for future scans.');
  document.getElementById('fd-entry')?.scrollIntoView({behavior:'smooth',block:'start'});
@@ -135,7 +135,7 @@ function chooseVerified(i){
 function chooseSearch(i){
  const p=searchProducts[i];if(!p)return;
  const source=String(p.code||'');
- draft=parseProduct(p,lastBarcode||source);
+ draft={...parseProduct(p,lastBarcode||source),lookupSource:'name-choice'};
  editing='';renderCurrent();
  showMessage('Selected a similar product by name, NOT a confirmed barcode match. Check the brand, variety, size and nutrition label before saving. This may differ from your tin.');
  document.getElementById('fd-entry')?.scrollIntoView({behavior:'smooth',block:'start'});
@@ -146,6 +146,17 @@ function foodSearchUI(){
   '<div id="fd-search-results">'+suggestionsHTML()+'</div></div>';
 }
 
+function barcodeVariants(code){
+ const normalized=String(code||'').replace(/\s/g,'');
+ if(!/^\d{8,14}$/.test(normalized))return [];
+ // UPC-A and EAN-13 are sometimes represented with/without a single leading zero.
+ return normalized.length===12?[normalized,'0'+normalized]:[normalized];
+}
+function nutritionCoverage(product){
+ const n=product?.nutriments||{};
+ const keys=['energy-kcal_100g','proteins_100g','carbohydrates_100g','fat_100g','fiber_100g'];
+ return keys.reduce((score,k)=>score+(n[k]!==null&&n[k]!==undefined&&n[k]!==''&&Number.isFinite(Number(n[k]))&&Number(n[k])>=0?1:0),0);
+}
 function sameBarcode(a,b){
  const x=String(a||''),y=String(b||'');
  return /^\d{8,14}$/.test(x)&&/^\d{8,14}$/.test(y)&&x.replace(/^0+(?=\d)/,'')===y.replace(/^0+(?=\d)/,'');
@@ -179,7 +190,7 @@ function saveManual(){
   if(!Number.isFinite(value)||value<0||value>limits[key]){alert('Check the '+key+' value per '+(unit==='portion'?'portion':'100 '+unit)+'.');return;}
   perUnit[key]=f(value);
  }
- if(incomplete.length&&!confirm('Missing nutrition data: '+incomplete.join(', ')+'. These unknown values will count as zero until you correct the entry from the label. Save anyway?'))return;
+ if(incomplete.length&&!confirm('Missing nutrition values: '+incomplete.join(', ')+'. FORGE cannot verify these fields; saving will treat them as zero in diary totals until corrected. Only continue if you understand this limitation. Save anyway?'))return;
  const diary=cleanDiary(),old=diary.entries.find(x=>x.id===editing);
  const isPlanned=old?.source==='plan'&&unit==='portion'&&cat===old.category;
  const source=isPlanned?'plan':code?'barcode':'manual';
@@ -214,7 +225,7 @@ function parseProduct(p,code){
  const quantity=String(p?.quantity||'').toLowerCase();
  const unit=/(?:ml|cl|litres?|liters?|\d\s*l\b)/.test(quantity)&&!/(?:\d\s*kg\b|\d\s*g\b)/.test(quantity)?'ml':'g';
  const missing=NUT.filter(k=>perUnit[k]==='');
- return {...blankDraft(),name,barcode:code,unit,perUnit,missing};
+ return {...blankDraft(),name,barcode:code,unit,perUnit,missing,lookupSource:'community'};
 }
 async function lookup(code){
  const normalized=String(code||'').replace(/\s/g,'');
@@ -224,7 +235,7 @@ async function lookup(code){
  const mine=savedBarcode(normalized);
  if(mine){
   lookupBusy=false;
-  draft={...blankDraft(),...mine,barcode:normalized,quantity:mine.lastQuantity||100,perUnit:{...mine.perUnit},saveFood:true};editing='';
+  draft={...blankDraft(),...mine,barcode:normalized,quantity:mine.lastQuantity||100,perUnit:{...mine.perUnit},saveFood:true,lookupSource:'personal'};editing='';
   renderCurrent();showMessage('Found in My saved foods: '+mine.name+'. These are the label values you previously saved. Review the amount eaten, then add to your diary.');
   document.getElementById('fd-entry')?.scrollIntoView({behavior:'smooth',block:'start'});
   return;
@@ -236,30 +247,34 @@ async function lookup(code){
  const abort=new AbortController();lookupController=abort;
  const timer=setTimeout(()=>abort.abort(),14000);
  try{
-  const fields='code,product_name,product_name_en,generic_name,quantity,nutriments';
-  const urls=[
-   'https://world.openfoodfacts.org/api/v3/product/'+normalized+'.json?fields='+fields,
-   'https://world.openfoodfacts.org/api/v2/product/'+normalized+'.json?fields='+fields
-  ];
-  let product=null;
-  for(let i=0;i<urls.length;i++){
-   try{
-    const res=await fetch(urls[i],{signal:abort.signal,headers:{Accept:'application/json'}});
-    if(res.status===429)throw Error('The food database is temporarily limiting requests (429).');
-    if(!res.ok){if(res.status===404){notFound=true;continue;}throw Error('Food database returned HTTP '+res.status+'.');}
-    const data=await res.json();
-    const found=!!data?.product&&(data.status===1||data.status==='success'||data.status==='success_with_warnings'||data.result?.id==='product_found');
-    // Some feeds contain incomplete or mismatched codes. Never assert an exact hit when returned code differs.
-    if(found){
-     const returned=String(data.product.code||'').trim();
-     if(returned&&!sameBarcode(returned,normalized)){failure=Error('Returned barcode does not match the scanned number.');notFound=true;continue;}
-     product=data.product;break;
-    }
-    notFound=true;
-   }catch(e){
-    failure=e;
+  const fields='code,product_name,product_name_en,generic_name,brands,quantity,nutriments';
+  // Prioritise v3. A v2 read is used only when the first record is absent or
+  // short of key nutrition fields. UPC-A also has a safe, zero-padded GTIN alias.
+  let product=null,matchedCode=normalized;
+  for(const candidate of barcodeVariants(normalized)){
+   for(const version of [3,2]){
     if(abort.signal.aborted)break;
+    try{
+     const url='https://world.openfoodfacts.org/api/v'+version+'/product/'+candidate+'.json?fields='+fields;
+     const res=await fetch(url,{signal:abort.signal,headers:{Accept:'application/json'}});
+     if(res.status===429)throw Error('The food database is temporarily limiting requests (429).');
+     if(!res.ok){if(res.status===404){notFound=true;continue;}throw Error('Food database returned HTTP '+res.status+'.');}
+     const data=await res.json();
+     const found=!!data?.product&&(data.status===1||data.status==='success'||data.status==='success_with_warnings'||data.result?.id==='product_found');
+     if(!found){notFound=true;continue;}
+     const returned=String(data.product.code||data.code||'').trim();
+     // A valid endpoint response isn't enough: reject another product's code.
+     if(returned&&!sameBarcode(returned,normalized)){failure=Error('Returned barcode does not match the scanned number.');notFound=true;continue;}
+     const candidateProduct=data.product;
+     if(!product||nutritionCoverage(candidateProduct)>nutritionCoverage(product)){
+      product=candidateProduct;matchedCode=candidate;
+     }
+     // Complete nutrient records need no extra request. Never merge fields
+     // from different products — report gaps and let the user verify the label.
+     if(nutritionCoverage(product)===5)break;
+    }catch(e){failure=e;if(abort.signal.aborted)break;}
    }
+   if(product||abort.signal.aborted)break;
   }
   if(token!==lookupToken)return;
   if(!product){
@@ -275,9 +290,10 @@ async function lookup(code){
   draft=parseProduct(product,normalized);editing='';
   renderCurrent();
   const missing=draft.missing||[];
+  const alias=matchedCode!==normalized?' UPC/EAN representation matched.':'';
   showMessage(!missing.length?
-   'Found '+draft.name+' — nutrition values are filled in. Check the packaging and amount eaten before saving.':
-   'Found '+draft.name+', but the database has no value for: '+missing.join(', ')+'. Enter any missing values from the product label before saving.');
+   'Found '+draft.name+' in Open Food Facts.'+alias+' Review the package label and amount eaten before saving.':
+   'Found '+draft.name+' in Open Food Facts.'+alias+' Missing '+missing.join(', ')+'. These are unknown, NOT zero — enter the correct label values before saving.');
   document.getElementById('fd-entry')?.scrollIntoView({behavior:'smooth',block:'start'});
  }catch(e){
   if(token===lookupToken)showMessage('Barcode '+normalized+' captured but the lookup failed ('+(e?.message||'connection error')+'). You can enter the nutrition label below.');
@@ -493,12 +509,54 @@ function quickEdit(key){
 
 function saved(){return libraryHTML()}
 
+function draftReview(d){
+ const source=d.lookupSource==='community'?'COMMUNITY PRODUCT LOOKUP':
+  d.lookupSource==='personal'?'YOUR SAVED LABEL VALUES':
+  d.lookupSource==='retailer-choice'?'SELECTED BY PRODUCT NAME — BARCODE NOT VERIFIED':
+  d.lookupSource==='name-choice'?'COMMUNITY NAME SEARCH — BARCODE NOT VERIFIED':
+  'MANUAL LABEL ENTRY';
+ const missing=NUT.filter(k=>d.perUnit?.[k]===null||d.perUnit?.[k]===undefined||d.perUnit?.[k]==='');
+ const unknown=missing.length?'<p class="fd46-unknown">Unknown fields: '+escape(missing.join(', '))+'. Blank is not zero. Check your packaging.</p>':
+  '<p class="fd46-complete">All five label values entered. Check they match this exact product.</p>';
+ const unit=d.unit==='portion'?'portion':'100 '+(d.unit==='ml'?'ml':'g');
+ return '<div class="fd46-review" id="fd46-review" aria-label="Check product nutritional values">'+
+ '<div class="fd46-source"><b>'+escape(source)+'</b><span>Values per '+escape(unit)+'</span></div>'+
+ unknown+'<p class="fd46-detail">Preview of the amount eaten, using the values currently entered:</p>'+
+ '<div class="fd46-preview" id="fd46-preview" role="status">'+nutritionPreview(d.unit,d.quantity,d.perUnit)+'</div>'+
+ '<small>Open Food Facts and retailer name matches are not official barcode certification. Verify variety, serving weight and nutrition on the pack.</small></div>';
+}
+function nutritionPreview(unit,quantity,nut){
+ const mult=unit==='portion'?Number(quantity):Number(quantity)/100;
+ const parts=NUT.map(k=>{
+  const raw=nut?.[k];
+  const val=raw===''||raw===undefined||raw===null||!Number.isFinite(Number(raw))?'—':
+   (!Number.isFinite(mult)||mult<=0?'—':String(f(Number(raw)*mult)));
+  return '<div><small>'+({kcal:'CALORIES',protein:'PROTEIN',carbs:'CARBS',fat:'FAT',fibre:'FIBRE'})[k]+'</small><b>'+val+(val==='—'?'':k==='kcal'?' kcal':' g')+'</b></div>';
+ });
+ return parts.join('');
+}
+function refreshPreview(){
+ const r=document.getElementById('fd46-review');if(!r)return;
+ const unit=document.getElementById('fd-unit')?.value||'g',quantity=document.getElementById('fd-quantity')?.value;
+ const values={};
+ for(const k of NUT)values[k]=document.getElementById('fd-'+k)?.value??'';
+ const preview=document.getElementById('fd46-preview');
+ if(preview)preview.innerHTML=nutritionPreview(unit,quantity,values);
+ const unknown=NUT.filter(k=>values[k]==='');
+ const warning=r.querySelector('.fd46-unknown,.fd46-complete');
+ if(warning){
+  warning.className=unknown.length?'fd46-unknown':'fd46-complete';
+  warning.textContent=unknown.length?'Unknown fields: '+unknown.join(', ')+'. Blank is not zero. Check your packaging.':'All five label values entered. Check they match this exact product.';
+ }
+ const basis=r.querySelector('.fd46-source span');
+ if(basis)basis.textContent='Values per '+(unit==='portion'?'portion':'100 '+unit);
+}
 function inputPanel(){
  const d=draft||blankDraft();const input=(id,label,step,maximum)=>'<label>'+label+'<input id="fd-'+id+'" type="number" step="'+step+'" min="0" max="'+maximum+'" inputmode="decimal" value="'+(d.perUnit[id]??'')+'" placeholder="Enter label value"></label>';
  return '<div class="card" id="fd-entry"><div class="row" style="justify-content:space-between;flex-wrap:wrap"><div><h3 style="margin:0">Add extra food</h3><p class="short">Snacks, drinks, takeaways, supplements or anything outside the plan.</p></div><button class="btn" onclick="fdBeginManual()">＋ New manual food</button></div>'+
  '<div class="fd-lookup"><button class="btn dark" onclick="fdOpenScanner()">▦ Scan barcode</button><label class="short" for="fd-lookup-code">Barcode digits</label><input id="fd-lookup-code" inputmode="numeric" pattern="[0-9]*" maxlength="14" placeholder="EAN/UPC barcode" aria-label="Barcode digits" value="'+escape(lastBarcode)+'"><button class="btn" onclick="fdLookup(document.getElementById(\'fd-lookup-code\').value)">Find product</button></div><div id="fd-scan-holder" hidden></div><div class="actions" style="margin:8px 0"><button class="btn sm" onclick="fdTestLookup()">Test food database connection</button></div><p class="short" id="fd-message" role="status">'+escape(lookupMessage||"Scan or enter a barcode to look up a product. Barcode data comes from Open Food Facts; verify against the label.")+'</p>'+(lastBarcode?'<p class="short">Scanned code: <b>'+escape(lastBarcode)+'</b> · <a href="https://world.openfoodfacts.org/product/'+encodeURIComponent(lastBarcode)+'" target="_blank" rel="noopener noreferrer">Check this barcode on Open Food Facts ↗</a></p>':'')+
  foodSearchUI()+
- (draft?'<form onsubmit="event.preventDefault();fdSaveManual()"><div class="fd-inputs"><label class="fd-wide">Product / food name<input id="fd-name" maxlength="100" required value="'+escape(d.name)+'" placeholder="e.g. Chicken sandwich"></label><label>Meal<select id="fd-category">'+CATS.map(c=>'<option value="'+c+'" '+(d.category===c?'selected':'')+'>'+c[0].toUpperCase()+c.slice(1)+'</option>').join('')+'</select></label><label>Quantity eaten<input id="fd-quantity" required type="number" inputmode="decimal" min="0.1" max="5000" step="0.1" value="'+f(d.quantity)+'"></label><label>Unit<select id="fd-unit" onchange="fdUnitChanged(this.value)">'+['g','ml','portion'].map(u=>'<option value="'+u+'" '+(d.unit===u?'selected':'')+'>'+escape(u==='portion'?'Portions':u==='ml'?'Millilitres (ml)':'Grams (g)')+'</option>').join('')+'</select></label><label>Barcode (optional)<input id="fd-barcode" inputmode="numeric" maxlength="14" value="'+escape(d.barcode||'')+'" placeholder="Optional"></label></div><p class="short fd-base-label" id="fd-base-label">Nutritional values per '+(d.unit==='portion'?'one portion':'100 '+d.unit)+'. You can change values to match the package label.</p><div class="fd-inputs">'+input('kcal','Calories (kcal)',.1,5000)+input('protein','Protein (g)',.1,300)+input('carbs','Carbohydrates (g)',.1,500)+input('fat','Fat (g)',.1,300)+input('fibre','Fibre (g)',.1,200)+'</div><label class="fd-check"><input type="checkbox" id="fd-save-food" '+(d.saveFood?'checked':'')+'> Save food for next time</label><div class="actions"><button class="btn dark" type="submit">'+(editing?'Update diary entry':'Add to my diary')+'</button><button type="button" class="btn" onclick="fdCancelDraft()">Cancel</button></div></form>':'<p class="short">Scan or find a barcode to fill the nutrition values, or choose “New manual food” to enter values from the packaging.</p>')+'</div>';
+ (draft?'<form onsubmit="event.preventDefault();fdSaveManual()"><div class="fd-inputs"><label class="fd-wide">Product / food name<input id="fd-name" maxlength="100" required value="'+escape(d.name)+'" placeholder="e.g. Chicken sandwich"></label><label>Meal<select id="fd-category">'+CATS.map(c=>'<option value="'+c+'" '+(d.category===c?'selected':'')+'>'+c[0].toUpperCase()+c.slice(1)+'</option>').join('')+'</select></label><label>Quantity eaten<input id="fd-quantity" required type="number" inputmode="decimal" min="0.1" max="5000" step="0.1" value="'+f(d.quantity)+'"></label><label>Unit<select id="fd-unit" onchange="fdUnitChanged(this.value)">'+['g','ml','portion'].map(u=>'<option value="'+u+'" '+(d.unit===u?'selected':'')+'>'+escape(u==='portion'?'Portions':u==='ml'?'Millilitres (ml)':'Grams (g)')+'</option>').join('')+'</select></label><label>Barcode (optional)<input id="fd-barcode" inputmode="numeric" maxlength="14" value="'+escape(d.barcode||'')+'" placeholder="Optional"></label></div><p class="short fd-base-label" id="fd-base-label">Nutritional values per '+(d.unit==='portion'?'one portion':'100 '+d.unit)+'. You can change values to match the package label.</p><div class="fd-inputs">'+input('kcal','Calories (kcal)',.1,5000)+input('protein','Protein (g)',.1,300)+input('carbs','Carbohydrates (g)',.1,500)+input('fat','Fat (g)',.1,300)+input('fibre','Fibre (g)',.1,200)+'</div>'+draftReview(d)+'<label class="fd-check"><input type="checkbox" id="fd-save-food" '+(d.saveFood?'checked':'')+'> Save food for next time</label><div class="actions"><button class="btn dark" type="submit">'+(editing?'Update diary entry':'Add to my diary')+'</button><button type="button" class="btn" onclick="fdCancelDraft()">Cancel</button></div></form>':'<p class="short">Scan or find a barcode to fill the nutrition values, or choose “New manual food” to enter values from the packaging.</p>')+'</div>';
 }
 function unitChanged(unit){
  const label=document.getElementById('fd-base-label');
@@ -519,6 +577,14 @@ css.textContent+='.fd-week-numbers{text-align:right}.fd-week-numbers small{displ
 window.nourishFoodDiaryPage=diaryPage;
 window.nourishFoodDashboard=dashboardCard;
 window.nourishFoodTodaySummary=()=>({date:localDate(new Date()),totals:grand(diaryFor(localDate(new Date()))),target:targetFor(localDate(new Date()))});
+document.addEventListener?.('input',e=>{
+ const target=e.target;
+ if(!target?.id||!/^fd-(quantity|unit|kcal|protein|carbs|fat|fibre)$/.test(target.id))return;
+ refreshPreview();
+});
+document.addEventListener?.('change',e=>{
+ if(e.target?.id==='fd-unit')refreshPreview();
+});
 document.addEventListener?.('click',e=>{
  const log=e.target.closest?.('[data-fd44-log]');
  const edit=e.target.closest?.('[data-fd44-edit]');
@@ -529,6 +595,7 @@ document.addEventListener?.('click',e=>{
 });
 window.fdPrivateSearch=privateSearch;window.fdQuickRepeat=quickRepeat;window.fdQuickEdit=quickEdit;
 window.forgeFoodQuickLog={libraryCandidates,libraryResults,quickRepeat,quickEdit};
+window.forgeBarcodeV46={barcodeVariants,nutritionCoverage,nutritionPreview,refreshPreview};
 window.fdChangeDate=changeDate;window.fdAdjustDate=adjustDate;window.fdAddPlanned=addPlanned;
 window.fdDeleteEntry=deleteEntry;window.fdEditEntry=editEntry;window.fdUseSaved=useSaved;
 window.fdBeginManual=beginManual;window.fdCancelDraft=cancelDraft;window.fdSaveManual=saveManual;
