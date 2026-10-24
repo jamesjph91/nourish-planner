@@ -396,7 +396,7 @@ test('v56 repeat-from-history creates a new entry with identical serving and doe
  assert.notEqual(entries[0].id,entries[1].id);
  assert.equal(entries[1].quantity,225);
  assert.equal(entries[1].totals.kcal,entries[0].totals.kcal);
- assert.deepEqual(entries[0],original);
+ assert.deepEqual(JSON.parse(JSON.stringify(entries[0])),original,'Original entry values were preserved across JS contexts');
  assert.equal(b.context.window.fdRepeatEntry(original.id),false,'Immediate double click must not log twice');
 });
 test('v56 same-day duplicate scanned serving requires a deliberate confirmation',()=>{
