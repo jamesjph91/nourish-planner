@@ -118,6 +118,7 @@ function uiBoot(cached=true){
    }
   })
  };
+ window.caches=caches; // CacheStorage exists on window in browsers.
  const navigator={onLine:true,serviceWorker:{}};
  const fetch=async()=>{if(networkDown)throw Error('offline');return {ok:true,json:async()=>({version:remote})}};
  vm.runInNewContext(offline,{document,window,location,URL,caches,navigator,fetch,Date,Number,console},{filename:'forge-offline-v53.js'});
