@@ -1,14 +1,12 @@
 {
-  "version": 53,
+  "version": 54,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Real-time read-only offline readiness inspection of ten critical cached app assets",
-    "Service worker resolves offline versioned JavaScript and CSS from canonical precached files",
-    "Failed essential precaches block a broken service-worker upgrade, preserving prior version",
-    "Clear installed-versus-published release versions without claiming online checks when unavailable",
-    "Android installed-app recovery guidance and missing-asset refresh link inside Settings",
-    "Safe refresh verifies live network via HEAD before deleting downloaded app caches",
-    "Offline and recovery smoke tests in GitHub CI; no private data storage is modified"
+    "Next unfinished set navigation and active movement focus",
+    "Sticky progress strip with real checked-set counts",
+    "Safer set adding/removing with immediate undo and confirmation for logged sets",
+    "Completed-only exercise recap including removed but historically logged movements",
+    "Workout history, user data and premium visual design preserved"
   ]
 }

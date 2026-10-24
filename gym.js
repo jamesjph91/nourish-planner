@@ -1,6 +1,7 @@
 /* Nourish Gym Lab — strength training planner and logging. */
 (function(){
 'use strict';
+let gym54Undo=null;
 const EX={
  goblet:{name:'Goblet squat',focus:'Legs',equip:'Dumbbell',sets:3,min:8,max:12,cue:'Keep chest tall, brace your midsection, sit between your hips and push through your whole foot.',alt:'Bodyweight box squat',load:true},
  chest:{name:'Machine chest press',focus:'Chest / triceps',equip:'Machine',sets:3,min:8,max:12,cue:'Set the handles around mid-chest, keep shoulders down, and control the return.',alt:'Incline press-up',load:true},
@@ -109,7 +110,7 @@ function setDayPlan(iso,id){
  if(num){s.gym[num]=id!=='rest';s.shopDirty=true;}
  save();renderCurrent();notify('Workout schedule and meal-day nutrition updated.');
 }
-function selectDay(iso){if(!/^\d{4}-\d{2}-\d{2}$/.test(iso))return;work().selected=iso;save();renderCurrent();}
+function selectDay(iso){if(!/^\d{4}-\d{2}-\d{2}$/.test(iso))return;gym54Undo=null;work().selected=iso;save();renderCurrent();}
 function selectWeek(week){if(week<1||week>4)return;work().week=week;work().selected=plus(work().startDate,(week-1)*7);save();renderCurrent();}
 function resetAnchor(){
  const w=work(),value=document.getElementById('gym-start').value;
@@ -147,13 +148,13 @@ function setValue(iso,exid,idx,field,value){
  const session=getSession(iso,id),set=session.sets[exid]?.[idx];if(!set)return;
  const n=value===''?'':Number(value),max=field==='kg'?600:1000;
  if(n!==''&&(!Number.isFinite(n)||n<0||n>max))return;
- set[field]=n;session.updatedAt=new Date().toISOString();save();
+ gym54Undo=null;set[field]=n;session.updatedAt=new Date().toISOString();save();
 }
 function tick(iso,exid,idx,checked){
  const id=planFor(iso),session=getSession(iso,id),set=session.sets[exid]?.[idx];
  if(!set)return;
  if(checked&&(set.reps===''|| (definition(exid).load&&set.kg===''))){alert('Enter reps/time and weight (0 for bodyweight) before ticking this set.');renderCurrent();return;}
- set.done=checked;session.updatedAt=new Date().toISOString();save();renderCurrent();
+ gym54Undo=null;set.done=checked;session.updatedAt=new Date().toISOString();save();renderCurrent();
 }
 function setNote(iso,v){const id=planFor(iso);if(id==='rest')return;const session=getSession(iso,id);session.notes=String(v).slice(0,750);save();}
 function complete(iso,yes){
@@ -163,14 +164,52 @@ function complete(iso,yes){
  session.completed=yes;session.updatedAt=new Date().toISOString();save();renderCurrent();notify(yes?'Workout completed — great work!':'Workout returned to in progress.');
 }
 function addSet(iso,exid){
- const id=planFor(iso),session=getSession(iso,id);
- if(!validExercise(exid)||!session.exerciseIds.includes(exid)||session.sets[exid].length>=8)return;
- session.sets[exid].push({kg:'',reps:'',done:false});save();renderCurrent();
+ const id=planFor(iso);if(id==='rest')return;
+ const session=getSession(iso,id),arr=session.sets[exid];
+ if(!validExercise(exid)||!session.exerciseIds.includes(exid)||!Array.isArray(arr)||arr.length>=8)return;
+ const set={kg:'',reps:'',done:false};
+ arr.push(set);
+ gym54Undo={kind:'add',iso,exid,session,arr,size:arr.length,index:arr.length-1,set};
+ session.updatedAt=new Date().toISOString();save();renderCurrent();
 }
 function removeSet(iso,exid,idx){
- const id=planFor(iso),session=getSession(iso,id);
- if(!validExercise(exid)||!session.exerciseIds.includes(exid)||session.sets[exid].length<=1)return;
- session.sets[exid].splice(idx,1);save();renderCurrent();
+ const id=planFor(iso);if(id==='rest')return;
+ const session=getSession(iso,id),arr=session.sets[exid];
+ if(!validExercise(exid)||!session.exerciseIds.includes(exid)||!Array.isArray(arr)||arr.length<=1||!Number.isInteger(idx)||idx<0||idx>=arr.length)return;
+ const set=arr[idx];
+ if(set?.done===true&&!confirm('Remove a completed set? You can undo this immediately, but it will otherwise disappear from today’s session.'))return;
+ const removed={kg:set.kg,reps:set.reps,done:set.done===true};
+ arr.splice(idx,1);
+ gym54Undo={kind:'remove',iso,exid,session,arr,size:arr.length,index:idx,set:removed};
+ session.updatedAt=new Date().toISOString();save();renderCurrent();
+}
+function gym54UndoAvailable(iso,exid,session){
+ const x=gym54Undo;if(!x||x.iso!==iso||x.exid!==exid||x.session!==session||x.arr!==session.sets[exid]||x.arr.length!==x.size)return false;
+ if(x.kind==='add'){const set=x.arr[x.index];return set===x.set&&set?.done===false&&set.kg===''&&set.reps==='';}
+ return x.kind==='remove'&&x.arr.length<8;
+}
+function gymUndoLastSetChange(iso,exid){
+ const id=planFor(iso);if(id==='rest')return false;
+ const session=getSession(iso,id);
+ if(!gym54UndoAvailable(iso,exid,session)){gym54Undo=null;notify('That change can no longer be undone.');return false;}
+ const u=gym54Undo;gym54Undo=null;
+ if(u.kind==='add')u.arr.splice(u.index,1);
+ else u.arr.splice(u.index,0,u.set);
+ session.updatedAt=new Date().toISOString();save();renderCurrent();
+ notify('Set change undone.');return true;
+}
+function gym54Snapshot(){
+ const w=work(),iso=w.selected,id=planFor(iso);
+ if(id==='rest')return {iso,id,completed:false,exercises:[],history:[]};
+ const session=getSession(iso,id);
+ const item=exid=>{
+  const def=definition(exid);
+  return {id:exid,name:String(def?.name||exid),load:def?.load===true,unit:def?.unit||'reps',
+   sets:(Array.isArray(session.sets?.[exid])?session.sets[exid]:[]).map(z=>({kg:z.kg,reps:z.reps,done:z.done===true}))};
+ };
+ const exercises=sessionIds(iso,id).map(item);
+ const history=Object.keys(session.sets||{}).filter(validExercise).map(item);
+ return {iso,id,completed:session.completed===true,exercises,history};
 }
 
 function gymLibrary(iso,oldId=''){
@@ -400,7 +439,7 @@ function exerciseRows(iso,exid){
  const previous=last?'<div class="gym48-previous" aria-label="Previous completed set">↗ Last logged: '+esc(last.label)+'</div>':'<div class="gym48-previous missing">No earlier completed set · start conservatively</div>';
  const history49=gym49HistoryStrip(iso,exid);
  const fast49='<div class="gym49-fastbar"><button type="button" class="btn sm" onclick="gymRepeatNext(\''+iso+'\',\''+exid+'\')">↻ Repeat for next set</button>'+(last?'<button type="button" class="btn sm dark" onclick="gymPrefillFromHistory(\''+iso+'\',\''+exid+'\')">↶ Fill previous values</button>':'')+'</div>';
- return '<div class="gym-exercise"><div class="row" style="flex-wrap:wrap"><div><strong>'+esc(x.name)+'</strong><div class="short">'+x.sets+' sets · '+x.min+'–'+x.max+' '+unit+' · '+esc(x.focus)+'</div></div><button class="btn sm" onclick="gymOpenGuide(\''+exid+'\')">How to do it ↗</button></div>'+previous+history49+fast49+'<div class="gym-sethead"><span>Set</span><span>'+(x.load?'Weight (kg)':'Bodyweight')+'</span><span>'+ (unit==='reps'?'Reps':unit==='sec'?'Seconds':'Minutes')+'</span><span>Done</span><span></span></div>'+list.map((set,i)=>'<div class="gym-setrow"><b>'+ (i+1)+'</b>'+(x.load?'<input inputmode="decimal" aria-label="'+esc(x.name)+' set '+(i+1)+' weight in kilograms" type="number" min="0" step="0.5" max="600" value="'+esc(set.kg??'')+'" placeholder="kg" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'kg\',this.value)">':'<span class="gym-bodyweight">—</span>')+'<input inputmode="numeric" aria-label="'+esc(x.name)+' set '+(i+1)+' reps or time" type="number" min="0" max="1000" step="1" value="'+esc(set.reps??'')+'" placeholder="'+x.min+'–'+x.max+'" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'reps\',this.value)"><input type="checkbox" aria-label="Completed '+esc(x.name)+' set '+(i+1)+'" '+(set.done?'checked':'')+' onchange="gymTick(\''+iso+'\',\''+exid+'\','+i+',this.checked)"><button class="btn sm" aria-label="Remove set" onclick="gymRemoveSet(\''+iso+'\',\''+exid+'\','+i+')">−</button></div>').join('')+'<div class="gym-ex-actions"><button class="btn sm" onclick="gymMoveExercise(\''+iso+'\',\''+exid+'\',-1)">↑ Up</button><button class="btn sm" onclick="gymMoveExercise(\''+iso+'\',\''+exid+'\',1)">↓ Down</button><button class="btn sm" onclick="gymLibrary(\''+iso+'\',\''+exid+'\')">↔ Replace</button><button class="btn sm" onclick="gymRemoveExercise(\''+iso+'\',\''+exid+'\')">Remove</button></div>'+'<div style="margin-top:9px"><button class="btn sm" onclick="gymAddSet(\''+iso+'\',\''+exid+'\')">＋ Add set</button></div></div>';
+ return '<div class="gym-exercise" data-gym-exid="'+esc(exid)+'" id="gym-ex-'+esc(exid)+'"><div class="row" style="flex-wrap:wrap"><div><strong>'+esc(x.name)+'</strong><div class="short">'+x.sets+' sets · '+x.min+'–'+x.max+' '+unit+' · '+esc(x.focus)+'</div></div><button class="btn sm" onclick="gymOpenGuide(\''+exid+'\')">How to do it ↗</button></div>'+previous+history49+fast49+'<div class="gym-sethead"><span>Set</span><span>'+(x.load?'Weight (kg)':'Bodyweight')+'</span><span>'+ (unit==='reps'?'Reps':unit==='sec'?'Seconds':'Minutes')+'</span><span>Done</span><span></span></div>'+list.map((set,i)=>'<div class="gym-setrow" data-gym-set-index="'+i+'"><b>'+ (i+1)+'</b>'+(x.load?'<input inputmode="decimal" aria-label="'+esc(x.name)+' set '+(i+1)+' weight in kilograms" type="number" min="0" step="0.5" max="600" value="'+esc(set.kg??'')+'" placeholder="kg" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'kg\',this.value)">':'<span class="gym-bodyweight">—</span>')+'<input inputmode="numeric" aria-label="'+esc(x.name)+' set '+(i+1)+' reps or time" type="number" min="0" max="1000" step="1" value="'+esc(set.reps??'')+'" placeholder="'+x.min+'–'+x.max+'" onchange="gymSetValue(\''+iso+'\',\''+exid+'\','+i+',\'reps\',this.value)"><input type="checkbox" aria-label="Completed '+esc(x.name)+' set '+(i+1)+'" '+(set.done?'checked':'')+' onchange="gymTick(\''+iso+'\',\''+exid+'\','+i+',this.checked)"><button class="btn sm" aria-label="Remove set" onclick="gymRemoveSet(\''+iso+'\',\''+exid+'\','+i+')">−</button></div>').join('')+'<div class="gym-ex-actions"><button class="btn sm" onclick="gymMoveExercise(\''+iso+'\',\''+exid+'\',-1)">↑ Up</button><button class="btn sm" onclick="gymMoveExercise(\''+iso+'\',\''+exid+'\',1)">↓ Down</button><button class="btn sm" onclick="gymLibrary(\''+iso+'\',\''+exid+'\')">↔ Replace</button><button class="btn sm" onclick="gymRemoveExercise(\''+iso+'\',\''+exid+'\')">Remove</button></div>'+'<div class="gym54-set-actions"><button class="btn sm" onclick="gymAddSet(\''+iso+'\',\''+exid+'\')">＋ Add set</button>'+(gym54UndoAvailable(iso,exid,ses)?'<button class="btn sm gym54-undo" onclick="gymUndoLastSetChange(\''+iso+'\',\''+exid+'\')">↶ Undo '+(gym54Undo.kind==='add'?'add':'remove')+'</button>':'')+'</div></div>';
 }
 function selectedSession(){
  const w=work(),iso=w.selected,id=planFor(iso),label=safeDate(iso);
@@ -433,6 +472,7 @@ window.forgeGymDefinition=id=>{const ex=definition(id);return ex?{name:String(ex
 window.gymSelectDay=selectDay;window.gymSelectWeek=selectWeek;window.gymSetDayPlan=setDayPlan;
 window.gymResetAnchor=resetAnchor;window.gymSetValue=setValue;window.gymTick=tick;
 window.gymSetNote=setNote;window.gymComplete=complete;window.gymAddSet=addSet;window.gymRemoveSet=removeSet;
+window.gymUndoLastSetChange=gymUndoLastSetChange;window.forgeGymV54Snapshot=gym54Snapshot;
 window.gymOpenGuide=openGuide;window.gymExport=logsCsv;
 window.gymLibrary=gymLibrary;window.gymFilter=gymFilter;window.gymFilterFocus=gymFilterFocus;window.gymFilterEquip=gymFilterEquip;window.gymChoose=gymChoose;
 window.gymSavePreset=gymSavePreset;window.gymApplyPreset=gymApplyPreset;window.gymDeletePreset=gymDeletePreset;window.forgePreviousSet=previousSet;

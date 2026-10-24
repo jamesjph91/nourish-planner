@@ -1,0 +1,35 @@
+/* FORGE v54: gym quick controls / active row / safe undo / completed-set recap. */
+#workouts .gym54-progress{position:sticky;top:8px;z-index:12;padding:13px 14px;background:linear-gradient(135deg,#1b3320eb,#07150df5);border:1px solid #719344;border-radius:16px;backdrop-filter:blur(15px);box-shadow:0 10px 28px #000a,inset 0 1px 0 #c7ff1752;margin-bottom:16px}
+#workouts .gym54-progress-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+#workouts .gym54-progress-head span{color:#b9ff16;font-size:9px;font-weight:950;letter-spacing:1.2px}
+#workouts .gym54-progress-head strong{color:#fff;font-size:13px;font-variant-numeric:tabular-nums}
+#workouts .gym54-meter{height:8px;border-radius:99px;background:#253329;overflow:hidden;margin:9px 0 12px}
+#workouts .gym54-meter i{display:block;height:100%;background:linear-gradient(90deg,#6fc918,#d3ff42);box-shadow:0 0 15px #c7ff177d;max-width:100%;border-radius:99px;transition:width .2s ease}
+#workouts .gym54-quick-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#workouts .gym54-quick-row>div{min-width:0}
+#workouts .gym54-quick-row b{display:block;font-size:12px;color:#f9fff5;overflow-wrap:anywhere}
+#workouts .gym54-quick-row small{display:block;margin-top:5px;font-size:10px;color:#aec3a9;line-height:1.45}
+#workouts .gym54-quick-row button{flex-shrink:0;border:1px solid #ccff2c;border-radius:11px;background:#c7ff17;color:#07110b;min-height:44px;padding:10px 13px;font-weight:950;font-size:11px}
+#workouts .gym54-quick-row button:disabled{opacity:.5;border-color:#54713b;background:#283727;color:#c3ccbe}
+#workouts .gym-exercise.gym54-current{border:1px solid #b9ff16!important;background:linear-gradient(150deg,#14251a,#08110d)!important;box-shadow:inset 0 1px 0 #e1ff4a30,0 11px 24px #0009,0 0 19px #b9ff161f!important}
+#workouts .gym-exercise.gym54-current>.row:before{content:"NEXT UP";color:#bcff23;background:#b9ff1613;border:1px solid #b9ff1649;border-radius:30px;padding:6px 9px;font-size:9px;letter-spacing:.8px;font-weight:950}
+#workouts .gym-setrow.gym54-next-row{border:1px solid #a4e33580!important;border-radius:11px;padding:5px;margin-left:-5px;margin-right:-5px;background:#b9ff160b}
+#workouts .gym54-set-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:11px}
+#workouts .gym54-set-actions button{min-height:44px!important;border-radius:11px!important;padding:9px 14px!important;font-size:11px!important;font-weight:950!important}
+#workouts .gym54-set-actions button:first-child{background:#17251c!important;border:1px solid #61833b!important;color:#e3ffbd!important}
+#workouts .gym54-undo{background:#c7ff17!important;color:#07120c!important;border:1px solid #e2ff68!important}
+#workouts .gym54-recap{margin:18px 0 0;border-radius:17px;padding:16px;border:1px solid #7ea747;background:linear-gradient(125deg,#1b3520,#08140c);box-shadow:inset 0 1px 0 #baff1626}
+#workouts .gym54-recap-top small{font-size:9px;letter-spacing:1.1px;font-weight:950;color:#b9ff16}
+#workouts .gym54-recap h3{font-size:clamp(22px,5vw,30px);line-height:1.1;letter-spacing:-.7px;margin:7px 0;color:#f5ffee}
+#workouts .gym54-recap p{font-size:11px;line-height:1.65;color:#b3c8b0}
+#workouts .gym54-recap-total{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #46643c}
+#workouts .gym54-recap-total b{font-size:34px;color:#ccff6a;font-variant-numeric:tabular-nums}
+#workouts .gym54-recap-total span{font-size:12px;font-weight:900;color:#e0f6d5}
+#workouts .gym54-recap-item{padding:12px 0;border-bottom:1px solid #345137;display:flex;align-items:start;justify-content:space-between;gap:10px}
+#workouts .gym54-recap-item strong{display:block;color:#f9fff6;font-size:12px}
+#workouts .gym54-recap-item small{display:block;color:#99b197;font-size:10px;margin-top:5px}
+#workouts .gym54-recap-item span{font-size:11px;color:#d4fbab;font-weight:800;text-align:right}
+#workouts .gym54-progress button:focus-visible,#workouts .gym54-set-actions button:focus-visible{outline:3px solid #ebff9f;outline-offset:3px}
+@media(max-width:760px){#workouts .gym54-progress{top:72px;padding:10px 11px}#workouts .gym54-quick-row button{font-size:10px;padding:9px 10px}#workouts .gym54-recap{padding:12px}}
+@media(max-width:400px){#workouts .gym54-quick-row{align-items:stretch;flex-wrap:wrap}#workouts .gym54-quick-row button{width:100%}#workouts .gym54-recap-item{flex-direction:column;gap:5px}#workouts .gym54-recap-item span{text-align:left}}
+@media(prefers-reduced-motion:reduce){#workouts .gym54-meter i{transition:none!important}}
