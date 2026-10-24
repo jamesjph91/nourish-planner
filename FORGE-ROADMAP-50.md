@@ -59,11 +59,11 @@
 - [x] **35** Keyboard- and scanner-friendly focus order in the logging form.
 
 ## v57 · Fuel: clearer UK quantities (steps 36–40)
-- [ ] **36** UK supermarket serving-size presets with explicit gram/ml units.
-- [ ] **37** Distinguish label-per-100g, per-100ml and per-portion calculations.
-- [ ] **38** Nutrient-total cross-checks before confirming a diary entry.
-- [ ] **39** Clear missing vs actual zero nutrition in every relevant view.
-- [ ] **40** Streamlined planner-to-diary meal logging without duplicate entries.
+- [x] **36** UK supermarket serving-size presets with explicit gram/ml units.
+- [x] **37** Distinguish label-per-100g, per-100ml and per-portion calculations.
+- [x] **38** Nutrient-total cross-checks before confirming a diary entry.
+- [x] **39** Clear missing vs actual zero nutrition in every relevant view.
+- [x] **40** Streamlined planner-to-diary meal logging without duplicate entries.
 
 ## v58 · Activity & wearable imports (steps 41–45)
 - [ ] **41** Label source attribution for manual vs imported activity.
@@ -89,7 +89,7 @@
 | v54 | 21–25 | Verified deployed | Regression run `40118022805` · Pages `40118022911` · `tests/forge-gym-v54.test.cjs` |
 | v55 | 26–30 | Verified deployed | Regression run `40118966606` · Pages `40118966549` · `tests/forge-strength-v55.test.cjs` |
 | v56 | 31–35 | Verified deployed | Regression run `40120052300` · Pages `40120052555` · `tests/food-diary.test.cjs` |
-| v57 | 36–40 | Pending | — |
+| v57 | 36–40 | Verified deployed | Regression run `40128940110` · Pages `40128939955` · `tests/food-diary.test.cjs` and `tests/forge-fuel-v57.test.cjs` |
 | v58 | 41–45 | Pending | — |
 | v59 | 46–50 | Pending | — |
 
