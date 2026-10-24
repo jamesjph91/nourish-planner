@@ -3,6 +3,7 @@
 (()=>{'use strict';
 const tabNames=['Plan','Exercises','History'];
 let active='Plan',restDuration=90,restRemaining=90,restDeadline=0,restInterval=null;
+let autoRest=true,observed=null,restMessage='';
 const root=()=>document.getElementById('workouts');
 const iso=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
 const parse=()=>{try{return JSON.parse(localStorage.getItem('nourishHigherDeficitV1')||'{}')||{}}catch{return {}}};
@@ -28,21 +29,27 @@ function ownData(){return snapshot()}
 function timerLabel(seconds){const min=Math.floor(seconds/60),sec=seconds%60;return String(min).padStart(2,'0')+':'+String(sec).padStart(2,'0')}
 function stopTimer(){if(restInterval!==null){clearInterval(restInterval);restInterval=null}restDeadline=0}
 function updateClock(){
- if(restDeadline){restRemaining=Math.max(0,Math.ceil((restDeadline-Date.now())/1000));if(restRemaining===0)stopTimer()}
+ if(restDeadline){restRemaining=Math.max(0,Math.ceil((restDeadline-Date.now())/1000));if(restRemaining===0){stopTimer();restMessage='Rest complete — ready for the next set.'}}
  const label=root()?.querySelector('[data-fgt-clock]');if(label)label.textContent=timerLabel(restRemaining);
  const button=root()?.querySelector('[data-fgt-rest-toggle]');if(button)button.textContent=restDeadline?'Pause rest':'Start rest';
+ const note=root()?.querySelector('[data-fgt-rest-status]');if(note)note.textContent=restMessage;
 }
 function changeTimer(next){
  if(![60,90,120,180].includes(next))return;
- restDuration=next;stopTimer();restRemaining=next;updateClock();
+ restDuration=next;stopTimer();restRemaining=next;restMessage='';updateClock();
 }
-function toggleTimer(){
- if(restDeadline){updateClock();stopTimer();updateClock();return}
+function startTimer(fromSet=false){
+ stopTimer();if(fromSet)restRemaining=restDuration;
  if(restRemaining<=0)restRemaining=restDuration;
  restDeadline=Date.now()+restRemaining*1000;
+ restMessage=fromSet?'Set recorded · rest timer started.':'Rest timer running.';
  restInterval=setInterval(updateClock,250);updateClock();
 }
-function resetTimer(){stopTimer();restRemaining=restDuration;updateClock()}
+function toggleTimer(){
+ if(restDeadline){restRemaining=Math.max(0,Math.ceil((restDeadline-Date.now())/1000));stopTimer();restMessage='Rest paused.';updateClock();return}
+ startTimer();
+}
+function resetTimer(){stopTimer();restRemaining=restDuration;restMessage='';updateClock()}
 function findParts(r){
  const cards=[...r.querySelectorAll(':scope > .card')];
  const calendar=cards.find(c=>!!c.querySelector('.gym-calendar'));
@@ -92,7 +99,7 @@ function panel(s){
  '<div class="fgt-quick-actions"><button type="button" class="primary" data-fgt-action="jump">▶ '+(s.finished?'View completed session':'Open session')+'</button><button type="button" data-fgt-action="library">＋ Add exercise</button></div>':
  '<div class="fgt-quick-actions"><button type="button" class="primary" data-fgt-action="assign">Choose a workout ↗</button></div>')+
  '</section>'+
- (active==='Exercises'&&!rest?'<section class="fgt-rest"><div><small>BETWEEN SETS</small><strong data-fgt-clock>'+timerLabel(restRemaining)+'</strong></div><label>Rest duration <select data-fgt-duration>'+[60,90,120,180].map(n=>'<option value="'+n+'" '+(n===restDuration?'selected':'')+'>'+n+' sec</option>').join('')+'</select></label><button data-fgt-rest-toggle type="button">'+(restDeadline?'Pause rest':'Start rest')+'</button><button data-fgt-action="reset-rest" type="button" aria-label="Reset rest timer">↻</button></section>':'')+
+ (active!=='History'&&!rest?'<section class="fgt-rest" aria-label="Workout rest timer"><div><small>BETWEEN SETS</small><strong data-fgt-clock>'+timerLabel(restRemaining)+'</strong></div><label>Rest duration <select data-fgt-duration>'+[60,90,120,180].map(n=>'<option value="'+n+'" '+(n===restDuration?'selected':'')+'>'+n+' sec</option>').join('')+'</select></label><button data-fgt-rest-toggle type="button">'+(restDeadline?'Pause rest':'Start rest')+'</button><button data-fgt-action="reset-rest" type="button" aria-label="Reset rest timer">↻</button><label class="fgt-auto"><input type="checkbox" data-fgt-autorest '+(autoRest?'checked':'')+'> Start automatically after a completed set</label><p class="fgt-rest-feedback" data-fgt-rest-status role="status">'+escape(restMessage)+'</p></section>':'')+
  (active==='Exercises'&&!rest?'<div class="fgt-explainer">The exercise list below is editable during your workout. <b>Replace, add, remove or reorder</b> without changing your permanent routine until you choose Save as my routine.</div>':'')
  )+'</div>';
 }
@@ -100,6 +107,10 @@ function enhance(){
  const r=root();
  if(!r||!document.querySelector('#nav [data-tab="workouts"].on'))return;
  const s=snapshot(),parts=findParts(r);
+ // Compare only after initial observation; never start a timer from old imported workouts.
+ if(observed&&observed.selected!==s.selected){resetTimer()}
+ if(observed&&observed.selected===s.selected&&s.selected===s.today&&!s.finished&&s.scheduled!=='rest'&&autoRest&&s.completed>observed.completed)startTimer(true);
+ observed={selected:s.selected,completed:s.completed};
  const sessionTitle=parts.session?.querySelector(':scope > .row h2');
  if(sessionTitle)s.label=sessionTitle.textContent.trim();
  // A newly opened routine can exist in gym.js memory before its first save.
@@ -135,8 +146,8 @@ document.addEventListener('click',event=>{
  }
  if(event.target.closest?.('[data-fgt-rest-toggle]'))toggleTimer();
 });
-document.addEventListener('change',event=>{const v=event.target.closest?.('[data-fgt-duration]');if(v&&root()?.contains(v))changeTimer(Number(v.value))});
+document.addEventListener('change',event=>{const v=event.target.closest?.('[data-fgt-duration]');if(v&&root()?.contains(v))changeTimer(Number(v.value));const t=event.target.closest?.('[data-fgt-autorest]');if(t&&root()?.contains(t)){autoRest=!!t.checked;restMessage=autoRest?'Automatic rest enabled.':'Automatic rest disabled.';updateClock()}});
 window.addEventListener('forge:view-rendered',event=>{if(event.detail?.tab==='workouts')enhance()});
 document.addEventListener('DOMContentLoaded',enhance,{once:true});
-window.forgeTrainCoach={enhance,snapshot,changeTimer,timerLabel,panel};
+window.forgeTrainCoach={enhance,snapshot,changeTimer,timerLabel,panel,restState:()=>({duration:restDuration,remaining:restRemaining,running:!!restDeadline,auto: autoRest}),toggleTimer,resetTimer};
 })();

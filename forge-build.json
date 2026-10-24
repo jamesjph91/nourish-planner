@@ -1,11 +1,11 @@
 {
-  "version": 42,
+  "version": 43,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Working Steps / Cardio / Sleep / All activity explorer with seven-day trends",
-    "Record, import and goal shortcuts use existing Health Hub controls",
-    "Distinguish missing readings from zero and remove inferred distance/active-time display",
-    "Keep v40 cinematic design, v41 updater and private user records"
+    "Auto-start, pause, reset and configure the in-gym rest timer when a today's set is completed",
+    "Live completed-set counts and previous training load comparisons",
+    "Highlight real new weight personal bests without treating first-time logs as prior records",
+    "Preserve adaptive workout logging, exercise substitutions, private cloud records and v40 visual design"
   ]
 }
