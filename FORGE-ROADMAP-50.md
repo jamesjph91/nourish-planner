@@ -24,11 +24,11 @@
 - [x] **10** Escape close, focus-return/trapping, 44px controls, visible focus and reduced-motion styling.
 
 ## v52 · Data & account safety (steps 11–15)
-- [ ] **11** Read-only device data-health summary for diary, workouts, activity and measurements.
-- [ ] **12** Show local backup timestamp and a clear photo-backup exclusion notice.
-- [ ] **13** Make device-vs-cloud save states unambiguous on the account page.
-- [ ] **14** Validate backup content *before* any import or replace action, without applying automatically.
-- [ ] **15** Give users an explicit, safe pre-update backup checklist.
+- [x] **11** Read-only device data-health summary for diary, workouts, activity and measurements.
+- [x] **12** Show local backup timestamp and a clear photo-backup exclusion notice.
+- [x] **13** Make device-vs-cloud save states unambiguous on the account page.
+- [x] **14** Validate backup content *before* any import or replace action, without applying automatically.
+- [x] **15** Give users an explicit, safe pre-update backup checklist.
 
 ## v53 · Offline and recovery (steps 16–20)
 - [ ] **16** Report offline readiness for critical app assets.
@@ -83,8 +83,8 @@
 
 | Milestone | Steps | State | Verification |
 |---|---|---|---|
-| v51 | 01–10 | Implemented; release gate must pass | `tests/forge-access-v51.test.cjs` and full CI |
-| v52 | 11–15 | Pending | — |
+| v51 | 01–10 | Verified deployed | Regression run `40113619270` · Pages `40113618711` |
+| v52 | 11–15 | Verified deployed | Regression run `40116507047` · Pages `40116506598` · `tests/forge-data-safety-v52.test.cjs` |
 | v53 | 16–20 | Pending | — |
 | v54 | 21–25 | Pending | — |
 | v55 | 26–30 | Pending | — |
