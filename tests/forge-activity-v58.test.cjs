@@ -18,6 +18,26 @@ test('activity validator preserves a genuine zero but omits missing readings',()
  assert.match(hub,/activeKcal:\[0,12000,1\]/);
 });
 
+test('duplicate-day imports show a preview and require confirmation before mutation',()=>{
+ assert.match(hub,/conflicts=parsed\.rows\.filter\(entry=>map\.has\(entry\.date\)\)/);
+ assert.match(hub,/Import preview:/);
+ assert.match(hub,/already in FORGE/);
+ assert.match(hub,/Existing fields on those dates will be updated, while fields absent from the import are kept/);
+ assert.match(hub,/Import cancelled\. No saved activity was changed\./);
+});
+
+test('week activity view distinguishes a missing reading from a genuine zero',()=>{
+ assert.match(hub,/const steps=row\.activity\?\.steps,has=steps!==undefined/);
+ assert.match(hub,/has\?fmt\(steps\):'—'/);
+ assert.match(hub,/Missing days show —; a recorded zero remains 0/);
+});
+
+test('last import freshness is explicit without claiming live watch sync',()=>{
+ assert.match(hub,/Last imported:/);
+ assert.match(hub,/file import time, not a live watch sync/);
+ assert.match(hub,/updatedAt:stamp/);
+});
+
 test('bad imports are designed to leave existing activity unchanged',()=>{
  assert.match(hub,/Your existing activity has not been changed/);
  assert.match(hub,/No usable daily activity values were found/);
