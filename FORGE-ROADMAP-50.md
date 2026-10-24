@@ -38,11 +38,11 @@
 - [x] **20** Improve app-shell recovery guidance for Android installed-PWA users.
 
 ## v54 · Train: fewer taps (steps 21–25)
-- [ ] **21** Jump to the next uncompleted set.
-- [ ] **22** Sticky, compact progress strip during a workout.
-- [ ] **23** Clearer current-exercise focus state.
-- [ ] **24** More tactile set-add/remove affordances with undo where safe.
-- [ ] **25** End-of-session recap generated only from completed sets.
+- [x] **21** Jump to the next uncompleted set.
+- [x] **22** Sticky, compact progress strip during a workout.
+- [x] **23** Clearer current-exercise focus state.
+- [x] **24** More tactile set-add/remove affordances with undo where safe.
+- [x] **25** End-of-session recap generated only from completed sets.
 
 ## v55 · Train: evidence-based performance (steps 26–30)
 - [ ] **26** Chart session load volume only for valid weight × repetitions.
@@ -86,7 +86,7 @@
 | v51 | 01–10 | Verified deployed | Regression run `40113619270` · Pages `40113618711` |
 | v52 | 11–15 | Verified deployed | Regression run `40116507047` · Pages `40116506598` · `tests/forge-data-safety-v52.test.cjs` |
 | v53 | 16–20 | Verified deployed | Regression run `40117118278` · Pages `40117118102` · `tests/forge-offline-v53.test.cjs` |
-| v54 | 21–25 | Pending | — |
+| v54 | 21–25 | Verified deployed | Regression run `40118022805` · Pages `40118022911` · `tests/forge-gym-v54.test.cjs` |
 | v55 | 26–30 | Pending | — |
 | v56 | 31–35 | Pending | — |
 | v57 | 36–40 | Pending | — |
