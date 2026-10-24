@@ -1,13 +1,14 @@
 {
-  "version": 50,
+  "version": 51,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "New Strength Progression Lab within Train: select any exercise for logged performance trends",
-    "Completed-set-only strength/load charts and verified historical personal-best status",
-    "Conservative next-session target suggestions based on actual reps, weight and exercise ranges",
-    "Bodyweight/time movements tracked without invented weights or calculated one-rep-max estimates",
-    "Progression module is read only and does not overwrite any workout entries or saved routines",
-    "Existing v47 artwork and enlarged mobile navigation are retained"
+    "Kickoff of the public 50-step roadmap (steps 01–10 implemented; remaining items tracked)",
+    "Keyboard skip link, focusable named main landmark and accessible navigation labels",
+    "Automatic active-tab aria-current, aria-pressed and polite route announcements",
+    "Alt+1–5 shortcuts for five main sections and published shortcut hints",
+    "Built-in keyboard help dialog with Escape, focus trap and Settings entry",
+    "Improved visible focus, accessible touch sizing and reduced-motion handling",
+    "Workouts, foods, watch imports, account data and progress records preserved"
   ]
 }
