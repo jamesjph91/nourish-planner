@@ -1,12 +1,13 @@
 {
-  "version": 54,
+  "version": 55,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Next unfinished set navigation and active movement focus",
-    "Sticky progress strip with real checked-set counts",
-    "Safer set adding/removing with immediate undo and confirmation for logged sets",
-    "Completed-only exercise recap including removed but historically logged movements",
-    "Workout history, user data and premium visual design preserved"
+    "Completed-set-only external-load volume trend in kg × repetitions",
+    "Separate best working weight from best repetitions or timed duration",
+    "Comparable per-exercise trends that never invent weighted volume for bodyweight or timed sets",
+    "Guarded next-session guidance requiring adequate recent evidence before proposing load increases",
+    "One-tap user-controlled CSV export of the selected exercise's real historical analytics",
+    "Visualiser styling, prior fitness data and account state preserved"
   ]
 }

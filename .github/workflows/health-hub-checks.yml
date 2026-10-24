@@ -28,6 +28,8 @@ on:
       - 'forge-train-v48.css'
       - 'forge-train-v49.css'
       - 'forge-gym-v54.js'
+      - 'forge-strength-v55.js'
+      - 'forge-strength-v55.css'
       - 'forge-gym-v54.css'
       - 'forge-offline-v53.js'
       - 'forge-offline-v53.css'
@@ -165,6 +167,7 @@ jobs:
           node --check forge-data-safety-v52.js
           node --check forge-offline-v53.js
           node --check forge-gym-v54.js
+          node --check forge-strength-v55.js
           node --check forge-updater.js
           node --check forge-food-navigation.js
           node --check forge-meal-library-data.js

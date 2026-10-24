@@ -18,7 +18,7 @@ class MockResponse{
 function swBoot(failFiles=[]){
  const listeners={},stored=new Map(),removed=[];
  let networkDown=false,waiting=0,claimed=0;
- const oldName='forge-v53-offline-recovery';
+ const oldName='forge-v54-gym-flow';
  stored.set(oldName,new Map([['https://example.com/nourish-planner/index.html',new MockResponse('OLD')]]));
  const canonical=u=>new URL(u instanceof MockRequest?u.url:String(u),ROOT).href;
  function find(map,req,opts={}){
@@ -75,10 +75,10 @@ function swBoot(failFiles=[]){
 test('Service worker precaches the essential shell and preserves it offline',async()=>{
  const x=swBoot();await x.dispatch('install');
  assert.equal(x.getWaiting(),1);
- assert.equal((await x.caches.keys()).includes('forge-v54-gym-flow'),true);
+ assert.equal((await x.caches.keys()).includes('forge-v55-strength-evidence'),true);
  await x.dispatch('activate');
  assert.equal(x.getClaimed(),1);
- assert.equal(x.removed.includes('forge-v53-offline-recovery'),true);
+ assert.equal(x.removed.includes('forge-v54-gym-flow'),true);
  x.setOffline(true);
  const response=await x.dispatch('fetch',new MockRequest('index.html?v=53',{mode:'navigate'}));
  assert.equal(response.ok,true);
@@ -100,7 +100,7 @@ test('Failed essential cache prevents activating a broken worker',async()=>{
  const x=swBoot(['gym.js']);
  await assert.rejects(x.dispatch('install'),/Required offline app files/);
  assert.equal(x.getWaiting(),0);
- assert.equal((await x.caches.keys()).includes('forge-v53-offline-recovery'),true);
+ assert.equal((await x.caches.keys()).includes('forge-v54-gym-flow'),true);
 });
 function uiBoot(cached=true){
  const events={},cacheData=new Set(cached?['index.html','forge-native.css','gym.js','food-diary.js','health-hub.js','progress.js','forge-master-ui.js','forge-dashboard.js','forge-accounts.js','forge-offline-v53.js']:[]);
@@ -110,7 +110,7 @@ function uiBoot(cached=true){
  const window={addEventListener:(name,fn)=>events[name]=fn};
  const location={href:ROOT+'index.html'};
  const caches={
-  keys:async()=>['forge-v54-gym-flow'],
+  keys:async()=>['forge-v55-strength-evidence'],
   open:async()=>({
    match:async url=>{
     const name=new URL(url).pathname.split('/').at(-1);
@@ -151,7 +151,7 @@ test('Recovery HEAD probe occurs before any cache deletion or unregister step',(
  const clear=refresh.indexOf('caches.keys()'),unregister=refresh.indexOf('getRegistrations()');
  assert.ok(head>0&&clear>head&&unregister>head);
  assert.match(refresh,/navigator.onLine===false/);
- assert.match(refresh,/index.html\?v=54/);
+ assert.match(refresh,/index.html\?v=55/);
  assert.doesNotMatch(refresh,/localStorage\.(?:clear|removeItem)|indexedDB\.deleteDatabase/);
 });
 test('Offline repair and inspector are read-only with accessible buttons and no external paid requirement',()=>{
