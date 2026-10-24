@@ -1,13 +1,13 @@
 {
-  "version": 56,
+  "version": 57,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Persistent personal food favourites, backed by the existing cloud-safe food library",
-    "Repeat historical diary entries and edit amounts without overwriting previous meals",
-    "Clear barcode source, match confidence and 0–5 nutritional-field coverage before save",
-    "Confirmation before same barcode, amount and meal are logged twice on the same date",
-    "Barcode and food search Enter-key submission, helpful focus hints and larger mobile controls",
-    "Preserves prior food data, workout history and the premium FORGE visual design"
+    "UK serving-size shortcuts with gram, millilitre and portion labels",
+    "Nutrition label basis and consumed amount kept separate",
+    "Macro-energy cross-check requires confirmation on large mismatches",
+    "Unknown nutrition fields remain distinct from explicit zero and survive backups and cloud restore",
+    "Food diary and library flag partial nutrition totals",
+    "Idempotent planned meal logging preserves entry IDs when portions are updated"
   ]
 }

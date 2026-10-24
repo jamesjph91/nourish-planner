@@ -37,9 +37,12 @@ function addPlanned(cat,servings){
  const row=days()[index-1],id=row.ids[CATS.indexOf(cat)],recipe=rs[id];
  if(!recipe)return;
  const diary=cleanDiary(),prior=diary.entries.find(x=>x.date===selected&&x.category===cat&&x.source==='plan');
- if(prior&&!confirm('Replace the already logged '+cat+' with this planned meal?'))return;
+ if(prior&&prior.recipeId===id&&Number(prior.quantity)===n){
+  notify('This planned '+cat+' is already logged at the same portion size. Nothing was added.');return;
+ }
+ if(prior&&!confirm('Update your existing '+cat+' log with this planned meal and portion amount?'))return;
  const foodData=portion(id,row.gym).n;
- const entry={id:uid(),date:selected,category:cat,source:'plan',name:recipe.name,recipeId:id,barcode:'',unit:'portion',quantity:n,perUnit:copyN(foodData),totals:total('portion',n,foodData)};
+ const entry={id:prior?.id||uid(),date:selected,category:cat,source:'plan',name:recipe.name,recipeId:id,barcode:'',unit:'portion',quantity:n,perUnit:copyN(foodData),totals:total('portion',n,foodData)};
  diary.entries=diary.entries.filter(x=>x!==prior);diary.entries.push(entry);
  s.foodDiary=diary;save();renderCurrent();notify(recipe.name+' logged as eaten.');
 }
@@ -57,7 +60,7 @@ function fillDraft(food,id=''){
  const values={};
  for(const key of NUT){
   const v=food.perUnit?.[key];
-  values[key]=v===undefined||v===null||v===''?'':f(v);
+  values[key]=food.missingNutrients?.includes(key)||v===undefined||v===null||v===''?'':f(v);
  }
  draft={...blankDraft(),...food,perUnit:values};
  renderCurrent();
@@ -175,7 +178,7 @@ function savedBarcode(code){
 function upsertSaved(data){
  const diary=cleanDiary();
  const key=data.barcode?diary.savedFoods.findIndex(x=>sameBarcode(x.barcode,data.barcode)):diary.savedFoods.findIndex(x=>x.name.toLowerCase()===data.name.toLowerCase()&&!x.barcode);
- const item={id:key>=0?diary.savedFoods[key].id:uid(),name:data.name,barcode:data.barcode||'',unit:data.unit,category:data.category,perUnit:data.perUnit,lastQuantity:data.quantity,favorite:key>=0&&diary.savedFoods[key].favorite===true};
+ const item={id:key>=0?diary.savedFoods[key].id:uid(),name:data.name,barcode:data.barcode||'',unit:data.unit,category:data.category,perUnit:data.perUnit,lastQuantity:data.quantity,missingNutrients:Array.isArray(data.missingNutrients)?data.missingNutrients.filter(k=>NUT.includes(k)):[],favorite:key>=0&&diary.savedFoods[key].favorite===true};
  if(key>=0)diary.savedFoods.splice(key,1);diary.savedFoods.unshift(item);
  diary.savedFoods=diary.savedFoods.slice(0,80);s.foodDiary=diary;
 }
@@ -193,7 +196,7 @@ function fd56Repeat(id){
  if(!old)return false;
  const now=Date.now(),key=selected+'|entry:'+id;
  if(lastQuickLog.key===key&&now-lastQuickLog.time<1000)return false;
- const entry={...old,id:uid(),date:selected,perUnit:copyN(old.perUnit),totals:total(old.unit,old.quantity,old.perUnit)};
+ const entry={...old,id:uid(),date:selected,missingNutrients:[...(old.missingNutrients||[])],perUnit:copyN(old.perUnit),totals:total(old.unit,old.quantity,old.perUnit)};
  if(fd56Duplicate(diary.entries,entry)&&!confirm('That barcode, quantity and meal are already logged on this date. Log another serving anyway?'))return false;
  lastQuickLog={key,time:now};
  diary.entries.push(entry);diary.entries=diary.entries.slice(-1200);
@@ -238,11 +241,18 @@ function saveManual(){
   if(!Number.isFinite(value)||value<0||value>limits[key]){alert('Check the '+key+' value per '+(unit==='portion'?'portion':'100 '+unit)+'.');return;}
   perUnit[key]=f(value);
  }
- if(incomplete.length&&!confirm('Missing nutrition values: '+incomplete.join(', ')+'. FORGE cannot verify these fields; saving will treat them as zero in diary totals until corrected. Only continue if you understand this limitation. Save anyway?'))return;
+ if(incomplete.length&&!confirm('Missing nutrition values: '+incomplete.join(', ')+'. FORGE will retain an unknown-field warning; displayed totals remain partial estimates until corrected. Save anyway?'))return;
+ const computed=perUnit.protein*4+perUnit.carbs*4+perUnit.fat*9;
+ const discrepancy=Math.abs(perUnit.kcal-computed);
+ if(!incomplete.some(k=>['protein','carbs','fat'].includes(k))&&
+    discrepancy>Math.max(25,perUnit.kcal*.2)&&
+    !confirm('Nutrition cross-check: protein, carbs and fat suggest approximately '+f(computed)+
+       ' kcal per label unit, but the label calories say '+perUnit.kcal+
+       ' kcal. Fibre, rounding and other nutrients can cause differences. Have you checked the packaging and want to save anyway?'))return;
  const diary=cleanDiary(),old=diary.entries.find(x=>x.id===editing);
  const isPlanned=old?.source==='plan'&&unit==='portion'&&cat===old.category;
  const source=isPlanned?'plan':code?'barcode':'manual';
- const entry={id:old?.id||uid(),date:selected,category:cat,source,name,barcode:code,unit,quantity:f(quantity),perUnit,totals:total(unit,quantity,perUnit)};
+ const entry={id:old?.id||uid(),date:selected,category:cat,source,name,barcode:code,unit,quantity:f(quantity),perUnit,missingNutrients:incomplete,totals:total(unit,quantity,perUnit)};
  if(isPlanned&&old.recipeId)entry.recipeId=old.recipeId;
  const signature=selected+'|'+cat+'|'+code+'|'+f(quantity)+'|'+unit+'|'+name.toLowerCase();
  const now=Date.now();
@@ -447,7 +457,7 @@ function bar(label,current,goalValue){
 }
 function dashboard(forToday=false){
  const date=forToday?localDate(new Date()):selected,entries=diaryFor(date),n=grand(entries),calTarget=targetFor(date),remaining=calTarget-n.kcal,goalProtein=s.settings.prot;
- return '<div class="card fd-summary"><div class="row" style="flex-wrap:wrap;justify-content:space-between"><div><div class="eyebrow">'+(forToday?'TODAY’S ACTUAL INTAKE':'FOOD ACTUALLY EATEN')+'</div><h2 style="margin:6px 0">'+Math.round(n.kcal)+' kcal <span style="font-size:14px;font-weight:400;color:var(--muted)">/ '+calTarget+' kcal target</span></h2></div><div class="fd-remaining"><strong>'+Math.round(Math.abs(remaining))+' kcal</strong><small>'+(remaining>=0?'remaining':'over reference target')+'</small></div></div><div class="fd-meter big"><div style="width:'+Math.min(100,n.kcal/calTarget*100)+'%"></div></div><div class="fd-nutrients">'+bar('Protein',n.protein,goalProtein)+bar('Carbs',n.carbs,Math.max(1,Math.round(calTarget*.45/4)))+bar('Fat',n.fat,Math.max(1,Math.round(calTarget*.30/9)))+'</div><p class="short">Logged '+entries.length+' food item'+(entries.length===1?'':'s')+'. Targets are reference values; carbs and fat are illustrative splits, not individual prescriptions. Planned meals count only after you log them.</p></div>';
+ return '<div class="card fd-summary">'+(entries.some(x=>x.missingNutrients?.length)?'<p class="fd57-unknown">Partial nutrition totals: some foods have unknown nutrients. Missing values are not confirmed zeros.</p>':'')+'<div class="row" style="flex-wrap:wrap;justify-content:space-between"><div><div class="eyebrow">'+(forToday?'TODAY’S ACTUAL INTAKE':'FOOD ACTUALLY EATEN')+'</div><h2 style="margin:6px 0">'+Math.round(n.kcal)+' kcal <span style="font-size:14px;font-weight:400;color:var(--muted)">/ '+calTarget+' kcal target</span></h2></div><div class="fd-remaining"><strong>'+Math.round(Math.abs(remaining))+' kcal</strong><small>'+(remaining>=0?'remaining':'over reference target')+'</small></div></div><div class="fd-meter big"><div style="width:'+Math.min(100,n.kcal/calTarget*100)+'%"></div></div><div class="fd-nutrients">'+bar('Protein',n.protein,goalProtein)+bar('Carbs',n.carbs,Math.max(1,Math.round(calTarget*.45/4)))+bar('Fat',n.fat,Math.max(1,Math.round(calTarget*.30/9)))+'</div><p class="short">Logged '+entries.length+' food item'+(entries.length===1?'':'s')+'. Targets are reference values; carbs and fat are illustrative splits, not individual prescriptions. Planned meals count only after you log them.</p></div>';
 }
 function planned(){
  const index=planIndex(selected);
@@ -466,7 +476,9 @@ function logRows(){
  (all.length?CATS.map(cat=>{
   const items=all.filter(x=>x.category===cat);if(!items.length)return '';
   return '<div class="fd-log-group"><h4>'+cat[0].toUpperCase()+cat.slice(1)+'</h4>'+items.map(item=>
-   '<div class="fd-log"><div><b>'+escape(item.name)+'</b><small>'+f(item.quantity)+' '+escape(item.unit==='portion'?'portion(s)':item.unit)+' · '+escape(item.source==='plan'?'Planned meal':item.source==='barcode'?'Scanned product':'Manual / saved food')+'</small><small>'+f(item.totals.protein)+'g protein · '+f(item.totals.carbs)+'g carbs · '+f(item.totals.fat)+'g fat</small></div><div class="fd-log-actions"><strong>'+Math.round(item.totals.kcal)+' kcal</strong><button class="btn sm" onclick="fdEditEntry(\''+item.id+'\')">Edit</button><button class="btn sm" onclick="fdRepeatEntry(\''+item.id+'\')">↻ Repeat</button><button class="btn sm" onclick="fdDeleteEntry(\''+item.id+'\')">Delete</button></div></div>').join('')+'</div>';
+   '<div class="fd-log"><div><b>'+escape(item.name)+'</b><small>'+f(item.quantity)+' '+escape(item.unit==='portion'?'portion(s)':item.unit)+' · '+escape(item.source==='plan'?'Planned meal':item.source==='barcode'?'Scanned product':'Manual / saved food')+'</small><small>'+f(item.totals.protein)+'g protein · '+f(item.totals.carbs)+'g carbs · '+f(item.totals.fat)+'g fat</small>'+(item.missingNutrients?.length?
+  '<small class="fd57-unknown">Partial estimate · missing '+escape(item.missingNutrients.join(', '))+' (unknown, not zero)</small>':
+  '')+'</div><div class="fd-log-actions"><strong>'+Math.round(item.totals.kcal)+' kcal</strong><button class="btn sm" onclick="fdEditEntry(\''+item.id+'\')">Edit</button><button class="btn sm" onclick="fdRepeatEntry(\''+item.id+'\')">↻ Repeat</button><button class="btn sm" onclick="fdDeleteEntry(\''+item.id+'\')">Delete</button></div></div>').join('')+'</div>';
  }).join(''):'<p class="short">Nothing logged yet. Tap “I ate this” on a planned meal or add any other food below.</p>')+'</div>';
 }
 function exportDiary(){
@@ -488,7 +500,7 @@ function weekIntake(){
  const rows=[];
  for(let i=6;i>=0;i--){
   const date=plusDays(selected,-i),items=diaryFor(date),nut=grand(items),goal=targetFor(date);
-  rows.push('<div class="fd-log"><span><b>'+date+'</b><small>'+items.length+' foods logged</small></span><span class="fd-week-numbers">'+(items.length?'<b>'+Math.round(nut.kcal)+' kcal</b><small>'+Math.round(nut.protein)+'g protein · '+goal+' kcal reference</small>':'<small>Not logged</small>')+'</span></div>');
+  rows.push('<div class="fd-log"><span><b>'+date+'</b><small>'+items.length+' foods logged'+(items.some(x=>x.missingNutrients?.length)?' · partial nutrient totals':'')+'</small></span><span class="fd-week-numbers">'+(items.length?'<b>'+Math.round(nut.kcal)+' kcal</b><small>'+Math.round(nut.protein)+'g protein · '+goal+' kcal reference</small>':'<small>Not logged</small>')+'</span></div>');
  }
  return '<div class="card"><h3>Last seven days</h3><p class="short">Unlogged days are marked “Not logged”, never assumed to mean you ate zero calories.</p>'+rows.join('')+'</div>';
 }
@@ -528,7 +540,7 @@ function libraryHTML(){
   const nutrition=total(x.unit,x.quantity,x.perUnit);
   const key=escape(x.key);
   return '<div class="fd44-library-item"><div><b>'+escape(x.name)+'</b>'+
-    '<small>'+escape(amount)+' · '+fmtQuick(nutrition.kcal)+' kcal · '+fmtQuick(nutrition.protein)+'g protein</small>'+
+    '<small>'+escape(amount)+' · '+fmtQuick(nutrition.kcal)+' kcal · '+fmtQuick(nutrition.protein)+'g protein'+(x.missingNutrients?.length?' · incomplete label':'')+'</small>'+
     '<small>'+(x.favorite?'★ Favourite · ':'')+(x.saved?'Saved food':'Recent food')+' · Label data per '+unitLabel+'</small></div>'+
     '<div class="fd44-library-actions"><button type="button" class="btn sm fd56-favorite" data-fd56-fav="'+key+'" aria-pressed="'+(x.favorite===true)+'" aria-label="'+(x.favorite?'Remove from favourites: ':'Add to favourites: ')+escape(x.name)+'">'+(x.favorite?'★ Favourited':'☆ Favourite')+'</button><button type="button" class="btn sm" data-fd44-edit="'+key+'">Edit amount</button>'+
     '<button type="button" class="btn sm dark" data-fd44-log="'+key+'">＋ Log again</button></div></div>';
@@ -559,7 +571,7 @@ function quickRepeat(key){
  if(lastQuickLog.key===key&&now-lastQuickLog.time<1000)return false;
  const entry={id:uid(),date:selected,category:CATS.includes(x.category)?x.category:'snack',
   source:'manual',name:x.name,barcode:x.barcode||'',unit:x.unit,quantity:f(x.quantity),
-  perUnit:copyN(x.perUnit),totals:total(x.unit,x.quantity,x.perUnit)};
+  perUnit:copyN(x.perUnit),missingNutrients:[...(x.missingNutrients||[])],totals:total(x.unit,x.quantity,x.perUnit)};
  const diary=cleanDiary();
  if(fd56Duplicate(diary.entries,entry)&&!confirm('That barcode, quantity and meal are already logged on this date. Add another serving anyway?'))return false;
  lastQuickLog={key,time:now};

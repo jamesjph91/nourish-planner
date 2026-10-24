@@ -6,6 +6,7 @@ on:
       - 'index.html'
       - 'gym.js'
       - 'food-diary.js'
+      - 'forge-fuel-v57.js'
       - 'health-hub.js'
       - 'progress.js'
       - 'forge-original-theme.js'
@@ -155,6 +156,7 @@ jobs:
         run: |
           node --check gym.js
           node --check food-diary.js
+          node --check forge-fuel-v57.js
           node --check health-hub.js
           node --check progress.js
           node --check forge-original-theme.js

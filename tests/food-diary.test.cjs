@@ -450,3 +450,71 @@ test('v56 saved food validator sanitizes malicious or nonboolean favourite flags
  assert.equal(b.context.window.nourishCloudBridge.applyData(st),true);
  assert.equal(b.cloud().foodDiary.savedFoods[0].favorite,true);
 });
+
+
+test('v57 UK g, ml and portion basis calculates consumed food correctly',()=>{
+ const b=boot();b.evaluate("navigate('diary')");b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'UK cereal label',quantity:'50',unit:'g',kcal:'400',protein:'10',carbs:'75',fat:'5',fibre:'6'});
+ b.context.window.fdSaveManual();let e=b.cloud().foodDiary.entries.at(-1);
+ assert.equal(e.totals.kcal,200);assert.equal(e.totals.protein,5);assert.equal(e.unit,'g');
+ b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'UK milk drink',quantity:'250',unit:'ml',kcal:'60',protein:'4',carbs:'5',fat:'3',fibre:'0'});
+ b.context.window.fdSaveManual();e=b.cloud().foodDiary.entries.at(-1);
+ assert.equal(e.totals.kcal,150);assert.equal(e.unit,'ml');assert.equal(e.totals.protein,10);
+ b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'One slice meal',quantity:'1.5',unit:'portion',kcal:'200',protein:'10',carbs:'30',fat:'5',fibre:'3'});
+ b.context.window.fdSaveManual();e=b.cloud().foodDiary.entries.at(-1);
+ assert.equal(e.totals.kcal,300);assert.equal(e.totals.protein,15);
+});
+test('v57 incomplete fields remain distinguishable from zeros after backup-like cloud roundtrip',()=>{
+ const b=boot();b.evaluate("navigate('diary')");b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'Incomplete snack label',quantity:'100',kcal:'99',protein:'',carbs:'12',fat:'2',fibre:'0'});
+ b.context.window.fdSaveManual();
+ let state=b.cloud(),entry=state.foodDiary.entries[0];
+ assert.equal(entry.perUnit.protein,0);
+ assert.equal(entry.perUnit.fibre,0);
+ assert.equal(entry.missingNutrients.includes('protein'),true);
+ assert.equal(entry.missingNutrients.includes('fibre'),false);
+ assert.match(b.element('diary').innerHTML,/Partial estimate · missing protein/);
+ assert.match(b.element('diary').innerHTML,/Partial nutrition totals/);
+ assert.equal(b.context.window.nourishCloudBridge.applyData(state),true);
+ state=b.cloud();
+ assert.deepEqual([...state.foodDiary.entries[0].missingNutrients],['protein']);
+ assert.deepEqual([...state.foodDiary.savedFoods[0].missingNutrients],['protein']);
+ b.context.window.fdUseSaved(state.foodDiary.savedFoods[0].id);
+ assert.match(b.element('diary').innerHTML,/Unknown fields: protein/);
+});
+test('v57 calorie/macro mismatch prompts before saving when all macros are supplied',()=>{
+ let prompts=0;
+ const b=boot({confirm:()=>{prompts++;return false}});
+ b.evaluate("navigate('diary')");b.context.window.fdBeginManual();
+ manualFill(b.element,{name:'Mislabelled snack',kcal:'700',protein:'1',carbs:'1',fat:'1',fibre:'0'});
+ b.context.window.fdSaveManual();
+ assert.equal(b.cloud().foodDiary.entries.length,0);
+ assert.equal(prompts,1);
+});
+test('v57 planner meal log is idempotent at unchanged portions and updates original entry in place',()=>{
+ const b=boot();b.evaluate("navigate('diary')");
+ const date=b.evaluate('s.workouts.startDate');
+ b.context.window.fdChangeDate(date);
+ b.context.window.fdAddPlanned('breakfast',1);
+ let entries=b.cloud().foodDiary.entries;
+ assert.equal(entries.length,1);
+ const id=entries[0].id;
+ b.context.window.fdAddPlanned('breakfast',1);
+ entries=b.cloud().foodDiary.entries;
+ assert.equal(entries.length,1);assert.equal(entries[0].id,id);
+ b.context.window.fdAddPlanned('breakfast',2);
+ entries=b.cloud().foodDiary.entries;
+ assert.equal(entries.length,1);assert.equal(entries[0].id,id);
+ assert.equal(entries[0].quantity,2);
+});
+test('v57 serving shortcuts are wired to Fuel and include unit/basis distinctions',()=>{
+ const html=require('node:fs').readFileSync('index.html','utf8');
+ assert.match(html,/forge-fuel-v57\.js\?v=57/);
+ assert.match(html,/food-diary\.js\?v=57/);
+ const layer=require('node:fs').readFileSync('forge-fuel-v57.js','utf8');
+ assert.match(layer,/250 ml/);
+ assert.match(layer,/100 g/);
+ assert.match(layer,/fd57-audit/);
+});
