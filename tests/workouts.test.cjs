@@ -113,3 +113,47 @@ assert(ownSaved.workouts.customExercises[own],'Custom exercise definition synced
 vm.runInContext('window.nourishCloudBridge.applyData('+JSON.stringify(ownSaved)+')',ctx);
 assert(vm.runInContext('s.workouts.customExercises["'+own+'"].name',ctx)==='Custom machine movement','Custom definition restored');
 console.log('PASS User-defined movements: add, cloud save, restore');
+
+
+// v48: Named reusable lineups, filtered gym picker and previous-set recall.
+const last=vm.runInContext('window.forgePreviousSet("'+nextDate+'","goblet")',ctx);
+assert.equal(last.kg,20,'Last completed load comes from earlier recorded workout');
+assert.equal(last.reps,10);
+assert.equal(last.date,day);
+assert.equal(vm.runInContext('window.forgePreviousSet("'+day+'","goblet")',ctx),null,'Future logs cannot become previous results');
+vm.runInContext('gymLibrary("'+nextDate+'")',ctx);
+assert(element('modalinner').innerHTML.includes('Filter by muscle group'),'Picker has muscle filter');
+assert(element('modalinner').innerHTML.includes('Filter by equipment'),'Picker has equipment filter');
+vm.runInContext('gymFilterFocus("Back")',ctx);
+vm.runInContext('gymFilterEquip("Machine")',ctx);
+vm.runInContext('gymFilter("")',ctx);
+assert(element('gym-library-list').innerHTML.includes('Chest-supported machine row'),'Combined filters find machines for back');
+assert(!element('gym-library-list').innerHTML.includes('Dumbbell biceps curl'),'Filter hides unrelated movements');
+vm.runInContext('gymFilterEquip("All")',ctx);
+vm.runInContext('gymFilterFocus("All")',ctx);
+element('gym-routine-name').value='My reusable upper day';
+vm.runInContext('gymSavePreset("'+nextDate+'")',ctx);
+const storedRoutine=vm.runInContext('Object.keys(s.workouts.savedRoutines)[0]',ctx);
+assert(storedRoutine?.startsWith('routine_'),'A named routine is saved under a validated ID');
+assert.equal(vm.runInContext('s.workouts.savedRoutines["'+storedRoutine+'"].name',ctx),'My reusable upper day');
+const workoutBefore=vm.runInContext('s.workouts.sessions["'+nextDate+'"].sets.curlbiceps[0].done',ctx);
+assert(workoutBefore,'Historic removed-set log remains intact');
+const third=new Date(day+'T12:00:00');third.setDate(third.getDate()+14);
+const thirdDate=[third.getFullYear(),String(third.getMonth()+1).padStart(2,'0'),String(third.getDate()).padStart(2,'0')].join('-');
+vm.runInContext('gymSelectDay("'+thirdDate+'")',ctx);
+vm.runInContext('gymApplyPreset("'+thirdDate+'","'+storedRoutine+'")',ctx);
+const applied=vm.runInContext('s.workouts.sessions["'+thirdDate+'"].exerciseIds',ctx);
+assert.deepEqual(JSON.parse(JSON.stringify(applied)),JSON.parse(JSON.stringify(vm.runInContext('s.workouts.savedRoutines["'+storedRoutine+'"].exerciseIds',ctx))), 'Saved lineup applied to a different training day');
+assert.equal(vm.runInContext('s.workouts.sessions["'+nextDate+'"].sets.curlbiceps[0].done',ctx),true,'Applying a preset never deletes earlier set records');
+const afterCloud=vm.runInContext('window.nourishCloudBridge.getData()',ctx);
+assert(afterCloud.workouts.savedRoutines[storedRoutine],'Reusable named routines included in cloud data');
+vm.runInContext('window.nourishCloudBridge.applyData('+JSON.stringify(afterCloud)+')',ctx);
+assert.equal(vm.runInContext('s.workouts.savedRoutines["'+storedRoutine+'"].name',ctx),'My reusable upper day','Saved routines survive a cloud restore');
+vm.runInContext('gymDeletePreset("'+storedRoutine+'")',ctx);
+assert.equal(vm.runInContext('Object.keys(s.workouts.savedRoutines).length',ctx),0,'User can delete only the saved lineup');
+assert.equal(vm.runInContext('s.workouts.sessions["'+thirdDate+'"].exerciseIds.length',ctx),applied.length,'Deleting a preset does not alter existing workouts');
+const malformed={savedRoutines:{'evil':{name:'Bad ID',exerciseIds:['goblet']},'routine_good123':{name:'Valid preset',exerciseIds:['goblet','goblet','!!!']}}};
+const validTest=vm.runInContext('validateWorkouts('+JSON.stringify(malformed)+')',ctx);
+assert.equal(Object.keys(validTest.savedRoutines).length,1,'Malformed saved routine IDs are rejected on restore');
+assert.equal(validTest.savedRoutines.routine_good123.exerciseIds.length,1,'Duplicate and unsafe exercise IDs are filtered');
+console.log('PASS FORGE v48: named splits, exercise filters, previous performance, sync, safe validation and history retention');

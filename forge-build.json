@@ -1,12 +1,13 @@
 {
-  "version": 47,
+  "version": 48,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Five original cached branded SVG scenes: Today, Train, Fuel, Activity and Progress",
-    "Premium cinema-inspired backgrounds, layered surfaces and electric-lime accent details",
-    "Mobile bottom navigation icons enlarged from 23px to 28px with brighter selection styling",
-    "Safer mobile navigation spacing and bottom safe-area support on Android/iOS",
-    "No changes to existing user data or food, workout, health and progress engines"
+    "Save up to 12 named reusable workout lineups and load them onto any training day",
+    "Filter the exercise picker by muscle group and equipment while searching",
+    "Display the last actually completed weight/reps or timed set for every exercise",
+    "Preserve historical set data when applying or deleting saved workout lineups",
+    "Carry saved named routines through validated local backups and cloud-sync restores",
+    "Keep the v47 premium art and larger five-tab bottom navigation"
   ]
 }

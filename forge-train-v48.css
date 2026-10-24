@@ -1,0 +1,26 @@
+/* FORGE v48: Named training splits, searchable exercise picker and previous-set recall. */
+#workouts .gym48-shelf{padding:17px 15px;margin:14px 12px 18px;border-radius:18px;border:1px solid #57733c;background:linear-gradient(125deg,#13251a,#07110c 78%);box-shadow:inset 0 1px 0 #c7ff171e,0 11px 27px #0007}
+#workouts .gym48-shelf header{display:flex;gap:8px;justify-content:space-between;align-items:center}
+#workouts .gym48-shelf header small{color:#c7ff17;font-size:9px;font-weight:950;letter-spacing:1.4px}
+#workouts .gym48-shelf h3{font-size:21px;color:#f7fcf4;letter-spacing:-.65px;margin:6px 0}
+#workouts .gym48-shelf header>span{color:#c7ff17;font-size:10px;font-weight:850;border:1px solid #456334;border-radius:30px;padding:7px 9px}
+#workouts .gym48-shelf>p{color:#a8bda9;font-size:11px;line-height:1.6}
+#workouts .gym48-save{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;margin:13px 0}
+#workouts .gym48-save input{background:#06100a!important;color:#f8fff2!important;border:1px solid #446039!important;border-radius:11px!important;padding:12px!important;min-width:0;font-size:16px}
+#workouts .gym48-save button{font-size:11px!important;min-height:44px!important}
+#workouts .gym48-routine-list{display:grid;gap:8px}
+#workouts .gym48-routine{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;background:#09170e;border:1px solid #35482e;border-radius:13px;padding:11px}
+#workouts .gym48-routine strong{display:block;font-size:12px;color:#f4faf1;overflow-wrap:anywhere}
+#workouts .gym48-routine small{display:block;color:#9aa99c;font-size:10px;margin-top:5px}
+#workouts .gym48-routine button{min-height:39px;border-radius:10px!important}
+#workouts .gym48-routine button[aria-label^="Delete"]{padding:5px 10px;font-size:17px!important}
+#workouts .gym48-empty{font-size:11px;color:#9bb19b;background:#111c14;border:1px dashed #354c31;padding:12px;border-radius:11px}
+#workouts .gym48-previous{font-size:10px;font-weight:800;color:#d1ff8b;margin:10px 0 4px;padding:9px 11px;border-left:3px solid #b9ff16;background:#162518;border-radius:0 9px 9px 0;line-height:1.45}
+#workouts .gym48-previous.missing{color:#9cafa1;border-left-color:#546a51}
+#modalinner .gym48-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+#modalinner .gym48-filters label{color:#a9bdab;font-size:10px;font-weight:900;display:flex;flex-direction:column;gap:6px}
+#modalinner .gym48-filters select{min-width:0;width:100%;min-height:43px;padding:10px!important;background:#0b1710!important;color:#f2faf3!important;border:1px solid #3b5334!important;border-radius:10px}
+#modalinner .gym-library-row{border-color:#30452e}
+#modalinner .gym48-previous{font-size:10px;margin:5px 0 0;color:#c2eea6}
+@media(max-width:430px){#workouts .gym48-shelf{padding:13px 10px;margin:12px 7px 14px}#workouts .gym48-save{grid-template-columns:minmax(0,1fr)}#workouts .gym48-routine{grid-template-columns:minmax(0,1fr) auto auto;gap:5px}#workouts .gym48-routine button{font-size:9px!important;padding:7px!important}#modalinner .gym48-filters{gap:6px}}
+@media(prefers-reduced-motion:reduce){#workouts .gym48-shelf *,#modalinner .gym48-filters *{transition:none!important}}
