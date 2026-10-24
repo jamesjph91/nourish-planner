@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-label="FORGE original performance artwork" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d5ff43"/><stop offset=".53" stop-color="#a8ff10"/><stop offset="1" stop-color="#3d7c36"/></linearGradient>
+ <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#678168" stop-opacity=".37"/><stop offset=".36" stop-color="#243829" stop-opacity=".58"/><stop offset="1" stop-color="#060d09" stop-opacity=".8"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#c7ff17" stop-opacity=".5"/><stop offset="1" stop-color="#c7ff17" stop-opacity="0"/></radialGradient>
+ <linearGradient id="ridge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#243d28" stop-opacity=".85"/><stop offset="1" stop-color="#070d09" stop-opacity=".55"/></linearGradient>
+ <filter id="a"><feGaussianBlur stdDeviation="16"/></filter>
+ <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse"><path d="M42 0H0V42" fill="none" stroke="#b9ff16" stroke-opacity=".06" stroke-width="1"/></pattern>
+</defs>
+<rect width="1200" height="520" fill="url(#grid)"/>
+<g opacity=".16"><path d="M-20 440L290 80 640 440" fill="none" stroke="#c7ff17" stroke-width="1.5"/><path d="M380 510L840 60 1300 510" fill="none" stroke="#c7ff17" stroke-width="1.2"/></g>
+
+<ellipse cx="920" cy="235" rx="270" ry="240" fill="url(#glow)" opacity=".3"/>
+<g transform="translate(796 100)">
+<circle cx="175" cy="188" r="173" fill="#102218" opacity=".78" stroke="#58783b" stroke-width="8"/>
+<circle cx="175" cy="188" r="136" fill="#051109" stroke="#c7ff17" stroke-width="3" stroke-dasharray="185 40 67 22" opacity=".75"/>
+<path d="M177 65C95 85 78 154 105 208C139 284 235 290 265 222C301 141 249 96 177 65Z" fill="#25472b" stroke="#8aab51" stroke-width="3"/>
+<path d="M160 87Q140 150 183 186Q228 159 220 113M114 204Q178 196 242 227" fill="none" stroke="#d6ff76" stroke-opacity=".65" stroke-width="9" stroke-linecap="round"/>
+<path d="M93 75Q50 133 72 201Q99 125 142 99" fill="none" stroke="#b9ff16" stroke-width="8" stroke-linecap="round"/>
+</g><path d="M700 450H1160M737 465H1122" stroke="#c7ff17" stroke-opacity=".35" stroke-width="2"/>
+<path d="M880-40L961-40L710 560L629 560Z" fill="#b9ff16" opacity=".055"/>
+<path d="M990-20L999-20L760 540L751 540Z" fill="url(#edge)" opacity=".75"/>
+<path d="M1009-20L1012-20L775 540L772 540Z" fill="#ebffab" opacity=".28"/>
+</svg>

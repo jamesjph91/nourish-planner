@@ -1,12 +1,12 @@
 {
-  "version": 46,
+  "version": 47,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Barcode lookup retries a 12-digit UPC with an equivalent leading-zero EAN-13 alias when needed",
-    "Incomplete Open Food Facts v3 results can be checked against the older v2 product record",
-    "Interactive serving-nutrition preview and visible unknown vs explicitly zero nutrient fields",
-    "Source and barcode-verification labels distinguish personal, community and name-selected foods",
-    "All logged foods remain user-confirmed; past nutrition, training and progress records are preserved"
+    "Five original cached branded SVG scenes: Today, Train, Fuel, Activity and Progress",
+    "Premium cinema-inspired backgrounds, layered surfaces and electric-lime accent details",
+    "Mobile bottom navigation icons enlarged from 23px to 28px with brighter selection styling",
+    "Safer mobile navigation spacing and bottom safe-area support on Android/iOS",
+    "No changes to existing user data or food, workout, health and progress engines"
   ]
 }

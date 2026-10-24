@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-label="FORGE original performance artwork" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d5ff43"/><stop offset=".53" stop-color="#a8ff10"/><stop offset="1" stop-color="#3d7c36"/></linearGradient>
+ <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#678168" stop-opacity=".37"/><stop offset=".36" stop-color="#243829" stop-opacity=".58"/><stop offset="1" stop-color="#060d09" stop-opacity=".8"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#c7ff17" stop-opacity=".5"/><stop offset="1" stop-color="#c7ff17" stop-opacity="0"/></radialGradient>
+ <linearGradient id="ridge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#243d28" stop-opacity=".85"/><stop offset="1" stop-color="#070d09" stop-opacity=".55"/></linearGradient>
+ <filter id="a"><feGaussianBlur stdDeviation="16"/></filter>
+ <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse"><path d="M42 0H0V42" fill="none" stroke="#b9ff16" stroke-opacity=".06" stroke-width="1"/></pattern>
+</defs>
+<rect width="1200" height="520" fill="url(#grid)"/>
+<g opacity=".16"><path d="M-20 440L290 80 640 440" fill="none" stroke="#c7ff17" stroke-width="1.5"/><path d="M380 510L840 60 1300 510" fill="none" stroke="#c7ff17" stroke-width="1.2"/></g>
+
+<ellipse cx="930" cy="300" rx="360" ry="260" fill="url(#glow)" opacity=".25"/>
+<path d="M0 457L240 310 480 442 700 245 950 445 1200 275V520H0Z" fill="#061009" opacity=".65"/>
+<g transform="translate(810 70)" stroke-linejoin="round">
+ <path d="M88 82Q97 36 135 30Q173 37 171 80L151 106Q122 118 95 101Z" fill="#0c130d" stroke="#658b4b" stroke-width="5"/>
+ <path d="M88 113Q125 130 166 115L196 154L218 222L189 245L165 193L167 305L190 425 155 438 118 333 78 435 43 424 69 302 58 209 29 253 1 236 25 161Z" fill="url(#steel)" stroke="#415d43" stroke-width="5"/>
+ <path d="M92 130L126 194 164 133M75 194L118 228 173 195" stroke="#b9ff16" stroke-opacity=".42" stroke-width="5" fill="none"/>
+ <path d="M-110 190H300" stroke="#aec0ae" stroke-width="11" stroke-linecap="round"/>
+ <g fill="#0d180f" stroke="#a7d540" stroke-width="5"><rect x="-95" y="149" width="34" height="85" rx="6"/><rect x="-61" y="160" width="18" height="63" rx="5"/><rect x="236" y="160" width="18" height="63" rx="5"/><rect x="254" y="149" width="34" height="85" rx="6"/></g>
+</g>
+<path d="M880-40L961-40L710 560L629 560Z" fill="#b9ff16" opacity=".055"/>
+<path d="M990-20L999-20L760 540L751 540Z" fill="url(#edge)" opacity=".75"/>
+<path d="M1009-20L1012-20L775 540L772 540Z" fill="#ebffab" opacity=".28"/>
+</svg>
