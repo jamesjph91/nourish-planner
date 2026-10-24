@@ -37,7 +37,8 @@ function accountCard(){
  const name=escape(account?.displayName||account?.email||'Signed-in account');
  return '<div class="fa37-intro"><small>YOUR PRIVATE FORGE ACCOUNT</small><h2>'+name+'</h2><p>Workouts, meals and progress use this Google account. Other accounts cannot open its private cloud document when the published Firestore rules enforce ownership.</p></div>'+
  '<div class="fa37-buttons"><button type="button" data-fa-close>Return to FORGE</button><button type="button" data-fa-out>Sign out / switch account</button></div>'+
- '<p class="fa37-note">Before switching accounts, confirm cloud sync or export a backup. Locally stored progress photos are kept in account-specific storage.</p>';
+ '<p class="fa37-note">Before switching accounts, confirm cloud sync or export a backup. Locally stored progress photos are kept in account-specific storage.</p>'+
+ (window.forgeDataSafetyV52?.accountStatusHtml?.()||'<p class="fa37-note">Browser saves and Google cloud saves are separate. Confirm cloud status before switching.</p>');
 }
 function signupForm(){
  return '<div class="fa37-intro"><small>SET UP YOUR PROFILE</small><h2>Make FORGE yours</h2><p>Only your own Google sign-in can access this cloud plan under the published per-user Firestore rules.</p></div>'+

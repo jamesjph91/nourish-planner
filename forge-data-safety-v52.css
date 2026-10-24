@@ -1,0 +1,32 @@
+/* FORGE v52: readable local-vs-cloud safety status. Preserves visualiser identity. */
+#settings .fd52-safety{margin:15px 0;padding:18px;border:1px solid #4d7239;border-radius:20px;background:linear-gradient(140deg,#13251a,#06110a 72%);color:#f4fff0;box-shadow:inset 0 1px 0 #d7ff5524,0 15px 36px #0007}
+.fd52-safety header{display:flex;justify-content:space-between;gap:13px;align-items:start}
+.fd52-safety header small,.fd52-backup>small{color:#c7ff17;font-size:9px;font-weight:950;letter-spacing:1.4px}
+.fd52-safety h2{margin:7px 0 11px;font-size:clamp(24px,4.5vw,32px);letter-spacing:-1px}
+.fd52-readonly{flex-shrink:0;border:1px solid #688e4b;border-radius:90px;padding:8px 9px;background:#baff1610;color:#c8f89d;font-size:9px;font-weight:900}
+.fd52-intro,.fd52-safety p{font-size:11px;line-height:1.65;color:#bacdb6}
+.fd52-warning{color:#ffca9e!important}
+.fd52-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.fd52-stat{display:flex;flex-direction:column;min-width:0;gap:7px;padding:12px 10px;border:1px solid #304a32;border-radius:12px;background:#07160d}
+.fd52-stat small{color:#accc96;font-weight:900;font-size:9px}
+.fd52-stat strong{font-size:24px;font-variant-numeric:tabular-nums}
+.fd52-stat span{font-size:10px;color:#a3b5a0;line-height:1.4}
+.fd52-source{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.fd52-source>div,.fd52-backup,.fd52-checklist{border:1px solid #345239;border-radius:14px;padding:13px;background:#0a190e}
+.fd52-source b{font-size:11px;color:#dff2d7;display:block;margin-bottom:7px}
+.fd52-source span{display:block;font-size:11px;color:#b7c6b3;line-height:1.5;overflow-wrap:anywhere}
+.fd52-backup{margin:12px 0;background:linear-gradient(130deg,#14251a,#0c170e)}
+.fd52-backup strong{display:block;margin-top:9px;color:#eefce8;font-size:14px}
+.fd52-backup b{color:#ddff91}
+.fd52-safety button{min-height:44px;border:1px solid #c7ff17;border-radius:11px;background:#c7ff17;color:#061009;font-size:11px;font-weight:950;padding:11px 13px}
+.fd52-safety button:focus-visible,.fd52-safety input:focus-visible{outline:2px solid #edffa7;outline-offset:3px}
+.fd52-checklist>strong{display:block;color:#d8ff9d;font-size:11px;letter-spacing:1px}
+.fd52-checklist>label{display:flex;align-items:flex-start;gap:10px;font-size:11px;line-height:1.5;color:#eef6e8;margin:11px 0}
+.fd52-checklist input{width:20px;height:20px;flex-shrink:0;accent-color:#b9ff16}
+.fd52-checklist button[disabled]{opacity:.45;cursor:not-allowed}
+.fd52-account-status{border:1px solid #536f41;background:#0b190f;padding:12px;border-radius:13px;margin:13px 0}
+.fd52-account-status>div{padding:9px 0;border-bottom:1px solid #324a33}
+.fd52-account-status strong{font-size:10px;color:#cefd91;letter-spacing:1px}
+.fd52-account-status p,.fd52-account-status small{font-size:11px;line-height:1.65;color:#c0d0bd}
+@media(max-width:600px){.fd52-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fd52-source{grid-template-columns:1fr}#settings .fd52-safety{padding:13px 11px}}
+@media(prefers-reduced-motion:reduce){.fd52-safety *{transition:none!important;animation:none!important}}

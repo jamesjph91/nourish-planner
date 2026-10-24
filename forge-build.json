@@ -1,14 +1,13 @@
 {
-  "version": 51,
+  "version": 52,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Kickoff of the public 50-step roadmap (steps 01–10 implemented; remaining items tracked)",
-    "Keyboard skip link, focusable named main landmark and accessible navigation labels",
-    "Automatic active-tab aria-current, aria-pressed and polite route announcements",
-    "Alt+1–5 shortcuts for five main sections and published shortcut hints",
-    "Built-in keyboard help dialog with Escape, focus trap and Settings entry",
-    "Improved visible focus, accessible touch sizing and reduced-motion handling",
-    "Workouts, foods, watch imports, account data and progress records preserved"
+    "Read-only per-device food, workout, activity and measurement record counts in Settings",
+    "Separate browser storage and cloud-sync status on Settings and the signed-in account card",
+    "Per-account last JSON backup request timestamp, explicitly not a successful download guarantee",
+    "Preflight JSON backup file structure and show record counts before any import with explicit confirmation",
+    "Pre-update checklist with separate photo backup warning and opt-in version check",
+    "Preserve all existing v47 brand art, mobile navigation, gym training, meals and account data"
   ]
 }
