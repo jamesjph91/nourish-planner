@@ -46,7 +46,7 @@ test('Invalid and unchecked records never trigger load best',()=>{
   '2026-10-20':{sets:{bench:[{kg:35,reps:7,done:true}]}},
   '2026-10-24':{exerciseIds:['bench'],sets:{bench:[{kg:120,reps:8,done:false},{kg:'',reps:10,done:true}]}}
  }}});
- const m=app.model();assert.equal(m.loadBests,0);assert.equal(m.completed,0);
+ const m=app.model();assert.equal(m.loadBests,0);assert.equal(m.completed,1); // A checked bodyweight/time set is completed even without a load.
 });
 test('Coach exposes automatic rest toggle and visible rest control for the main workout',()=>{
  new vm.Script(coachSource,{filename:'forge-train-coach.js'});

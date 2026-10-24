@@ -53,7 +53,8 @@ test('Rest day does not offer to add exercises and timer durations are formatted
 });
 
 test('Main workout timer offers opt-in auto-rest and manual override',()=>{
- const b=boot({workouts:{sessions:{}}});
+ const date=today();
+ const b=boot({workouts:{selected:date,schedule:{[date]:'A'},sessions:{}}});
  const s=b.api.snapshot();
  assert.match(b.api.panel(s),/data-fgt-autorest/);
  assert.equal(b.api.restState().auto,true);
