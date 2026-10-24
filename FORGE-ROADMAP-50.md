@@ -52,11 +52,11 @@
 - [x] **30** Export exercise-history analytics as a user-controlled CSV.
 
 ## v56 · Fuel: faster food diary (steps 31–35)
-- [ ] **31** Favourite foods in the personal food library.
-- [ ] **32** Easier edit/repeat workflow for historical foods.
-- [ ] **33** Barcode source and nutrition completeness visible before saving.
-- [ ] **34** Guard duplicate barcode/quantity submission.
-- [ ] **35** Keyboard- and scanner-friendly focus order in the logging form.
+- [x] **31** Favourite foods in the personal food library.
+- [x] **32** Easier edit/repeat workflow for historical foods.
+- [x] **33** Barcode source and nutrition completeness visible before saving.
+- [x] **34** Guard duplicate barcode/quantity submission.
+- [x] **35** Keyboard- and scanner-friendly focus order in the logging form.
 
 ## v57 · Fuel: clearer UK quantities (steps 36–40)
 - [ ] **36** UK supermarket serving-size presets with explicit gram/ml units.
@@ -88,7 +88,7 @@
 | v53 | 16–20 | Verified deployed | Regression run `40117118278` · Pages `40117118102` · `tests/forge-offline-v53.test.cjs` |
 | v54 | 21–25 | Verified deployed | Regression run `40118022805` · Pages `40118022911` · `tests/forge-gym-v54.test.cjs` |
 | v55 | 26–30 | Verified deployed | Regression run `40118966606` · Pages `40118966549` · `tests/forge-strength-v55.test.cjs` |
-| v56 | 31–35 | Pending | — |
+| v56 | 31–35 | Verified deployed | Regression run `40120052300` · Pages `40120052555` · `tests/food-diary.test.cjs` |
 | v57 | 36–40 | Pending | — |
 | v58 | 41–45 | Pending | — |
 | v59 | 46–50 | Pending | — |
