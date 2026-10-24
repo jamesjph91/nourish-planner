@@ -69,7 +69,7 @@ test('Empty workouts and finished workouts have safe non-invented indicators',()
 function gymBoot(){
  const store=new Map(),elems=new Map();
  const element=id=>{
-  if(!elems.has(id))elems.set(id,{innerHTML:'',value:'',textContent:'',style:{},classList:{add(){},remove(){},toggle(){}}});
+  if(!elems.has(id))elems.set(id,{innerHTML:'',value:'',textContent:'',style:{},addEventListener(){},classList:{add(){},remove(){},toggle(){}}});
   return elems.get(id);
  };
  const ctx={console,Date,Math,JSON,Object,Array,Number,String,RegExp,Boolean,Promise,

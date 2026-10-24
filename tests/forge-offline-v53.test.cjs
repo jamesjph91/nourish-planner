@@ -151,7 +151,7 @@ test('Recovery HEAD probe occurs before any cache deletion or unregister step',(
  const clear=refresh.indexOf('caches.keys()'),unregister=refresh.indexOf('getRegistrations()');
  assert.ok(head>0&&clear>head&&unregister>head);
  assert.match(refresh,/navigator.onLine===false/);
- assert.match(refresh,/index.html\?v=53/);
+ assert.match(refresh,/index.html\?v=54/);
  assert.doesNotMatch(refresh,/localStorage\.(?:clear|removeItem)|indexedDB\.deleteDatabase/);
 });
 test('Offline repair and inspector are read-only with accessible buttons and no external paid requirement',()=>{
