@@ -28,7 +28,7 @@ vm.createContext(ctx);
 vm.runInContext(inline[1],ctx,{filename:'nourish-inline.js'});
 vm.runInContext(gym,ctx,{filename:'gym.js'});
 assert(html.includes('data-tab="workouts"'),'Gym nav button');
-assert(html.includes('src="./gym.js"'),'Gym script');
+assert.match(html,/src="\.\/gym\.js(?:\?v=\d+)?"/,'Gym script');
 vm.runInContext('navigate("workouts")',ctx);
 // The current date may be a rest day; select the Monday workout before checking exercise controls.
 vm.runInContext('gymSelectDay(s.workouts.startDate)',ctx);

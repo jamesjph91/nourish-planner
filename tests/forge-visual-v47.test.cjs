@@ -42,7 +42,8 @@ test('The live shell loads visual CSS and caches vector artwork for offline rend
  assert.match(html,/forge-visual-v47\.css\?v=47/);
  assert.match(sw,/forge-visual-v47\.css/);
  for(const page of assets)assert.match(sw,new RegExp('forge-art-'+page+'\\.svg'));
- assert.match(html,/name="forge-release" content="47"/);
+ const current=JSON.parse(read('forge-build.json')).version;
+ assert.match(html,new RegExp('name="forge-release" content="'+current+'"'));
 });
 test('Visual upgrade only changes presentation, not food, health or user data',()=>{
  const css=read('forge-visual-v47.css');
