@@ -12,7 +12,7 @@
 - Separate existing fitness apparel sellers appear under **Forge Athletics** (https://forgeathleticsuk.com/) and **Forge Performance** (https://forgeperformance.co.uk/).
 - Other fitness-sector FORGE names and similar marks exist. These search findings are **signals of material legal and brand confusion risk**, NOT a definitive legal finding of infringement or trade mark priority.
 
-**Immediate hold:** Do not file FORGE or FORGE Athletics marks, commission printed branded bulk apparel, pay for influencer or media campaigns, buy expensive branded packaging, claim the name is exclusive, or put ® on any output until the relevant register records and marketplace rights have been assessed by a qualified UK trade mark attorney.
+**Immediate hold:** Obtain written professional clearance before filing, advertising, or manufacturing under this name. Do not file FORGE or FORGE Athletics marks, commission printed branded bulk apparel, pay for influencer or media campaigns, buy expensive branded packaging, claim the name is exclusive, or put ® on any output until the relevant register records and marketplace rights have been assessed by a qualified UK trade mark attorney.
 
 **Safe work:** Continue developing and QA-testing the underlying software, preparing *unbranded* apparel samples, packaging system concepts, source-asset archiving, business workflows and alternate-name options. Do not copy, imitate or use any other company's logos, screenshots or brand materials.
 
