@@ -54,7 +54,7 @@ function metricExplorer(d){
  const since=range==='All'?'all recorded dates':'the selected '+range+' range';
  const change=points.length>=2?signed(last.value-first.value)+' '+meta[2]:'Need two distinct dates';
  return '<article class="fp-panel fp59-metrics" aria-label="Date-filtered measurement trends">'+
-  '<div class="fp-heading"><div><small>FORGE / YOUR EVIDENCE</small><h3>Measurements by date</h3></div>'+
+  '<div class="fp-heading"><div><small>FORGE / YOUR EVIDENCE</small><h3>'+esc(meta[1])+' progress</h3><p class="fp-help">Measurements by date</p></div>'+
   '<label class="fp59-metric-label">Metric<select aria-label="Measurement trend metric" data-fp59-metric>'+
   METRIC_FIELDS.map(([id,name])=>'<option value="'+id+'" '+(metricId===id?'selected':'')+'>'+esc(name)+'</option>').join('')+'</select></label></div>'+
   '<div class="fp59-meta"><strong>'+points.length+' recorded date'+(points.length===1?'':'s')+'</strong>'+

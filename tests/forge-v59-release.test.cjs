@@ -45,7 +45,7 @@ test('v59 chart uses only real values and explicitly indicates small samples',()
  assert.match(html,/Date-filtered measurement trends/);
  assert.match(html,/2 recorded dates/);
  assert.match(html,/Weight trend from 95.5 to 94/);
- assert.match(html,/Missing dates and values are never invented/);
+ assert.match(html,/missing dates and values are never invented/i);
  const missing=api.metricExplorer({measurements:[]});
  assert.match(missing,/Nothing to chart yet/);
  assert.match(missing,/No recorded value/);
