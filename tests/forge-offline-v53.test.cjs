@@ -7,7 +7,7 @@ const swSource=fs.readFileSync('service-worker.js','utf8');
 class MockRequest{constructor(input,opts={}){const raw=input instanceof MockRequest?input.url:String(input);this.url=/^https?:/.test(raw)?raw:new URL(raw,'https://forge.test/nourish-planner/').href;this.method=opts.method||(input instanceof MockRequest?input.method:'GET');this.mode=opts.mode||(input instanceof MockRequest?input.mode:'same-origin');this.cache=opts.cache||'default'}}
 class MockResponse{constructor(body='',opts={}){this.body=body;this.status=opts.status||200;this.ok=this.status>=200&&this.status<300;this.headers=opts.headers||{}}clone(){return new MockResponse(this.body,{status:this.status,headers:this.headers})}static error(){return new MockResponse('',{status:599})}}
 function swBoot(){
- const listeners={},stored=new Map([['forge-v55-strength-evidence',new Map()]]),removed=[];let waiting=0,claimed=0,networkDown=false;
+ const listeners={},stored=new Map([['forge-v57-fuel-quantity',new Map()]]),removed=[];let waiting=0,claimed=0,networkDown=false;
  const normalize=x=>x instanceof MockRequest?x.url:new MockRequest(x).url;
  const caches={
   async open(name){if(!stored.has(name))stored.set(name,new Map());const map=stored.get(name);return {add:async req=>{const key=normalize(req);if(networkDown)throw Error('offline');map.set(key,new MockResponse('CACHED '+new URL(key).pathname))},put:async(req,res)=>map.set(normalize(req),res.clone())}},
@@ -27,7 +27,7 @@ test('Service worker precaches the essential shell and preserves it offline',asy
  assert.equal((await x.caches.keys()).some(name=>/^forge-v\d+-/.test(name)),true);
  await x.dispatch('activate');
  assert.equal(x.getClaimed(),1);
- assert.equal(x.removed.includes('forge-v55-strength-evidence'),true);
+ assert.equal(x.removed.includes('forge-v57-fuel-quantity'),true);
  x.setOffline(true);
  const response=await x.dispatch('fetch',new MockRequest('index.html?v=53',{mode:'navigate'}));
  assert.equal(response.ok,true);

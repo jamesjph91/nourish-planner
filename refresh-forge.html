@@ -2,7 +2,7 @@
 <html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050806">
 <title>Refresh FORGE safely</title>
 <style>html{color-scheme:dark}body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:18px;background:#050806;color:#f4f8f2;font:14px system-ui,sans-serif;box-sizing:border-box}.wrap{width:min(440px,100%);padding:25px;border:1px solid #29432a;border-radius:20px;background:radial-gradient(circle at top right,#1c32175c,transparent 55%),#0a140d}.mark{font-style:italic;color:#b9ff16;font-size:28px;font-weight:1000}.mark span{color:white;margin-left:8px}h1{font-size:28px;margin:20px 0 10px;letter-spacing:-1px}p{line-height:1.6;color:#acb9ad}button{margin-top:12px;width:100%;padding:15px;border:0;border-radius:12px;color:#061008;background:#b9ff16;font-weight:950;font-size:14px}small{display:block;line-height:1.5;margin-top:16px;color:#8b9e8e}#status{min-height:50px;color:#b9ff16}</style></head>
-<body><main class="wrap"><div class="mark">F <span>FORGE</span></div><h1>Refresh your FORGE app</h1><p>This will reset only old downloadable app files. Your saved workouts, food logs, measurements and on-device photos are kept.</p><p id="status" role="status" aria-live="polite">Preparing safe refresh…</p><button id="refresh" type="button">Refresh FORGE v57</button><small>Do not clear Chrome storage or uninstall FORGE. Keep an internet connection while refreshing.</small></main>
+<body><main class="wrap"><div class="mark">F <span>FORGE</span></div><h1>Refresh your FORGE app</h1><p>This will reset only old downloadable app files. Your saved workouts, food logs, measurements and on-device photos are kept.</p><p id="status" role="status" aria-live="polite">Preparing safe refresh…</p><button id="refresh" type="button">Refresh FORGE v58</button><small>Do not clear Chrome storage or uninstall FORGE. Keep an internet connection while refreshing.</small></main>
 <script>
 (async()=>{
 const status=document.getElementById('status'),button=document.getElementById('refresh'),base=new URL('./',location.href);
@@ -21,7 +21,7 @@ async function refresh(){
   status.textContent='Refreshing app service worker…';
   if('serviceWorker' in navigator){const registrations=await navigator.serviceWorker.getRegistrations();await Promise.all(registrations.filter(r=>r.scope.startsWith(base.href)).map(r=>r.unregister()))}
   status.textContent='Opening the current FORGE version…';
-  location.replace(new URL('index.html?v=57&repair='+Date.now(),base).href);
+  location.replace(new URL('index.html?v=58&repair='+Date.now(),base).href);
  }catch(error){status.textContent='Safe refresh did not start. Reconnect to the internet and try again; cached files and personal data have not been cleared.';button.disabled=false;button.textContent='Retry safe refresh'}
 }
 button.addEventListener('click',refresh);

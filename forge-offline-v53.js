@@ -3,7 +3,7 @@
 const CRITICAL=['./index.html','./forge-native.css','./gym.js','./food-diary.js',
  './health-hub.js','./progress.js','./forge-master-ui.js','./forge-dashboard.js',
  './forge-accounts.js','./forge-offline-v53.js'];
-const CACHE_NAME='forge-v57-fuel-quantity';
+const CACHE_NAME='forge-v58-activity-import';
 const byId=id=>document.getElementById(id);
 const installed=()=>{
  const n=Number(document.querySelector('meta[name="forge-release"]')?.content);

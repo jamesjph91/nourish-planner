@@ -1,13 +1,13 @@
 {
-  "version": 57,
+  "version": 58,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "UK serving-size shortcuts with gram, millilitre and portion labels",
-    "Nutrition label basis and consumed amount kept separate",
-    "Macro-energy cross-check requires confirmation on large mismatches",
-    "Unknown nutrition fields remain distinct from explicit zero and survive backups and cloud restore",
-    "Food diary and library flag partial nutrition totals",
-    "Idempotent planned meal logging preserves entry IDs when portions are updated"
+    "Distinct manual, Samsung export, Health Connect and generic imported activity labels",
+    "Same-date import conflict preview with confirmation and preservation of missing fields",
+    "Show real zero readings as 0, missing activity readings as unknown",
+    "Last imported file time shown without promising automatic Samsung/watch sync",
+    "Android Health Connect bridge readme, permission guidance and safe manual import validation",
+    "Existing meals, workouts, photos and local account records preserved"
   ]
 }

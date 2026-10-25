@@ -5,9 +5,9 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const read=file=>fs.readFileSync(file,'utf8');
 
-test('FORGE v57 is wired into the installed app and remains on a stable start URL',()=>{
+test('FORGE v58 is wired into the installed app and remains on a stable start URL',()=>{
  const html=read('index.html'),manifest=JSON.parse(read('manifest.webmanifest')),build=JSON.parse(read('forge-build.json'));
- assert.equal(build.version,57);
+ assert.equal(build.version,58);
  assert.equal(manifest.start_url,'./index.html');
  assert.match(html,/forge-updater\.js\?v=41/);
  assert.match(html,/forge-updater\.css\?v=39/);
@@ -19,6 +19,7 @@ test('FORGE v57 is wired into the installed app and remains on a stable start UR
  assert.match(html,/forge-fuel-v44\.css\?v=44/);
  assert.match(html,/food-diary\.js\?v=57/);
  assert.match(html,/forge-fuel-v57\.js\?v=57/);
+ assert.match(html,/health-hub\.js\?v=58/);
  assert.match(html,/forge-fuel-v46\.css\?v=46/);
  assert.match(html,/forge-fuel-v56\.css\?v=56/);
  assert.match(html,/forge-visual-v47\.css\?v=47/);
@@ -40,7 +41,7 @@ test('FORGE v57 is wired into the installed app and remains on a stable start UR
  assert.match(html,/forge-today-v45\.js\?v=45/);
  assert.match(html,/forge-today-v45\.css\?v=45/);
  assert.match(html,/forge-train-coach\.js\?v=43/);
- assert.match(html,/name="forge-release" content="57"/);
+ assert.match(html,/name="forge-release" content="58"/);
 });
 test('FORGE update worker revalidates navigations and carries recovery files',()=>{
  const sw=read('service-worker.js');
@@ -54,7 +55,7 @@ test('Recovery only resets caches and service workers, not local workouts or pho
  const html=read('refresh-forge.html');
  assert.match(html,/caches\.keys\(\)/);
  assert.match(html,/\.unregister\(\)/);
- assert.match(html,/index\.html\?v=57/);
+ assert.match(html,/index\.html\?v=58/);
  assert.doesNotMatch(html,/localStorage\.(?:clear|removeItem)/);
  assert.doesNotMatch(html,/indexedDB\.deleteDatabase/);
  assert.doesNotMatch(html,/caches\.delete\([^)]*localStorage/);
