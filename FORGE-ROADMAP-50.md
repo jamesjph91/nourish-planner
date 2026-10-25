@@ -73,11 +73,11 @@
 - [x] **45** Improve the Android companion import instructions and validation tests.
 
 ## v59 · Progress, polish & release confidence (steps 46–50)
-- [ ] **46** Measurement trends with consistent date-range filters and no invented readings.
-- [ ] **47** Clear user-friendly progress-photo backup instructions, separate from JSON backups.
-- [ ] **48** Polish responsive mobile layouts and improve essential touch/focus behaviour.
-- [ ] **49** Test corrupted storage, slow/offline loading and keyboard navigation regression cases.
-- [ ] **50** Final end-to-end release gate: features, privacy, accessibility, update/recovery and deployment, with a documented audit.
+- [x] **46** Measurement trends with consistent date-range filters and no invented readings.
+- [x] **47** Clear user-friendly progress-photo backup instructions, separate from JSON backups.
+- [x] **48** Polish responsive mobile layouts and improve essential touch/focus behaviour.
+- [x] **49** Test corrupted storage, slow/offline loading and keyboard navigation regression cases.
+- [x] **50** Final end-to-end release gate: features, privacy, accessibility, update/recovery and deployment, with a documented audit.
 
 ## Completion ledger
 
@@ -91,6 +91,6 @@
 | v56 | 31–35 | Verified deployed | Regression run `40120052300` · Pages `40120052555` · `tests/food-diary.test.cjs` |
 | v57 | 36–40 | Verified deployed | Regression run `40128940110` · Pages `40128939955` · `tests/food-diary.test.cjs` and `tests/forge-fuel-v57.test.cjs` |
 | v58 | 41–45 | Verified deployed | Regression run `40155675539` · Pages `40155674940` · `tests/health-hub.test.cjs` and `tests/forge-activity-v58.test.cjs` |
-| v59 | 46–50 | Pending | — |
+| v59 | 46–50 | Verified deployed | Regression `40156089654` · Pages `40156089281` · `tests/forge-v59-release.test.cjs` · [`FORGE-RELEASE-AUDIT.md`](FORGE-RELEASE-AUDIT.md) |
 
-**Operating rule:** Each continuation reads this ledger, works the earliest *pending* bounded milestone, commits working code, verifies CI and deployment, and updates only demonstrably delivered steps. Stop once all 50 are verified; never falsely claim that pending entries have shipped.
+**Operating rule:** Each continuation reads this ledger, works the earliest *pending* bounded milestone, commits working code, verifies CI and deployment, and updates only demonstrably delivered steps. All 50 planned steps have passed CI and Pages release gates. The separate manual Android smoke checklist remains unperformed; do not claim on-device verification. Stop the recurring 50-step automation once this completed roadmap is confirmed, or request a new follow-on programme.

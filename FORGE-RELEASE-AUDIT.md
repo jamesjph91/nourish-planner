@@ -1,6 +1,6 @@
 # FORGE · Final 50-step quality and release audit
 
-**Scope:** FORGE v51–v59, 50 programme steps. **Release:** v59 candidate until both GitHub Actions regression checks and Pages deployment succeed. **Source:** `jamesjph91/nourish-planner` on `main`. This audit is not a substitute for manual testing on every Android device.
+**Scope:** FORGE v51–v59, 50 programme steps. **Release:** v59 tested and deployed successfully on GitHub Pages. Verified app commit: `1318020a63d294c52b9355d7bc0de17b71973899`. CI run: `40156089654` (success). Pages run: `40156089281` (success). **Source:** `jamesjph91/nourish-planner` on `main`. This audit is not a substitute for manual testing on every Android device.
 
 ## Verification matrix
 
@@ -38,4 +38,4 @@
 
 ## Final deployment evidence
 
-Pending until the release code, automated tests and GitHub Pages deploy on the same v59 commit finish successfully. Document the actual job IDs when available; do not mark an unverified job successful.
+Verified: FORGE app regression run **`40156089654` — success** and Pages deployment **`40156089281` — success**, both targeting v59 commit **`1318020a63d294c52b9355d7bc0de17b71973899`**. The documentation/roadmap commit is an administrative follow-up and may trigger additional checks. Real-device smoke checks above are separate and not claimed as performed.
