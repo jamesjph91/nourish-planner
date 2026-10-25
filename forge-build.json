@@ -1,13 +1,13 @@
 {
-  "version": 59,
+  "version": 60,
   "name": "FORGE",
-  "released": "2026-10-24",
+  "released": "2026-10-25",
   "features": [
-    "Unified date-filtered measurement explorer with real date-axis data and no synthetic readings",
-    "Explicit individual progress photo Save copy download and independent photo-backup guidance",
-    "Mobile layout improvements: 29px nav icons, large touch controls, consistent focus and reduced motion",
-    "Regression coverage for damaged local state, absent data, offline recovery, keyboard navigation and photo safety",
-    "Release audit covering all 50 improvements and honest external/manual test limits",
-    "Existing workouts, nutrition, watch summaries, account cloud data and local photo storage preserved"
+    "Account sign-in recovery for blocked Android Google popups with redirect fallback",
+    "Safe access to previously saved device data only after Firebase authenticates the matching account and a saved profile exists",
+    "Explicit cached-cloud waiting state and cloud conflict re-verification",
+    "Actionable sign-in failure messaging and safe cache-only refresh without clearing private records",
+    "Additional regression tests verifying cross-account isolation and onboarding guard",
+    "Preserve v59 measurement trends, saved workouts, food logs, account-specific IndexedDB photos and graphite/lime visuals"
   ]
 }

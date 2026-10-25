@@ -94,8 +94,8 @@ test('Account onboarding, app gating and photo storage are separate by account',
  new vm.Script(account);
  const css=fs.readFileSync('forge-v37-accounts.css','utf8');
  assert.match(index,/id="forge-auth-bootstrap"/);
- assert.match(index,/forge-accounts\.js\?v=37/);
- assert.match(index,/forge-v37-accounts\.css\?v=37/);
+ assert.match(index,/forge-accounts\.js\?v=60/);
+ assert.match(index,/forge-v37-accounts\.css\?v=60/);
  assert.match(index,/window\.forgeOnboardProfile/);
  assert.match(account,/Create my FORGE profile/);
  assert.match(account,/forge:cloud-conflict/);

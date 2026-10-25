@@ -94,14 +94,14 @@ test('v59 respects 48px mobile touch, at least 28px nav icons, focus and reduced
 test('v59 release gate includes offline, recovery, accessibility and privacy assertions',()=>{
  const sw=read('service-worker.js'),html=read('index.html'),repair=read('refresh-forge.html');
  const build=JSON.parse(read('forge-build.json'));
- assert.equal(build.version,59);
- assert.match(html,/name="forge-release" content="59"/);
+ assert.equal(build.version,60);
+ assert.match(html,/name="forge-release" content="60"/);
  assert.match(html,/forge-progress\.js\?v=59/);
  assert.match(html,/forge-v59\.css\?v=59/);
- assert.match(sw,/forge-v59-final-audit/);
+ assert.match(sw,/forge-v60-auth-recovery/);
  assert.match(sw,/forge-progress\.js/);
  assert.match(sw,/forge-v59\.css/);
- assert.match(repair,/index\.html\?v=59/);
+ assert.match(repair,/index\.html\?v=60/);
  assert.match(repair,/method:'HEAD'/);
  assert.doesNotMatch(repair,/localStorage\.(?:clear|removeItem)|indexedDB\.deleteDatabase/);
  const access=read('forge-access-v51.js');

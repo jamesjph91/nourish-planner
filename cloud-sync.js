@@ -28,7 +28,7 @@ if(!configured){
 }
 async function enableCloud(){
  const sdk='https://www.gstatic.com/firebasejs/13.1.0/';
- const [{initializeApp},{getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut},{getFirestore,doc,onSnapshot,setDoc,serverTimestamp}]=
+ const [{initializeApp},{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,onAuthStateChanged,signOut},{getFirestore,doc,onSnapshot,setDoc,serverTimestamp}]=
   await Promise.all([import(sdk+'firebase-app.js'),import(sdk+'firebase-auth.js'),import(sdk+'firebase-firestore.js')]);
  const app=initializeApp(config),auth=getAuth(app),db=getFirestore(app);
  const idKey='nourish-device-id-v3',uidKey='nourish-last-account-v1';
@@ -58,12 +58,23 @@ async function enableCloud(){
  }
  async function signIn(){
   try{await signInWithPopup(auth,new GoogleAuthProvider())}
-  catch(e){const txt='Google sign-in was not completed ('+(e?.code||e?.message||'popup failed')+'). Check authorised domains and allow popups.';
-   if(user)status(txt);else show(txt,[{label:'Try Google sign-in',callback:signIn,kind:'primary'}]);
-   if(!user)session('guest');
+  catch(e){
+   const txt='Google popup sign-in was not completed ('+(e?.code||e?.message||'popup failed')+'). An installed Android app may block popups. Try redirect sign-in or use Chrome.';
+   if(user)status(txt);
+   else {show(txt,[{label:'Try Google sign-in',callback:signIn,kind:'primary'},
+    {label:'Try redirect sign-in',callback:redirectSignIn}]);error(txt);}
+  }
+ }
+ async function redirectSignIn(){
+  try{await signInWithRedirect(auth,new GoogleAuthProvider())}
+  catch(e){
+   const txt='Google redirect sign-in could not start ('+(e?.code||e?.message||'unavailable')+'). Try opening FORGE in Chrome.';
+   if(user)status(txt);
+   else {show(txt,[{label:'Try Google popup',callback:signIn,kind:'primary'}]);error(txt);}
   }
  }
  window.forgeCloudSignIn=signIn;
+ window.forgeCloudRedirectSignIn=redirectSignIn;
  window.forgeCloudSignOut=signOutSafely;
  function chooseConflict(remote,reason,hasRemote){
   readyState=false;conflict=true;
@@ -168,7 +179,7 @@ async function enableCloud(){
   unsubscribe=onSnapshot(ref,snap=>{
    if(epoch!==generation||user?.uid!==nextUid)return;
    if(snap.metadata.hasPendingWrites)return;
-   if(first&&snap.metadata.fromCache){status('Waiting for a current cloud response before displaying private records…');return}
+   if(first&&snap.metadata.fromCache){status('Waiting for a current cloud response. If signed in and this device has your saved profile, use the recovery option to open local data without cloud sync.');event('forge:cloud-wait',{uid:nextUid});return}
    if(!snap.exists()){
     if(first){
      first=false;

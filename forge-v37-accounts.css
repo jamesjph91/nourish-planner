@@ -31,3 +31,14 @@ html.forge-account-locked{overflow:hidden!important}
 .fa37-mobile-chip{border:1px solid #345234!important;background:#122418!important;color:#b9ff16!important;border-radius:11px!important;font-size:19px!important;width:37px!important;min-width:37px!important;height:36px!important;margin-left:auto!important;flex:0 0 37px!important}
 .forge-mobile-header .fa37-mobile-chip+.forge-version-btn{margin-left:0!important}
 @media(min-width:761px){.fa37-mobile-chip{display:none!important}}
+
+/* FORGE v60 authentication recovery: keep actions visible in compact Android PWAs. */
+.fa60-recovery{margin:15px 0 6px;border:1px solid #496c3c;border-radius:14px;background:#101e13;padding:14px}
+.fa60-recovery>b{display:block;color:#d4ff9e;font-size:12px;letter-spacing:.2px}
+.fa60-recovery p,.fa60-recovery small{color:#aec7a8;font-size:11px;line-height:1.6}
+.fa60-recovery-actions{display:grid;gap:8px;margin:12px 0}
+.fa60-recovery-actions button,.fa60-recovery-actions a{box-sizing:border-box;width:100%;min-height:48px;display:flex;justify-content:center;align-items:center;padding:11px;border-radius:11px;background:#c7ff17;color:#081209;border:1px solid #d4ff7b;text-decoration:none;font-size:12px;font-weight:950;text-align:center}
+.fa60-recovery-actions button:nth-child(2),.fa60-recovery-actions a{background:#15251a;color:#e2ffd2;border-color:#698353}
+.fa60-recovery-actions button:focus-visible,.fa60-recovery-actions a:focus-visible{outline:3px solid #f3ffbf;outline-offset:3px}
+@media(max-width:420px){.fa37-dialog{max-height:calc(100dvh - 20px);padding:18px 14px}.fa60-recovery{padding:11px}}
+@media(prefers-reduced-motion:reduce){.fa60-recovery *{animation:none!important;transition:none!important}}

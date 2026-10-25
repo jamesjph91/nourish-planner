@@ -2,7 +2,20 @@
    Google identity and server-side data ownership remain in Firebase; this is UI only. */
 (()=>{'use strict';
 const ACCOUNT='nourish-last-account-v1';
-let status='checking',account=null,openedGuest=false,mode='welcome',notice='',conflictHasRemote=false;
+let status='checking',account=null,openedGuest=false,openedDevice=false,verifiedUid=null,mode='welcome',notice='',conflictHasRemote=false;
+const storedUid=()=>{try{return localStorage.getItem(ACCOUNT)||''}catch{return ''}};
+const savedDeviceReady=()=>!!verifiedUid&&storedUid()===verifiedUid&&!!profile().nickname&&
+ (status==='loading'||status==='error'||status==='checking');
+let startupWarning='';
+function recoverMessage(){return '<div class="fa60-recovery"><b>Having trouble signing in?</b><p>'+
+ 'Stay connected and check the account message below. Google popups may be blocked by an installed Android app. You can try Google redirect sign-in or open FORGE in Chrome.</p>'+
+ '<div class="fa60-recovery-actions">'+
+ '<button type="button" data-fa-in="signin">Retry Google popup sign-in</button>'+ 
+ '<button type="button" data-fa-redirect>Try Google redirect sign-in</button>'+
+ (savedDeviceReady()?'<button type="button" data-fa-device>Open saved data on this device</button>':'')+
+ '<a href="./refresh-forge.html">Safe app refresh</a></div>'+
+ '<small>Do not uninstall FORGE, clear Chrome data, or choose Start fresh as a troubleshooting step. JSON backups do not include progress photos.</small></div>';}
+
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const node=id=>document.getElementById(id);
 const remembered=()=>{try{return !!localStorage.getItem(ACCOUNT)}catch{return true}};
@@ -11,7 +24,7 @@ const canGuest=()=>status==='guest'&&!remembered();
 function badge(){
  const chip=node('forge-account-chip');
  if(!chip)return;
- const name=signed()?account?.displayName||account?.email||'My profile':openedGuest?'Guest · local only':remembered()?'Checking account…':'Your FORGE profile';
+ const name=signed()?account?.displayName||account?.email||'My profile':openedDevice?'Saved device data · cloud pending':openedGuest?'Guest · local only':remembered()?'Checking account…':'Your FORGE profile';
  chip.textContent='◉ '+String(name).slice(0,30);
  chip.title=signed()?'Manage this private FORGE account':'Open FORGE account sign-in';
  const mobile=node('forge-account-mobile-chip');
@@ -50,13 +63,14 @@ function signupForm(){
 }
 function welcome(){
  if(status==='checking'||status==='loading')return '<div class="fa37-intro"><small>PRIVATE ACCOUNTS</small><h2>Restoring your account…</h2><p>Checking your Google sign-in and private plan before showing personal data.</p></div>'+
+ '<p class="fa37-note">'+escape(startupWarning||'If this continues, use the recovery options below without deleting saved records.')+'</p>'+recoverMessage()+
  '<div class="fa37-buttons"><button type="button" data-fa-out>Switch Google account</button></div>';
  if(status==='conflict')return '<div class="fa37-intro"><small>PRIVATE ACCOUNT DECISION</small><h2>Choose your FORGE data</h2><p>'+escape(notice||'This browser and Google account have different plans.')+'</p><p>Nothing will be uploaded until you choose. Only use the device plan if the records belong to you. If unsure, export a backup before continuing.</p></div>'+
  '<div class="fa37-buttons">'+(conflictHasRemote?'<button type="button" data-fa-conflict="cloud">Use my private cloud plan</button>':'')+
  '<button type="button" data-fa-conflict="device">Use this browser’s plan</button>'+
  '<button type="button" data-fa-conflict="fresh">Start with a fresh profile</button>'+
  '<button type="button" data-fa-out>Sign out</button></div>';
- if(status==='error')return '<div class="fa37-intro"><small>ACCOUNT CHECK REQUIRED</small><h2>We couldn’t verify your account</h2><p>Personal records stay hidden until sign-in succeeds. Check your internet connection and try again. Avoid clearing device storage.</p></div>'+
+ if(status==='error')return '<div class="fa37-intro"><small>ACCOUNT CHECK REQUIRED</small><h2>We couldn’t verify your account</h2><p>Cloud sign-in could not finish. Your data is not erased. Check your internet connection, then use one of the options below.</p></div>'+recoverMessage()+
  '<div class="fa37-buttons"><button type="button" data-fa-retry>Retry sign-in check</button><button type="button" data-fa-out>Sign out safely</button></div>';
  if(status==='ready'&&mode==='manage')return accountCard();
  if(status==='ready'&&!profile().nickname)return signupForm();
@@ -65,12 +79,12 @@ function welcome(){
  '<div class="fa37-benefits"><span>✓ Your own workout history</span><span>✓ Personal calorie and protein goals</span><span>✓ 210 recipes and custom meal plans</span><span>✓ Private progress records</span></div>'+
  '<div class="fa37-buttons"><button type="button" data-fa-in="create">Create my FORGE profile</button><button type="button" data-fa-in="signin">Sign in to my account</button>'+
  (canGuest()?'<button type="button" data-fa-guest>Use without an account · this device only</button>':'')+'</div>'+
- '<p class="fa37-note">A Google account is required for private cloud sync. Guest changes are saved only in this browser and are not protected by a login.</p>';
+ '<p class="fa37-note">A Google account is required for private cloud sync. Guest changes are saved only in this browser and are not protected by a login.</p>'+recoverMessage();
 }
 function render(){
  badge();
  const modal=node('forge-account-gate');if(!modal)return;
- const shouldShow=status!=='ready'||(signed()&&!profile().nickname)||mode==='manage';
+ const shouldShow=!openedDevice&&(status!=='ready'||(signed()&&!profile().nickname)||mode==='manage');
  if(!shouldShow){close();return}
  guard();
  const body=node('fa37-content');if(body)body.innerHTML=welcome();
@@ -80,23 +94,25 @@ function onAuth(nextState,details){
  if(!['checking','guest','loading','ready','error'].includes(nextState))return;
  status=nextState;
  account=details?{uid:String(details.uid||''),displayName:String(details.displayName||''),email:String(details.email||'')}:null;
- if(status==='ready')mode='welcome';
- if(status==='guest')openedGuest=false;
+ if(account?.uid){if(verifiedUid&&verifiedUid!==account.uid)openedDevice=false;verifiedUid=account.uid;}
+ if(status==='ready'){mode='welcome';openedDevice=false;startupWarning=''}
+ if(status==='guest'){openedGuest=false;openedDevice=false;verifiedUid=null;}
+
  notice='';render();
 }
 function cloudReady(){
- if(status==='loading')status='ready';
- render();
+ if(status==='loading'||status==='error')status='ready';
+ openedDevice=false;startupWarning='';render();
 }
 function cloudError(message){
- if(status==='loading'||status==='checking'){status='error';notice=String(message||'Cloud sign-in unavailable');render()}
+ if(status==='loading'||status==='checking'||status==='guest'){status='error';notice=String(message||'Cloud sign-in unavailable');render()}
 }
 function hide(){
  if(!signed()||!profile().nickname)return;
  mode='welcome';render();
 }
 function showManage(){
- if(!signed()){mode='welcome';render();return}
+ if(!signed()){mode='welcome';openedDevice=false;render();return}
  mode='manage';render();
 }
 function mount(){
@@ -120,9 +136,17 @@ function mount(){
  render();
 }
 document.addEventListener('click',event=>{
- const el=event.target.closest?.('[data-fa-in],[data-fa-out],[data-fa-retry],[data-fa-close],[data-fa-guest],[data-fa-conflict]');
+ const el=event.target.closest?.('[data-fa-in],[data-fa-out],[data-fa-retry],[data-fa-close],[data-fa-guest],[data-fa-conflict],[data-fa-device],[data-fa-redirect]');
  if(!el||!node('forge-account-gate')?.contains(el))return;
- if(el.hasAttribute('data-fa-conflict')){
+ if(el.hasAttribute('data-fa-device')){
+  if(!savedDeviceReady()){show('Signed-in account and local device data could not be verified together. Nothing has been opened.');return;}
+  openedDevice=true;notice='';startupWarning='';render();
+  const banner=node('cloud-status');
+  if(banner)banner.textContent='Viewing the previously saved device plan. Cloud sync is not confirmed; do not switch accounts or clear storage.';
+ }else if(el.hasAttribute('data-fa-redirect')){
+  if(typeof window.forgeCloudRedirectSignIn==='function')window.forgeCloudRedirectSignIn();
+  else show('Google redirect sign-in is not ready. Try opening FORGE in Chrome on a reliable connection.');
+ }else if(el.hasAttribute('data-fa-conflict')){
   const decision=el.getAttribute('data-fa-conflict');if(window.forgeCloudResolveConflict?.(decision)){status='loading';show('Processing your selected account data…')}
  }else if(el.hasAttribute('data-fa-in')){
   const operation=el.getAttribute('data-fa-in');
@@ -151,10 +175,13 @@ document.addEventListener('submit',event=>{
  else show('Could not save this profile on your device. Please check available storage and try again.');
 });
 window.addEventListener('forge:cloud-session',event=>onAuth(event.detail?.state,event.detail?.user));
+window.addEventListener('forge:cloud-wait',()=>{if(status==='loading'){startupWarning='The browser has only a cached cloud response. Your account has not finished reconnecting.';render()}});
+window.addEventListener('forge:cloud-redirect-error',event=>cloudError(event.detail?.message));
 window.addEventListener('forge:cloud-ready',cloudReady);
-window.addEventListener('forge:cloud-conflict',event=>{status='conflict';conflictHasRemote=!!event.detail?.hasRemote;notice=String(event.detail?.reason||'Data selection required');render()});
+window.addEventListener('forge:cloud-conflict',event=>{openedDevice=false;status='conflict';conflictHasRemote=!!event.detail?.hasRemote;notice=String(event.detail?.reason||'Data selection required');render()});
 window.addEventListener('forge:cloud-error',event=>cloudError(event.detail?.message));
 window.addEventListener('storage',event=>{if(event.key==='nourish-last-account-v1'&&event.newValue!==event.oldValue){status='checking';guard();location.reload()}});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
-window.forgeAccounts={onAuth,cloudReady,cloudError,showManage,render,hide};
+window.forgeAccounts={onAuth,cloudReady,cloudError,showManage,render,hide,savedDeviceReady,
+ getState:()=>({status,openedDevice,verifiedUid,warning:startupWarning})};
 })();
