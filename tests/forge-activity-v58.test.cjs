@@ -27,14 +27,14 @@ test('duplicate-day imports show a preview and require confirmation before mutat
 });
 
 test('week activity view distinguishes a missing reading from a genuine zero',()=>{
- assert.match(hub,/const steps=row\.activity\?\.steps,has=steps!==undefined/);
- assert.match(hub,/has\?fmt\(steps\):'—'/);
- assert.match(hub,/Missing days show —; a recorded zero remains 0/);
+ assert.match(hub,/const v=x\.activity\?\.steps/);
+ assert.match(hub,/v===undefined\?'—':fmt\(v\)/);
+ assert.match(hub,/A real 0 stays visible as 0/);
 });
 
 test('last import freshness is explicit without claiming live watch sync',()=>{
  assert.match(hub,/Last imported:/);
- assert.match(hub,/file import time, not a live watch sync/);
+ assert.match(hub,/last file import saved in FORGE, not a live-watch sync time/);
  assert.match(hub,/updatedAt:stamp/);
 });
 
