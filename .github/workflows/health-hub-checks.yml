@@ -29,6 +29,9 @@ on:
       - 'forge-train-v48.css'
       - 'forge-train-v49.css'
       - 'forge-gym-v54.js'
+      - 'forge-rest-v61.js'
+      - 'forge-rest-v61.css'
+      - 'FORGE-PHASE-2-ROADMAP.md'
       - 'forge-strength-v55.js'
       - 'forge-strength-v55.css'
       - 'forge-gym-v54.css'
@@ -173,6 +176,7 @@ jobs:
           node --check forge-data-safety-v52.js
           node --check forge-offline-v53.js
           node --check forge-gym-v54.js
+          node --check forge-rest-v61.js
           node --check forge-strength-v55.js
           node --check forge-updater.js
           node --check forge-food-navigation.js

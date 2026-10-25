@@ -1,0 +1,18 @@
+/* FORGE v61 rest timer: graphite / acid-lime gym identity, large mobile controls */
+#workouts .fg61-timer{margin:12px 0 20px;padding:17px;border:1px solid #658641;border-radius:18px;color:#f6fff4;background:linear-gradient(135deg,#102417,#07120d 65%,#19260e);box-shadow:inset 0 1px 0 #c7ff172d,0 12px 28px #0008}
+#workouts .fg61-top{display:flex;gap:8px;align-items:start;justify-content:space-between}
+#workouts .fg61-top small{font-size:9px;font-weight:950;color:#b9ff16;letter-spacing:1.2px}
+#workouts .fg61-top h3{font-size:clamp(22px,5vw,29px);margin:5px 0 0;letter-spacing:-1px;font-style:italic}
+#workouts .fg61-status{font-size:9px;color:#cfff85;border:1px solid #5f8040;background:#c7ff1710;border-radius:40px;padding:8px;font-weight:900;letter-spacing:.4px;white-space:nowrap}
+#workouts .fg61-display{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;margin:12px 0}
+#workouts .fg61-display strong{font-variant-numeric:tabular-nums;font-size:clamp(48px,11vw,76px);line-height:1;letter-spacing:-3px;color:#e4ffad}
+#workouts .fg61-display p{font-size:11px;line-height:1.6;color:#acbfa6;margin:0;flex:1 1 160px}
+#workouts .fg61-presets,#workouts .fg61-actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+#workouts .fg61-presets button,#workouts .fg61-actions button{min-height:48px;flex:1 1 65px;border-radius:11px;padding:10px;border:1px solid #658341;background:#152818;color:#ddf8c6;font-size:12px;font-weight:950}
+#workouts .fg61-presets button[aria-pressed="true"]{background:#bfdc4f;color:#0a1309;border-color:#e1ff74}
+#workouts .fg61-actions .fg61-primary{flex:2 1 125px;background:#c7ff17;color:#061108;border-color:#c7ff17}
+#workouts .fg61-done .fg61-status{background:#c7ff17;color:#0a140b}
+#workouts .fg61-note{font-size:10px;line-height:1.6;color:#a9c1a3;margin:12px 0 0}
+#workouts .fg61-timer button:focus-visible{outline:3px solid #f0ffba;outline-offset:3px}
+@media(max-width:420px){#workouts .fg61-timer{padding:12px}#workouts .fg61-top{align-items:start}#workouts .fg61-presets button,#workouts .fg61-actions button{font-size:11px}}
+@media(prefers-reduced-motion:reduce){#workouts .fg61-timer *{transition:none!important;animation:none!important}}

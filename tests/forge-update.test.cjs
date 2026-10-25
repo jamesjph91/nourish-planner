@@ -5,9 +5,9 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const read=file=>fs.readFileSync(file,'utf8');
 
-test('FORGE v60 is wired into the installed app and remains on a stable start URL',()=>{
+test('FORGE v61 is wired into the installed app and remains on a stable start URL',()=>{
  const html=read('index.html'),manifest=JSON.parse(read('manifest.webmanifest')),build=JSON.parse(read('forge-build.json'));
- assert.equal(build.version,60);
+ assert.equal(build.version,61);
  assert.equal(manifest.start_url,'./index.html');
  assert.match(html,/forge-updater\.js\?v=41/);
  assert.match(html,/forge-updater\.css\?v=39/);
@@ -40,13 +40,15 @@ test('FORGE v60 is wired into the installed app and remains on a stable start UR
  assert.match(html,/forge-offline-v53\.css\?v=53/);
  assert.match(html,/forge-gym-v54\.css\?v=54/);
  assert.match(html,/forge-gym-v54\.js\?v=54/);
+ assert.match(html,/forge-rest-v61\.js\?v=61/);
+ assert.match(html,/forge-rest-v61\.css\?v=61/);
  assert.match(html,/forge-strength-v55\.js\?v=55/);
  assert.match(html,/forge-strength-v55\.css\?v=55/);
  assert.match(html,/forge-train-v49\.css\?v=49/);
  assert.match(html,/forge-today-v45\.js\?v=45/);
  assert.match(html,/forge-today-v45\.css\?v=45/);
  assert.match(html,/forge-train-coach\.js\?v=43/);
- assert.match(html,/name="forge-release" content="60"/);
+ assert.match(html,/name="forge-release" content="61"/);
 });
 test('FORGE update worker revalidates navigations and carries recovery files',()=>{
  const sw=read('service-worker.js');
@@ -60,7 +62,7 @@ test('Recovery only resets caches and service workers, not local workouts or pho
  const html=read('refresh-forge.html');
  assert.match(html,/caches\.keys\(\)/);
  assert.match(html,/\.unregister\(\)/);
- assert.match(html,/index\.html\?v=60/);
+ assert.match(html,/index\.html\?v=61/);
  assert.doesNotMatch(html,/localStorage\.(?:clear|removeItem)/);
  assert.doesNotMatch(html,/indexedDB\.deleteDatabase/);
  assert.doesNotMatch(html,/caches\.delete\([^)]*localStorage/);

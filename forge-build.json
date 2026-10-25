@@ -1,13 +1,13 @@
 {
-  "version": 60,
+  "version": 61,
   "name": "FORGE",
   "released": "2026-10-25",
   "features": [
-    "Account sign-in recovery for blocked Android Google popups with redirect fallback",
-    "Safe access to previously saved device data only after Firebase authenticates the matching account and a saved profile exists",
-    "Explicit cached-cloud waiting state and cloud conflict re-verification",
-    "Actionable sign-in failure messaging and safe cache-only refresh without clearing private records",
-    "Additional regression tests verifying cross-account isolation and onboarding guard",
-    "Preserve v59 measurement trends, saved workouts, food logs, account-specific IndexedDB photos and graphite/lime visuals"
+    "60, 90 and 120 second manual rest presets shown within the real Train workout session",
+    "Rest timer pause, resume, plus 15 seconds and explicit reset using absolute clock deadlines",
+    "Session changes, rest days, account changes and conflicts clear the in-memory timer without touching personal logs",
+    "Large, accessible mobile-first controls and optional device vibration on completion",
+    "No new cloud data, workout edits, permissions or paid APIs",
+    "Regression tests verifying countdown drift, data integrity, account changes and mobile design"
   ]
 }
