@@ -66,11 +66,11 @@
 - [x] **40** Streamlined planner-to-diary meal logging without duplicate entries.
 
 ## v58 · Activity & wearable imports (steps 41–45)
-- [ ] **41** Label source attribution for manual vs imported activity.
-- [ ] **42** Duplicate-day import preview with user confirmation.
-- [ ] **43** Preserve zero vs missing readings throughout week charts.
-- [ ] **44** Show last imported date without implying native watch sync.
-- [ ] **45** Improve the Android companion import instructions and validation tests.
+- [x] **41** Label source attribution for manual vs imported activity.
+- [x] **42** Duplicate-day import preview with user confirmation.
+- [x] **43** Preserve zero vs missing readings throughout week charts.
+- [x] **44** Show last imported date without implying native watch sync.
+- [x] **45** Improve the Android companion import instructions and validation tests.
 
 ## v59 · Progress, polish & release confidence (steps 46–50)
 - [ ] **46** Measurement trends with consistent date-range filters and no invented readings.
@@ -90,7 +90,7 @@
 | v55 | 26–30 | Verified deployed | Regression run `40118966606` · Pages `40118966549` · `tests/forge-strength-v55.test.cjs` |
 | v56 | 31–35 | Verified deployed | Regression run `40120052300` · Pages `40120052555` · `tests/food-diary.test.cjs` |
 | v57 | 36–40 | Verified deployed | Regression run `40128940110` · Pages `40128939955` · `tests/food-diary.test.cjs` and `tests/forge-fuel-v57.test.cjs` |
-| v58 | 41–45 | Pending | — |
+| v58 | 41–45 | Verified deployed | Regression run `40155675539` · Pages `40155674940` · `tests/health-hub.test.cjs` and `tests/forge-activity-v58.test.cjs` |
 | v59 | 46–50 | Pending | — |
 
 **Operating rule:** Each continuation reads this ledger, works the earliest *pending* bounded milestone, commits working code, verifies CI and deployment, and updates only demonstrably delivered steps. Stop once all 50 are verified; never falsely claim that pending entries have shipped.
