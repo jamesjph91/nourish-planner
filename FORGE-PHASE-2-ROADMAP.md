@@ -2,6 +2,10 @@
 
 This follow-on plan begins after the original 50-step FORGE programme (v51–v59) and the v60 Android sign-in recovery release. It does **not** reopen or inflate the original 50/50 completion count.
 
+## Commercial naming/IP hold — 24 October 2026
+
+The planned FORGE product name and FORGE Athletics merchandise have not been cleared for commercial use. Existing FORGE fitness app marks and other fitness apparel brands present significant potential conflicts. **Keep implementing the core product while trademark counsel verifies rights; do not launch paid media, merchandise or trade mark claims under the provisional name until clearance.** See [FORGE-IP-SECURITY-REGISTER.md](FORGE-IP-SECURITY-REGISTER.md).
+
 ## Delivery rules
 - Build production features in the existing PWA, with matching regression tests and an accessible mobile experience.
 - Keep the graphite / acid-lime FORGE identity, established SVG artwork and large bottom navigation.
@@ -11,10 +15,10 @@ This follow-on plan begins after the original 50-step FORGE programme (v51–v59
 - Implement the earliest pending milestone; do not start a conflicting release while tests are failing or Pages is deploying.
 
 ## v61 · Train — Rest timer and session flow
-- [ ] **P2-01** Add deliberate 60/90/120-second rest presets into the existing Train screen.
-- [ ] **P2-02** Implement accurate deadline-based countdown, pause/resume and +15-second adjustment.
-- [ ] **P2-03** Respect workout day changes and account changes; never mutate saved workout sets.
-- [ ] **P2-04** Provide accessible, large Android controls and regression tests for long background pauses.
+- [x] **P2-01** Add deliberate 60/90/120-second rest presets into the existing Train screen.
+- [x] **P2-02** Implement accurate deadline-based countdown, pause/resume and +15-second adjustment.
+- [x] **P2-03** Respect workout day changes and account changes; never mutate saved workout sets.
+- [x] **P2-04** Provide accessible, large Android controls and regression tests for long background pauses.
 
 ## v62 · Train — Better decisions while exercising
 - [ ] **P2-05** Offer optional per-exercise rest preference without silently changing previous sessions.
@@ -38,7 +42,7 @@ This follow-on plan begins after the original 50-step FORGE programme (v51–v59
 
 | Version | Steps | State | Verification |
 |---|---|---|---|
-| v61 | P2-01–04 | Pending | — |
+| v61 | P2-01–04 | Verified deployed | Regression `40157567556` · Pages `40157567036` · `tests/forge-rest-v61.test.cjs` |
 | v62 | P2-05–08 | Pending | — |
 | v63 | P2-09–12 | Pending | — |
 | v64 | P2-13–16 | Pending | — |
