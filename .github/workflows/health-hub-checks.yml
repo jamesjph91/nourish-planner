@@ -51,6 +51,8 @@ on:
       - 'forge-v37-accounts.css'
       - 'forge-visual-v40.css'
       - 'forge-visual-v47.css'
+      - 'forge-v59.css'
+      - 'FORGE-RELEASE-AUDIT.md'
       - 'forge-art-hero.svg'
       - 'forge-art-train.svg'
       - 'forge-art-fuel.svg'

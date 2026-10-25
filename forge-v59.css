@@ -1,0 +1,38 @@
+/* FORGE v59 — mobile polish, dated trends and photo backup clarity. No data writes. */
+#progress .fp59-metrics{border:1px solid #5c7d43!important;background:linear-gradient(130deg,#172b1a,#08130d)!important;box-shadow:inset 0 1px 0 #d4ff4725,0 15px 30px #0009;margin:12px 0 16px}
+#progress .fp59-metric-label{display:flex;gap:7px;align-items:center;color:#c0d1b9;font-size:11px;font-weight:850}
+#progress .fp59-metric-label select{max-width:210px;min-height:46px;border-radius:11px;border:1px solid #709c4b;background:#0b190e;color:#f5ffef;padding:10px;font-size:13px;font-weight:800}
+#progress .fp59-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:11px 1px;font-size:11px;color:#afc6ac}
+#progress .fp59-meta strong{color:#d8ff95}
+#progress .fp59-photo-guide{margin:14px 0;border:1px solid #6a8b4c;border-radius:14px;padding:13px;background:linear-gradient(135deg,#1d321d,#08180f)}
+#progress .fp59-photo-guide>strong{color:#d2ff72;font-size:10px;letter-spacing:1.2px;font-weight:950}
+#progress .fp59-photo-guide p{font-size:11px;line-height:1.7;color:#d8e5ce}
+#progress .fp59-photo-guide b{color:#f4ffd5}
+#progress .fp59-download{display:inline-flex!important;justify-content:center;align-items:center;min-height:44px!important;padding:9px 10px;border-radius:10px;border:1px solid #c8ff5a;background:#c7ff17;color:#0b160b!important;text-decoration:none;font-size:11px;font-weight:950}
+#progress.forge-progress-ready>[data-fp-legacy="unfiltered"]{display:none!important}
+#progress .fp-tabs button,#progress .fp-periods button{min-height:44px!important}
+#progress .forge-progress-app button:focus-visible,
+#progress .forge-progress-app select:focus-visible,
+#progress .forge-progress-app input:focus-visible,
+#progress .forge-progress-app a:focus-visible{outline:3px solid #dbff8b!important;outline-offset:3px!important}
+@media(max-width:760px){
+ .sidebar #nav button{min-height:68px!important}
+ .sidebar #nav button .fn-icon{min-width:44px!important;min-height:40px!important}
+ .sidebar #nav button .fn-icon svg{width:29px!important;height:29px!important}
+ #progress .fp-header h2{font-size:clamp(30px,8vw,50px)!important}
+ #progress .fp59-metrics{padding:12px!important}
+ #progress .fp59-metrics .fp-heading{display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px}
+ #progress .fp59-metric-label{width:100%;justify-content:space-between}
+ #progress .fp59-metric-label select{flex:1;min-width:0;max-width:none}
+ #progress .fp-gallery img{max-width:100%;height:auto}
+}
+@media(max-width:375px){
+ .sidebar #nav button{min-width:0!important;padding-inline:1px!important}
+ .sidebar #nav button>span:last-child{font-size:9px!important;letter-spacing:-.2px}
+ #progress .fp-tabs{gap:2px!important;padding:3px!important}
+ #progress .fp-tabs button{font-size:10px!important;padding-inline:3px!important}
+ #progress .fp59-meta{flex-direction:column}
+}
+@media(prefers-reduced-motion:reduce){
+ #progress .forge-progress-app *, .sidebar #nav button{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}

@@ -4,7 +4,7 @@
 const section=()=>document.getElementById('progress');
 const TABS=['Overview','Stats','Photos','Goals'];
 const PERIODS={'7D':7,'30D':30,'90D':90,'1Y':365,'All':0};
-let tab='Overview',range='30D',photos=[],photoStatus='',photoBusy=false,urls=[],photoGeneration=0;
+let tab='Overview',range='30D',metricId='weightKg',photos=[],photoStatus='',photoBusy=false,urls=[],photoGeneration=0;
 const LEGACY_PHOTO_OWNER='forge-photo-legacy-owner-v1',LEGACY_PHOTO_IMPORTED='forge-photo-legacy-imported-v1';
 try{
  if(!localStorage.getItem(LEGACY_PHOTO_OWNER)){
@@ -38,6 +38,30 @@ function data(){
  return {s,all,measurements,sessions,completedSets,volume,steps,average};
 }
 function series(rows,key){return rows.filter(x=>finite(x[key])).map(x=>({date:x.date,value:Number(x[key])}))}
+const METRIC_FIELDS=[
+ ['weightKg','Weight','kg'],['waistCm','Waist','cm'],
+ ['chestCm','Chest','cm'],['hipsCm','Hips','cm'],
+ ['armCm','Upper arm','cm'],['thighCm','Thigh','cm'],
+ ['bodyFatPct','Body fat · device estimate','%']
+];
+function metricSeries(rows,key){
+ if(!METRIC_FIELDS.some(m=>m[0]===key))return [];
+ return series(Array.isArray(rows)?rows:[],key).filter(x=>dateOK(x.date)&&Number.isFinite(x.value)).sort((a,b)=>a.date.localeCompare(b.date));
+}
+function metricExplorer(d){
+ const meta=METRIC_FIELDS.find(m=>m[0]===metricId)||METRIC_FIELDS[0],
+  points=metricSeries(d.measurements,meta[0]),last=points.at(-1),first=points[0];
+ const since=range==='All'?'all recorded dates':'the selected '+range+' range';
+ const change=points.length>=2?signed(last.value-first.value)+' '+meta[2]:'Need two distinct dates';
+ return '<article class="fp-panel fp59-metrics" aria-label="Date-filtered measurement trends">'+
+  '<div class="fp-heading"><div><small>FORGE / YOUR EVIDENCE</small><h3>Measurements by date</h3></div>'+
+  '<label class="fp59-metric-label">Metric<select aria-label="Measurement trend metric" data-fp59-metric>'+
+  METRIC_FIELDS.map(([id,name])=>'<option value="'+id+'" '+(metricId===id?'selected':'')+'>'+esc(name)+'</option>').join('')+'</select></label></div>'+
+  '<div class="fp59-meta"><strong>'+points.length+' recorded date'+(points.length===1?'':'s')+'</strong>'+
+  '<span>'+esc(since)+' · '+(last?fmt(last.value,1)+' '+esc(meta[2])+' latest':'No recorded value')+'</span></div>'+
+  lineChart(points,meta[1],meta[2])+
+  '<p class="fp-help">Change in selected period: '+esc(change)+'. Only dated entries containing this measurement are plotted; missing dates and values are never invented or treated as zero. '+(meta[0]==='bodyFatPct'?'Body-fat scale readings are estimates.':'')+'</p></article>';
+}
 function stat(label,value,unit,sub,note){
  return '<article class="fp-stat"><span>'+esc(label)+'</span><strong>'+esc(value)+' <small>'+esc(unit)+'</small></strong><footer><b>'+esc(sub)+'</b><small>'+esc(note)+'</small></footer></article>';
 }
@@ -60,7 +84,7 @@ function overview(d){
  stat('BODY FAT · EST.',f?fmt(f.value,1):'—','%',fatDelta,f?'Device estimate':'No reading in period')+
  stat('WORKOUTS',fmt(d.sessions.length),'completed',fmt(d.completedSets.length)+' sets','Selected period')+
  stat('AVERAGE STEPS',d.average===null?'—':fmt(d.average),'daily',fmt(d.steps.length)+' recorded days','Recorded days only')+'</div>'+
- '<article class="fp-panel fp-trend"><div class="fp-heading"><div><small>YOUR TREND</small><h3>Weight progress</h3></div><span>'+esc(range)+'</span></div>'+lineChart(weight,'Weight','kg')+'</article>'+
+ metricExplorer(d)+
  '<div class="fp-two"><article class="fp-panel"><div class="fp-heading"><div><small>TRAINING</small><h3>Workout consistency</h3></div></div><div class="fp-numbers"><div><b>'+fmt(d.sessions.length)+'</b><span>Sessions</span></div><div><b>'+fmt(d.completedSets.length)+'</b><span>Sets</span></div><div><b>'+fmt(d.volume)+'</b><span>kg × reps</span></div></div><p class="fp-help">Training volume only includes completed weighted sets. It is not a percentage strength-gain claim.</p></article>'+
  '<article class="fp-panel"><div class="fp-heading"><div><small>ACTIVITY</small><h3>Steps recorded</h3></div></div>'+barChart(d.steps)+'</article></div>'+
  '<div class="fp-shortcuts"><button data-fp-tab="Stats">＋ Log measurement</button><button data-fp-tab="Photos">▧ Progress photos</button><button data-fp-tab="Goals">◎ Review goals</button></div>';
@@ -72,15 +96,19 @@ function goals(d){
 }
 function photoView(){
  return '<article class="fp-panel"><div class="fp-heading"><div><small>PRIVATE PHOTO JOURNAL</small><h3>Progress photos</h3></div><span>'+photos.length+' saved</span></div><p class="fp-help"><b>Stored on this device only.</b> Photos are not uploaded or cloud synced. Clearing browser data or changing devices can permanently remove them.</p>'+
+ '<div class="fp59-photo-guide"><strong>BACK UP YOUR PHOTOS SEPARATELY</strong><p>1. Use <b>Save copy</b> beneath each photo you want to keep. Check that it appears in Downloads, Files or your chosen photo folder.</p>'+
+ '<p>2. Move those copies to another safe location before switching phones, uninstalling FORGE or clearing site storage.</p>'+
+ '<p>3. The Settings JSON backup covers plan records, <b>not photo files</b>. FORGE cannot verify that a downloaded file was saved. Photos are only accessible to the current browser profile.</p></div>'+
  (legacyAllowed()?'<div class="fp-legacy-note"><b>Older local photos found?</b> They remain in the original on-device photo database. To copy them into this verified profile only, press <button type="button" data-fp-legacy>Import my older photos</button>. Nothing is deleted from the original database.</div>':'')+
  '<label class="fp-upload"><b>＋ Add a progress photo</b><small>JPG, PNG or WebP · 8 MB maximum</small><input type="file" accept="image/jpeg,image/png,image/webp" data-fp-upload '+(photoBusy?'disabled':'')+'></label><p class="fp-help" role="status">'+esc(photoStatus)+'</p>'+
- '<div class="fp-gallery">'+(photos.length?photos.map(x=>'<article class="fp-photo"><img src="'+esc(x.url)+'" alt="Progress photo '+esc(x.date)+'"><div><span>'+esc(x.date)+'</span><button data-fp-delete="'+x.id+'">Delete</button></div></article>').join(''):'<div class="fp-empty">Your first progress photo will appear here.</div>')+'</div></article>';
+ '<div class="fp-gallery">'+(photos.length?photos.map(x=>'<article class="fp-photo"><img src="'+esc(x.url)+'" alt="Progress photo '+esc(x.date)+'"><div><span>'+esc(x.date)+'</span><a class="fp59-download" href="'+esc(x.url)+'" download="FORGE-progress-'+esc(x.date)+'-'+x.id+'.'+(x.type==='image/png'?'png':x.type==='image/webp'?'webp':'jpg')+'">↓ Save copy</a><button data-fp-delete="'+x.id+'">Delete</button></div></article>').join(''):'<div class="fp-empty">Your first progress photo will appear here.</div>')+'</div></article>';
 }
 function classify(r){
  const children=[...r.children].filter(x=>!x.classList.contains('forge-progress-app'));
  children.forEach(x=>{let kind='other';const t=(x.querySelector('h2,h3')?.textContent||'').toLowerCase();
  if(x.id==='measurement-form'||t.includes('add a measurement')||t.includes('measurement history')||t.includes('measurement trend')||t.includes('your results'))kind='stats';
  if(t.includes('your profile')||t.includes('compare progress'))kind='goals';
+ if(t.includes('measurement trend'))kind='unfiltered'; // v59 replaces this unfiltered chart with the date-filtered explorer.
  x.dataset.fpLegacy=kind;
  });
  const shareHeading=children.find(x=>x.dataset.fpLegacy==='goals'&&/compare progress/i.test(x.textContent||''));
@@ -92,7 +120,7 @@ function render(){
  mount.innerHTML='<header class="fp-header"><div><small>PROGRESS · SEE RESULTS</small><h2>Progress</h2><p>Consistency. Growth. Results.</p></div><span class="fp-private">◈ PRIVATE</span></header>'+
  '<nav class="fp-tabs" aria-label="Progress sections">'+TABS.map(x=>'<button data-fp-tab="'+x+'" class="'+(tab===x?'on':'')+'" aria-pressed="'+(tab===x)+'">'+x+'</button>').join('')+'</nav>'+
  (tab==='Overview'||tab==='Stats'?'<div class="fp-periods" aria-label="Chart period">'+Object.keys(PERIODS).map(x=>'<button data-fp-period="'+x+'" class="'+(range===x?'on':'')+'" aria-pressed="'+(range===x)+'">'+x+'</button>').join('')+'</div>':'')+
- (tab==='Overview'?overview(d):tab==='Goals'?goals(d):tab==='Photos'?photoView():'<article class="fp-panel fp-info"><h3>Measurements & history</h3><p class="fp-help">Record weight, body measurements and body-fat estimates below. The existing private tracker handles saving, editing and synchronisation.</p></article>');
+ (tab==='Overview'?overview(d):tab==='Goals'?goals(d):tab==='Photos'?photoView():metricExplorer(d)+'<article class="fp-panel fp-info"><h3>Measurements & history</h3><p class="fp-help">Record weight, body measurements and body-fat estimates below. The existing private tracker handles saving, editing and synchronisation.</p></article>');
  r.dataset.fpTab=tab.toLowerCase();r.classList.add('forge-progress-ready');
 }
 function enhance(){
@@ -128,7 +156,7 @@ async function migrateOldPhotos(){
   await fetchPhotos();return true;
  }catch(e){photoStatus='Could not finish copying old photos. No originals were deleted.';render();return false}
 }
-async function fetchPhotos(){const token=++photoGeneration;try{const items=await operation('readonly',s=>s.getAll());if(token!==photoGeneration)return;urls.forEach(URL.revokeObjectURL);urls=[];photos=items.sort((a,b)=>b.id-a.id).slice(0,40).map(x=>{const url=URL.createObjectURL(x.blob);urls.push(url);return {id:x.id,url,date:x.date}})}catch(e){photoStatus=e.message||'Could not read photos';photos=[]}if(tab==='Photos')render()}
+async function fetchPhotos(){const token=++photoGeneration;try{const items=await operation('readonly',s=>s.getAll());if(token!==photoGeneration)return;urls.forEach(URL.revokeObjectURL);urls=[];photos=items.sort((a,b)=>b.id-a.id).slice(0,40).map(x=>{const url=URL.createObjectURL(x.blob);urls.push(url);return {id:x.id,url,date:x.date,type:x.blob?.type||'image/jpeg'}})}catch(e){photoStatus=e.message||'Could not read photos';photos=[]}if(tab==='Photos')render()}
 async function savePhoto(file){if(photoBusy||!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>8*1024*1024||!file.size){photoStatus='Choose a JPG, PNG or WebP image under 8 MB.';render();return}photoBusy=true;photoStatus='Saving to this device…';render();try{await operation('readwrite',s=>s.add({date:stamp(new Date()),blob:file}));await fetchPhotos();photoStatus='Photo saved on this device.'}catch(e){photoStatus=e.message||'Could not save photo'}photoBusy=false;if(tab==='Photos')render()}
 async function deletePhoto(id){if(!Number.isSafeInteger(id)||!confirm('Delete this photo from this browser?'))return;try{await operation('readwrite',s=>s.delete(id));await fetchPhotos();photoStatus='Photo deleted.'}catch(e){photoStatus=e.message||'Could not delete photo'}if(tab==='Photos')render()}
 document.addEventListener('click',e=>{
@@ -139,9 +167,9 @@ document.addEventListener('click',e=>{
  const legacy=e.target.closest('[data-fp-legacy]');if(legacy){void migrateOldPhotos();return}
  const b=e.target.closest('[data-fp-delete]');if(b)deletePhoto(Number(b.dataset.fpDelete));
 });
-document.addEventListener('change',e=>{if(e.target.matches('[data-fp-upload]')&&e.target.files?.[0])savePhoto(e.target.files[0])});
+document.addEventListener('change',e=>{if(e.target.matches?.('[data-fp59-metric]')){metricId=e.target.value;render();return}if(e.target.matches?.('[data-fp-upload]')&&e.target.files?.[0])savePhoto(e.target.files[0])});
 window.addEventListener('forge:view-rendered',e=>{if(e.detail?.tab==='progress')enhance()});
 window.addEventListener('forge:cloud-session',()=>{photoGeneration++;urls.forEach(URL.revokeObjectURL);urls=[];photos=[];photoStatus='';if(tab==='Photos')render()});
 document.addEventListener('DOMContentLoaded',enhance,{once:true});
-window.forgeProgress={enhance,render,photoDatabaseName,legacyAllowed,migrateOldPhotos};
+window.forgeProgress={enhance,render,photoDatabaseName,legacyAllowed,migrateOldPhotos,metricSeries,metricExplorer,inspectReadOnly:data,availablePeriods:PERIODS};
 })();

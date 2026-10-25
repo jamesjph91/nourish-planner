@@ -1,13 +1,13 @@
 {
-  "version": 58,
+  "version": 59,
   "name": "FORGE",
   "released": "2026-10-24",
   "features": [
-    "Distinct manual, Samsung export, Health Connect and generic imported activity labels",
-    "Same-date import conflict preview with confirmation and preservation of missing fields",
-    "Show real zero readings as 0, missing activity readings as unknown",
-    "Last imported file time shown without promising automatic Samsung/watch sync",
-    "Android Health Connect bridge readme, permission guidance and safe manual import validation",
-    "Existing meals, workouts, photos and local account records preserved"
+    "Unified date-filtered measurement explorer with real date-axis data and no synthetic readings",
+    "Explicit individual progress photo Save copy download and independent photo-backup guidance",
+    "Mobile layout improvements: 29px nav icons, large touch controls, consistent focus and reduced motion",
+    "Regression coverage for damaged local state, absent data, offline recovery, keyboard navigation and photo safety",
+    "Release audit covering all 50 improvements and honest external/manual test limits",
+    "Existing workouts, nutrition, watch summaries, account cloud data and local photo storage preserved"
   ]
 }
