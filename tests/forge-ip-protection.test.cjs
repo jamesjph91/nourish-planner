@@ -6,6 +6,7 @@ test('Uncleared commercial brand is identified as a launch blocker',()=>{
  assert.match(reg,/UK00004378627/);
  assert.match(reg,/Nexus Capital Group Ltd/);
  assert.match(reg,/official UKIPO Trade Marks Journal/i);
+ assert.match(reg,/ipo\.gov\.uk\/types\/tm\/t-os\/t-tmj/);
  assert.match(reg,/UNRESOLVED \/ HIGH RISK/);
  assert.match(reg,/written professional clearance/i);
  assert.match(reg,/Do not file FORGE or FORGE Athletics marks/i);
