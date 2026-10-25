@@ -27,7 +27,7 @@ test('Service worker precaches the essential shell and preserves it offline',asy
  assert.equal((await x.caches.keys()).some(name=>/^forge-v\d+-/.test(name)),true);
  await x.dispatch('activate');
  assert.equal(x.getClaimed(),1);
- assert.equal(x.removed.includes('forge-v58-activity-import'),true);
+ assert.equal(x.removed.includes('forge-v59-final-audit'),true);
  x.setOffline(true);
  const response=await x.dispatch('fetch',new MockRequest('index.html?v=53',{mode:'navigate'}));
  assert.equal(response.ok,true);
