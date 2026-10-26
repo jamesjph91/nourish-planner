@@ -21,7 +21,7 @@ async function refresh(){
   status.textContent='Refreshing app service worker…';
   if('serviceWorker' in navigator){const registrations=await navigator.serviceWorker.getRegistrations();await Promise.all(registrations.filter(r=>r.scope.startsWith(base.href)).map(r=>r.unregister()))}
   status.textContent='Opening the current FORGE version…';
-  location.replace(new URL('index.html?v=61&repair='+Date.now(),base).href);
+  location.replace(new URL('index.html?v=62&repair='+Date.now(),base).href);
  }catch(error){status.textContent='Safe refresh did not start. Reconnect to the internet and try again; cached files and personal data have not been cleared.';button.disabled=false;button.textContent='Retry safe refresh'}
 }
 button.addEventListener('click',refresh);
