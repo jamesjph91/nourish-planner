@@ -117,7 +117,7 @@ test('Accessibility, build wiring and privacy invariants',()=>{
  assert.match(x.api.markup(),/aria-label="Training session controls"/);
  assert.match(x.api.markup(),/aria-pressed="false"/);
  assert.match(x.api.markup(),/Next: Bench press/);
- assert.doesNotMatch(source,/resetPrivatePlan|\.applyData\(|\.completed\s*=|\.done\s*=/);
+ assert.doesNotMatch(source,/resetPrivatePlan|\.applyData\(|\.completed\s*=(?!=)|\.done\s*=(?!=)/);
  assert.doesNotMatch(source,/indexedDB\.deleteDatabase/);
  const css=fs.readFileSync('forge-train-v62.css','utf8');
  assert.match(css,/min-height:48px/);
