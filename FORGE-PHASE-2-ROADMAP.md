@@ -21,10 +21,10 @@ The planned FORGE product name and FORGE Athletics merchandise have not been cle
 - [x] **P2-04** Provide accessible, large Android controls and regression tests for long background pauses.
 
 ## v62 · Train — Better decisions while exercising
-- [ ] **P2-05** Offer optional per-exercise rest preference without silently changing previous sessions.
-- [ ] **P2-06** Show a factual next-set context strip based on current logs and previous completed effort.
-- [ ] **P2-07** Add an explicit session pause/resume note that remains separate from completion.
-- [ ] **P2-08** Add regression coverage for changed routines, empty history and account switching.
+- [x] **P2-05** Offer optional per-exercise rest preference without silently changing previous sessions.
+- [x] **P2-06** Show a factual next-set context strip based on current logs and previous completed effort.
+- [x] **P2-07** Add an explicit session pause/resume note that remains separate from completion.
+- [x] **P2-08** Add regression coverage for changed routines, empty history and account switching.
 
 ## v63 · Fuel — Faster trusted food logging
 - [ ] **P2-09** Improve incomplete-label visibility before and after meals are logged.
@@ -43,7 +43,7 @@ The planned FORGE product name and FORGE Athletics merchandise have not been cle
 | Version | Steps | State | Verification |
 |---|---|---|---|
 | v61 | P2-01–04 | Verified deployed | Regression `40157567556` · Pages `40157567036` · `tests/forge-rest-v61.test.cjs` |
-| v62 | P2-05–08 | Implemented on review branch; **not verified/deployed** | `tests/forge-train-v62.test.cjs` (CI and Pages pending) |
+| v62 | P2-05–08 | **Verified deployed** | Regression `40310968581` · Pages `40310968035` · app commit `db0478c0fa2aefbabce1adc81b88437e0e22e0f5` · `tests/forge-train-v62.test.cjs` |
 | v63 | P2-09–12 | Pending | — |
 | v64 | P2-13–16 | Pending | — |
 
