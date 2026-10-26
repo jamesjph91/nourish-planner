@@ -102,7 +102,7 @@ test('v61 is wired into the app and the new phase roadmap is separate from origi
  const html=fs.readFileSync('index.html','utf8');
  assert.match(html,/forge-rest-v61\.js\?v=61/);
  assert.match(html,/forge-rest-v61\.css\?v=61/);
- assert.match(html,/name="forge-release" content="61"/);
+ assert.match(html,/name="forge-release" content="6[1-9]"/);
  const p2=fs.readFileSync('FORGE-PHASE-2-ROADMAP.md','utf8');
  assert.match(p2,/v61/);
  assert.match(p2,/v62/);

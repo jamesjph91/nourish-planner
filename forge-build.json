@@ -1,13 +1,13 @@
 {
-  "version": 61,
+  "version": 62,
   "name": "FORGE",
-  "released": "2026-10-25",
+  "released": "2026-10-26",
   "features": [
-    "60, 90 and 120 second manual rest presets shown within the real Train workout session",
-    "Rest timer pause, resume, plus 15 seconds and explicit reset using absolute clock deadlines",
-    "Session changes, rest days, account changes and conflicts clear the in-memory timer without touching personal logs",
-    "Large, accessible mobile-first controls and optional device vibration on completion",
-    "No new cloud data, workout edits, permissions or paid APIs",
-    "Regression tests verifying countdown drift, data integrity, account changes and mobile design"
+    "Optional per-exercise rest preferences (60, 90 or 120 seconds) saved locally per verified account or guest profile",
+    "Rest preference only applies after an explicit button press; ongoing countdown reset requires confirmation",
+    "Next-set context displays validated completed sets from this session or the latest earlier workout, without inventing targets",
+    "Explicit pause/resume session note does not mark sets or workouts complete or upload new cloud records",
+    "Session status resets on account, day, routine and exercise-list changes",
+    "Accessible mobile controls and automated regression coverage for guest isolation, missing history and account switching"
   ]
 }

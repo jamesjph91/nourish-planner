@@ -1,0 +1,21 @@
+/* FORGE v62 session flow: compact graphite and acid-lime controls, accessible on phones. */
+#workouts .fg62-session{margin:12px 0 18px;padding:15px;border-radius:17px;border:1px solid #567444;background:linear-gradient(145deg,#0b1e13,#10180c);color:#edffe8}
+#workouts .fg62-heading,#workouts .fg62-control{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:11px}
+#workouts .fg62-heading small{color:#c7ff17;font-size:10px;font-weight:900;letter-spacing:1.15px}
+#workouts .fg62-heading h3{font-size:clamp(19px,4vw,24px);line-height:1.15;margin:5px 0}
+#workouts .fg62-state{color:#dbfaad;font-size:9px;font-weight:900;border:1px solid #658341;border-radius:20px;padding:8px;letter-spacing:.35px}
+#workouts .fg62-next{background:#152b19;padding:13px;border-radius:12px;border:1px solid #365437;margin:12px 0}
+#workouts .fg62-next strong{display:block;color:#eaffb9;font-size:15px;line-height:1.45}
+#workouts .fg62-next p{font-size:12px;line-height:1.5;color:#e1ede0;margin:6px 0 0}
+#workouts .fg62-control p{font-size:11px;line-height:1.5;color:#d1e6cc;flex:1 1 180px;margin:0}
+#workouts .fg62-control button{min-height:48px;min-width:136px;padding:10px 12px;border:1px solid #c7ff17;color:#091809;background:#c7ff17;border-radius:11px;font-size:12px;font-weight:950;cursor:pointer}
+#workouts .fg62-footnote{font-size:10px;color:#b3c9ae;line-height:1.6;margin:12px 0 0}
+#workouts .fg62-message{font-size:11px;background:#1a341d;color:#e6ffc6;padding:9px;border-radius:8px;margin:10px 0 0}
+#workouts .fg62-exercise{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px;padding:10px 11px;margin:10px 0;background:#0f2013;border:1px solid #426139;border-radius:11px}
+#workouts .fg62-exercise label{display:flex;flex:1 1 145px;flex-direction:column;gap:5px;color:#ebffdb;font-size:11px;font-weight:800}
+#workouts .fg62-exercise select{min-height:46px;width:100%;background:#162819;color:#f1ffe2;border:1px solid #688b52;border-radius:9px;padding:8px;font:inherit;font-size:13px}
+#workouts .fg62-exercise button{min-height:46px;flex:1 1 133px;max-width:220px;background:#c7ff17;border:1px solid #c7ff17;color:#071409;border-radius:9px;font-size:12px;font-weight:900;padding:8px}
+#workouts .fg62-exercise button:disabled{background:#1c3020;color:#adbdac;border-color:#526653;cursor:not-allowed}
+#workouts .fg62-session button:focus-visible,#workouts .fg62-exercise button:focus-visible,#workouts .fg62-exercise select:focus-visible{outline:3px solid #f1ffb4;outline-offset:3px}
+@media(max-width:420px){#workouts .fg62-session{padding:12px}#workouts .fg62-control button{width:100%}#workouts .fg62-exercise button{max-width:none}}
+@media(prefers-reduced-motion:reduce){#workouts .fg62-session *,#workouts .fg62-exercise *{transition:none!important;animation:none!important}}

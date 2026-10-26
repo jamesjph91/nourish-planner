@@ -43,7 +43,7 @@ The planned FORGE product name and FORGE Athletics merchandise have not been cle
 | Version | Steps | State | Verification |
 |---|---|---|---|
 | v61 | P2-01–04 | Verified deployed | Regression `40157567556` · Pages `40157567036` · `tests/forge-rest-v61.test.cjs` |
-| v62 | P2-05–08 | Pending | — |
+| v62 | P2-05–08 | Implemented on review branch; **not verified/deployed** | `tests/forge-train-v62.test.cjs` (CI and Pages pending) |
 | v63 | P2-09–12 | Pending | — |
 | v64 | P2-13–16 | Pending | — |
 

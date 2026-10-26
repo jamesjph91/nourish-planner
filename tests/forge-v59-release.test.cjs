@@ -94,14 +94,14 @@ test('v59 respects 48px mobile touch, at least 28px nav icons, focus and reduced
 test('v59 release gate includes offline, recovery, accessibility and privacy assertions',()=>{
  const sw=read('service-worker.js'),html=read('index.html'),repair=read('refresh-forge.html');
  const build=JSON.parse(read('forge-build.json'));
- assert.equal(build.version,61);
- assert.match(html,/name="forge-release" content="61"/);
+ assert.equal(build.version,62);
+ assert.match(html,/name="forge-release" content="62"/);
  assert.match(html,/forge-progress\.js\?v=59/);
  assert.match(html,/forge-v59\.css\?v=59/);
- assert.match(sw,/forge-v61-rest-timer/);
+ assert.match(sw,/forge-v62-session-flow/);
  assert.match(sw,/forge-progress\.js/);
  assert.match(sw,/forge-v59\.css/);
- assert.match(repair,/index\.html\?v=61/);
+ assert.match(repair,/index\.html\?v=62/);
  assert.match(repair,/method:'HEAD'/);
  assert.doesNotMatch(repair,/localStorage\.(?:clear|removeItem)|indexedDB\.deleteDatabase/);
  const access=read('forge-access-v51.js');
@@ -117,7 +117,7 @@ test('v59 regression suite and release audit document are present',()=>{
  const workflow=read('.github/workflows/health-hub-checks.yml');
  assert.match(workflow,/node --test tests\/\*\.test\.cjs/);
  assert.match(workflow,/node --check forge-progress\.js/);
- assert.match(workflow,/forge-v59\.css/);
+ assert.match(workflow,/node --check forge-train-v62\.js/);
  const doc=read('FORGE-RELEASE-AUDIT.md');
  assert.match(doc,/Progress measurements/);
  assert.match(doc,/Progress photos/);
